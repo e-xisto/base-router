@@ -1,6 +1,6 @@
 {
     "name": "@e-xisto/base-router",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Enrutador dinamico para express",
     "main": "dist/main.js",
     "scripts": {
