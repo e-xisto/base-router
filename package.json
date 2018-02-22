@@ -2,7 +2,7 @@
     "name": "@e-xisto/base-router",
     "version": "1.0.1",
     "description": "Enrutador dinamico para express",
-    "main": "dist/index.js",
+    "main": "dist/main.js",
     "scripts": {
         "dev": "clear; npx tsc --watch",
         "build": "clear; npx tsc -d"
