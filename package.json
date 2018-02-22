@@ -1,0 +1,29 @@
+{
+    "name": "@e-xisto/base-router",
+    "version": "1.0.1",
+    "description": "Enrutador dinamico para express",
+    "main": "dist/index.js",
+    "scripts": {
+        "dev": "clear; npx tsc --watch",
+        "build": "clear; npx tsc -d"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/e-xisto/base-router.git"
+    },
+    "keywords": [],
+    "author": "E-XISTO Diseño web SL <info@existo.es> (https://www.existo.es)",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/e-xisto/base-router/issues"
+    },
+    "homepage": "https://github.com/e-xisto/base-router#readme",
+    "dependencies": {
+        "chalk": "^2.3.1"
+    },
+    "devDependencies": {
+        "@types/express": "^4.11.1",
+        "@types/node": "^9.4.6",
+        "typescript": "^2.7.2"
+    }
+}
