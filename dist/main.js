@@ -11,7 +11,7 @@ let pathRoutes = ''; // Path de las rutas por defecto _path/routes
 let routesFile = ''; // Fichero con la declaración de rutas por defecto routes.js
 exports.configure = (options) => {
     let app;
-    mapName = options.map || 'map.json';
+    mapName = options.map || 'map.yaml';
     path = options.path || '';
     pathRoutes = options.pathRoutes || options.path + '/routes';
     routesFile = options.routes || 'routes.js';
@@ -54,45 +54,6 @@ function findRuta(req, res) {
             return ruta;
     });
 }
-function loadRoutes() {
-    let rutasFile = `${pathRoutes}/${routesFile}`;
-    try {
-        require(rutasFile);
-    }
-    catch (e) {
-        console.log("\n" + chalk.red('No se ha podido cargar el fichero de rutas'));
-        console.log('    ' + chalk.red.inverse(rutasFile) + "\n");
-        console.log(e);
-        process.exit();
-    }
-}
-function mapReload(res) {
-    console.log("\n" + chalk.green('Recargando mapa de contenidos') + "\n");
-    loadMap();
-    res.redirect('/');
-    return false;
-}
-function routes(req, res, next) {
-    let ruta = findRuta(req, res);
-    if (ruta === false)
-        return;
-    if (ruta) {
-        res.locals.__route = ruta;
-        ruta.url = req.url;
-        if (ruta.languages.es.exp)
-            req.url = ruta.router.route + req.url.replace(/^\/[^\/]*/, '');
-        else
-            req.url = ruta.router.route;
-    }
-    else
-        res.locals.__route = { url: req.url };
-    if (idioma)
-        res.locals.__route.lng = idioma;
-    next('route');
-}
-///////////////////////////////////////////
-///////////////////////////////////////////
-///////////////////////////////////////////
 function loadMap() {
     let mapFile = `${path}/${mapName}`;
     idiomas = [];
@@ -121,3 +82,54 @@ function loadMap() {
         if (lang.active)
             idiomas.push(lang.path);
 }
+function loadRoutes() {
+    let rutasFile = `${pathRoutes}/${routesFile}`;
+    try {
+        require(rutasFile);
+    }
+    catch (e) {
+        console.log("\n" + chalk.red('No se ha podido cargar el fichero de rutas'));
+        console.log('    ' + chalk.red.inverse(rutasFile) + "\n");
+        console.log(e);
+        process.exit();
+    }
+}
+function mapReload(res) {
+    console.log("\n" + chalk.green('Recargando mapa de contenidos') + "\n");
+    loadMap();
+    res.redirect('/');
+    return false;
+}
+function routes(req, res, next) {
+    let ruta = findRuta(req, res);
+    if (ruta === false)
+        return;
+    if (ruta) {
+        res.locals.__route = ruta;
+        ruta.url = req.url;
+        if (idioma) {
+            if (ruta.languages[idioma].redirect)
+                return res.redirect(ruta.languages[idioma].redirect);
+            if (ruta.languages[idioma].exp)
+                req.url = ruta.router.route + req.url.replace(/^\/[^\/]*/, '');
+            else
+                req.url = ruta.router.route;
+        }
+        else if (!idioma) {
+            if (ruta.redirect)
+                return res.redirect(ruta.redirect);
+            if (ruta.exp)
+                req.url = ruta.router.route + req.url.replace(/^\/[^\/]*/, '');
+            else
+                req.url = ruta.router.route;
+        }
+    }
+    else
+        res.locals.__route = { url: req.url };
+    if (idioma)
+        res.locals.__route.lng = idioma;
+    next('route');
+}
+///////////////////////////////////////////
+///////////////////////////////////////////
+///////////////////////////////////////////

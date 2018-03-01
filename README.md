@@ -1,1 +1,161 @@
-# base-router
+# @e-xisto/base-router
+
+Enrutador externo para Express. Carga un mapa de rutas definido en json o yaml y crea el enrutador.
+
+## Como Usarlo
+---------
+
+Instalar el módulo
+
+```bash
+npm install @e-xisto/base-router
+```
+
+Usarlo:
+
+``` js
+const baseRouter = require ('@e-xisto/base-router');
+
+// Configurarlo
+baseRouter.configure ({ path: __dirname, map: args.map });
+```
+
+## Variables de configuración
+
+## Getting Started
+|Variable|Description|
+|--|--|
+|path|Ruta de la aplicación, esta variable es obligatoria e indica la ruta donde empezar a localizar el mapa y las rutas estáticas.|
+|map|Nombre del fichero del mapa. Debe estar localizado en el path o ser una ruta relativa al path. Por defecto tiene el valor `map.json`|
+|pathRoutes|Ruta de la la carpeta de rutas. Por defecto `[path]/routes`|
+|routes|Nombre del fichero de rutas. Por defecto `routes.js`|
+
+## Ejemplo de mapa de rutas en yaml
+
+```yaml
+languages:
+    -   path: es
+        text: Español
+        active: true
+
+    -   path: en
+        text: English
+        active: true
+
+content:
+    -   content: 'Contenido 1'
+        id: 1
+        languages:
+            es:
+                url: /contenido-1
+            en:
+                url: /content-1
+        router:
+            route: /ruta1
+            view: vista1
+
+    -   content: 'Contenido 2'
+        id: 2
+        languages:
+            es:
+                url: /contenido-2
+            en:
+                url: /content-2
+        router:
+            route: /ruta1
+            view: vista1
+
+    -   content: 'Contenido 3'
+        id: 3
+        languages:
+            es:
+                url: /contenido-3
+                redirect: /contenido-1
+            en:
+                url: /content-2
+                redirect: /content-1
+
+    -   content: Categorias
+        id: 5
+        languages:
+            es:
+                exp: '/categorias(/.*)?'
+            en:
+                url: /categorys
+        router:
+            route: /categorias
+            view: vista-categorias
+```
+
+
+## Ejemplo de mapa de rutas en json
+
+```json
+{
+	"languages": [
+		{
+			"path": "es",
+			"text": "Español",
+			"active": true
+		},
+		{
+			"path": "en",
+			"text": "English",
+			"active": true
+		}
+    ],
+	"content": [
+		{
+			"content": "Contenido 1",
+			"id": 1,
+			"languages": {
+					"es": {
+							"url": "/contenido-1"
+						},
+					"en": {
+							"url": "/content-1"
+						}
+				},
+			"router": {
+					"route": "/ruta1",
+					"view": "vista1"
+				}
+		},
+		{
+			"content": "Contenido 2",
+			"id": 2,
+			"languages": {
+					"es": {
+							"url": "/contenido-2"
+						},
+					"en": {
+							"url": "/content-2"
+						}
+				},
+			"router": {
+					"route": "/ruta1",
+					"view": "vista1"
+				}
+		},
+		{
+			"content": "Categorias",
+			"id": 5,
+			"languages": {
+								"es": {
+									"exp": "/categorias(/.*)?"
+								},
+								"en": {
+									"url": "/categorys"
+								}
+				},
+			"router": {
+							"route": "/categorias",
+							"view":  "vista-categorias"
+				}
+		}
+	]
+}
+```
+
+
+

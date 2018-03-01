@@ -3,6 +3,7 @@
 ## [1.0.3] - 2018-03-01
 ### Added
 - Acepta ficheros YAML @cesaregarcia
+- Se añade el atributo redirect al mapa.
 
 ### Fixed
 - Error si no existe el mapa de rutas @cesaregarcia

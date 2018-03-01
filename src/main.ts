@@ -17,7 +17,7 @@ exports.configure = (options: any) => {
 
 	let app: any;
 
-	mapName    = options.map || 'map.json';
+	mapName    = options.map || 'map.yaml';
 	path       = options.path || '';
 	pathRoutes = options.pathRoutes || options.path + '/routes';
 	routesFile = options.routes || 'routes.js';
@@ -67,6 +67,32 @@ function findRuta (req: express.Request, res: express.Response): any {
 }
 
 
+function loadMap () {
+
+	let mapFile = `${ path }/${ mapName }`;
+
+	idiomas = [];
+
+	try {
+		// Metodo asincrono
+		if (mapFile.match (/\.YAML$/i)) map = require ('yamljs').parse (fs.readFileSync (mapFile, 'utf8'));
+		else map = JSON.parse (fs.readFileSync (mapFile, 'utf8'));
+	} catch (e) {
+		if (e.code == 'MODULE_NOT_FOUND' || e.code == 'ENOENT') {
+			console.log ("\n" + chalk.red ('No se ha encontrado el mapa de rutas'));
+			console.log ('    ' + chalk.red.inverse (mapFile) + "\n");
+		} else if (e.code == undefined) {
+			console.log ("\n" + chalk.red ('Error en el mapa de rutas'));
+			console.log ('    ' + chalk.red.inverse (mapFile) + "\n");
+			console.log (e);
+		} else console.log (e);
+		process.exit ();
+	}
+
+	for (let lang of map.languages) if (lang.active) idiomas.push (lang.path);
+}
+
+
 function loadRoutes () {
 
 	let rutasFile = `${ pathRoutes }/${ routesFile }`;
@@ -100,9 +126,17 @@ function routes (req: express.Request, res: express.Response, next: express.Next
 	if (ruta) {
 		res.locals.__route = ruta;
 		ruta.url = req.url;
-		if (ruta.languages.es.exp) req.url = ruta.router.route + req.url.replace (/^\/[^\/]*/, '');
-		else req.url = ruta.router.route;
+		if (idioma) {
+			if (ruta.languages [idioma].redirect) return res.redirect (ruta.languages [idioma].redirect);
+			if (ruta.languages [idioma].exp) req.url = ruta.router.route + req.url.replace (/^\/[^\/]*/, '');
+			else req.url = ruta.router.route;
+		} else if (! idioma) {
+			if (ruta.redirect) return res.redirect (ruta.redirect);
+			if (ruta.exp) req.url = ruta.router.route + req.url.replace (/^\/[^\/]*/, '');
+			else req.url = ruta.router.route;
+		}
 	} else res.locals.__route = {url: req.url}
+
 	if (idioma) res.locals.__route.lng = idioma;
 	next ('route');
 }
@@ -112,32 +146,4 @@ function routes (req: express.Request, res: express.Response, next: express.Next
 ///////////////////////////////////////////
 ///////////////////////////////////////////
 ///////////////////////////////////////////
-
-
-function loadMap () {
-
-
-	let mapFile = `${ path }/${ mapName }`;
-
-	idiomas = [];
-
-	try {
-		// Metodo asincrono
-		if (mapFile.match (/\.YAML$/i)) map = require ('yamljs').parse (fs.readFileSync (mapFile, 'utf8'));
-		else map = JSON.parse (fs.readFileSync (mapFile, 'utf8'));
-	} catch (e) {
-		if (e.code == 'MODULE_NOT_FOUND' || e.code == 'ENOENT') {
-			console.log ("\n" + chalk.red ('No se ha encontrado el mapa de rutas'));
-			console.log ('    ' + chalk.red.inverse (mapFile) + "\n");
-		} else if (e.code == undefined) {
-			console.log ("\n" + chalk.red ('Error en el mapa de rutas'));
-			console.log ('    ' + chalk.red.inverse (mapFile) + "\n");
-			console.log (e);
-		} else console.log (e);
-		process.exit ();
-	}
-
-	for (let lang of map.languages) if (lang.active) idiomas.push (lang.path);
-}
-
 
