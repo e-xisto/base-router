@@ -67,31 +67,6 @@ function findRuta (req: express.Request, res: express.Response): any {
 }
 
 
-function loadMap () {
-
-	let mapFile = `${ path }/${ mapName }`;
-
-	idiomas = [];
-
-	try {
-		// Metodo asincrono
-		map = JSON.parse (fs.readFileSync (mapFile, 'utf8'));
-	} catch (e) {
-		if (e.code == 'MODULE_NOT_FOUND') {
-			console.log ("\n" + chalk.red ('No se ha encontrado el mapa de rutas'));
-			console.log ('    ' + chalk.red.inverse (mapFile) + "\n");
-		} else if (e.code == undefined) {
-			console.log ("\n" + chalk.red ('Error en el mapa de rutas'));
-			console.log ('    ' + chalk.red.inverse (mapFile) + "\n");
-			console.log (e);
-		} else console.log (e);
-		process.exit ();
-	}
-
-	for (let lang of map.languages) if (lang.active) idiomas.push (lang.path);
-}
-
-
 function loadRoutes () {
 
 	let rutasFile = `${ pathRoutes }/${ routesFile }`;
@@ -101,6 +76,7 @@ function loadRoutes () {
 	} catch (e) {
 		console.log ("\n" + chalk.red ('No se ha podido cargar el fichero de rutas'));
 		console.log ('    ' + chalk.red.inverse (rutasFile) + "\n");
+		console.log (e);
 		process.exit ();
 	}
 }
@@ -136,5 +112,32 @@ function routes (req: express.Request, res: express.Response, next: express.Next
 ///////////////////////////////////////////
 ///////////////////////////////////////////
 ///////////////////////////////////////////
+
+
+function loadMap () {
+
+
+	let mapFile = `${ path }/${ mapName }`;
+
+	idiomas = [];
+
+	try {
+		// Metodo asincrono
+		if (mapFile.match (/\.YAML$/i)) map = require ('yamljs').parse (fs.readFileSync (mapFile, 'utf8'));
+		else map = JSON.parse (fs.readFileSync (mapFile, 'utf8'));
+	} catch (e) {
+		if (e.code == 'MODULE_NOT_FOUND' || e.code == 'ENOENT') {
+			console.log ("\n" + chalk.red ('No se ha encontrado el mapa de rutas'));
+			console.log ('    ' + chalk.red.inverse (mapFile) + "\n");
+		} else if (e.code == undefined) {
+			console.log ("\n" + chalk.red ('Error en el mapa de rutas'));
+			console.log ('    ' + chalk.red.inverse (mapFile) + "\n");
+			console.log (e);
+		} else console.log (e);
+		process.exit ();
+	}
+
+	for (let lang of map.languages) if (lang.active) idiomas.push (lang.path);
+}
 
 

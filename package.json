@@ -19,7 +19,8 @@
     },
     "homepage": "https://github.com/e-xisto/base-router#readme",
     "dependencies": {
-        "chalk": "^2.3.1"
+        "chalk": "^2.3.1",
+        "yamljs": "^0.3.0"
     },
     "devDependencies": {
         "@types/express": "^4.11.1",
