@@ -2,8 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require('fs');
 const chalk = require('chalk');
-let idioma = '';
-let idiomas = [];
+let idiomas = { idioma: false, default: false };
 let map;
 let mapName = ''; // Nombre del fichero del mapa de rutas, por defecto map.json
 let path = ''; // Path de la aplicación
@@ -27,13 +26,13 @@ exports.configure = (options) => {
 function findRoute(req, res) {
     if (req.url == '/map-reload')
         return mapReload(res);
-    if (idiomas.length) {
+    if (idiomas.idioma) {
         if (!validarIdioma(req, res))
             return false;
         // Eliminamos el idioma de la URL
         let url = req.url.substr(3);
         return map.content.find((ruta) => {
-            if (findRouteOk(ruta.languages[idioma], url))
+            if (findRouteOk(ruta.languages[idiomas.idioma], url))
                 return ruta;
         });
     }
@@ -54,7 +53,6 @@ function findRouteOk(ruta, url) {
 }
 function loadMap() {
     let mapFile = `${path}/${mapName}`;
-    idiomas = [];
     try {
         // Metodo asincrono
         if (mapFile.match(/\.YAML$/i))
@@ -76,10 +74,7 @@ function loadMap() {
             console.log(e);
         process.exit();
     }
-    for (let lang of map.languages) {
-        if (lang.active)
-            idiomas.push(lang.path);
-    }
+    optimizedLanguages();
     prepareRoutes();
 }
 function loadRoutes() {
@@ -100,9 +95,23 @@ function mapReload(res) {
     res.redirect('/');
     return false;
 }
+function optimizedLanguages() {
+    //Por defecto el idioma por defecto es el primero.
+    for (let lang of map.languages) {
+        if (lang.active) {
+            idiomas[lang.path] = true;
+            if (!idiomas.default)
+                idiomas.default = lang.path;
+            if (lang.default)
+                idiomas.default = lang.path;
+        }
+    }
+    if (idiomas.default)
+        idiomas.idioma = idiomas.default;
+}
 function prepareRoutes() {
     const pathToRegexp = require('path-to-regexp');
-    if (idiomas.length) {
+    if (idiomas.idioma) {
         for (let i in map.content) {
             let route = map.content[i];
             for (let language of map.languages) {
@@ -136,17 +145,17 @@ function routes(req, res, next) {
     if (ruta) {
         res.locals.__route = ruta;
         ruta.url = req.url;
-        if (idioma) {
-            traduceRuta(req, res, ruta.languages[idioma], ruta.router);
+        if (idiomas.idioma) {
+            traduceRuta(req, res, ruta.languages[idiomas.idioma], ruta.router);
         }
-        else if (!idioma) {
+        else if (!idiomas.idioma) {
             traduceRuta(req, res, ruta, ruta.router);
         }
     }
     else
         res.locals.__route = { url: req.url };
-    if (idioma)
-        res.locals.__route.lng = idioma;
+    if (idiomas.idioma)
+        res.locals.__route.lng = idiomas.idioma;
     next('route');
 }
 function traduceRuta(req, res, ruta, router) {
@@ -157,26 +166,30 @@ function traduceRuta(req, res, ruta, router) {
         return req.url = router.route;
     url.push(router.route);
     for (let i = 1; i <= ruta.keysLength; i++) {
-        if (ruta.keys[i] === undefined)
+        if (ruta.keys[i - 1] === undefined)
             break;
         url.push(ruta.args[i]);
     }
     req.url = url.join('/');
 }
-///////////////////////////////////////////
-///////////////////////////////////////////
-///////////////////////////////////////////
 function validarIdioma(req, res) {
     // Si la url no trae idioma lo añade y lo redirige habria que analizar mejor este comportamiento
-    // Falta validar que el idioma este activado
     if (!req.url) {
-        res.redirect('/' + idiomas[0]);
+        res.redirect('/' + idiomas.default);
         return false;
     }
     if (!req.url.match(/^\/\w\w(\/|$)/)) {
-        res.redirect('/' + idiomas[0] + req.url);
+        res.redirect('/' + idiomas.default + req.url);
         return false;
     }
-    idioma = req.url.substr(1, 2);
+    idiomas.idioma = req.url.substr(1, 2);
+    //
+    if (!idiomas[idiomas.idioma]) {
+        res.redirect('/' + idiomas.default);
+        return false;
+    }
     return true;
 }
+///////////////////////////////////////////
+///////////////////////////////////////////
+///////////////////////////////////////////

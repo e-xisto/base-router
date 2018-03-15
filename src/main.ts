@@ -4,8 +4,7 @@ const fs    = require('fs');
 const chalk = require('chalk');
 
 
-let idioma: string     = '';
-let idiomas: string [] = [];
+let idiomas: any = { idioma: false, default: false };
 let map: any;
 let mapName: string    = ''; 	// Nombre del fichero del mapa de rutas, por defecto map.json
 let path: string       = '';	// Path de la aplicación
@@ -39,12 +38,12 @@ function findRoute (req: express.Request, res: express.Response): any {
 
 	if (req.url == '/map-reload') return mapReload (res);
 
-	if (idiomas.length) {
+	if (idiomas.idioma) {
 		if (! validarIdioma (req, res)) return false;
 		// Eliminamos el idioma de la URL
 		let url = req.url.substr (3);
 		return map.content.find ((ruta: any) => {
-				if (findRouteOk (ruta.languages [idioma], url)) return ruta;
+				if (findRouteOk (ruta.languages [idiomas.idioma], url)) return ruta;
 			});
 	}
 
@@ -71,8 +70,6 @@ function loadMap () {
 
 	let mapFile = `${ path }/${ mapName }`;
 
-	idiomas = [];
-
 	try {
 		// Metodo asincrono
 		if (mapFile.match (/\.YAML$/i)) map = require ('yamljs').parse (fs.readFileSync (mapFile, 'utf8'));
@@ -89,10 +86,7 @@ function loadMap () {
 		process.exit ();
 	}
 
-
-	for (let lang of map.languages) {
-		if (lang.active) idiomas.push (lang.path);
-	}
+	optimizedLanguages ();
 	prepareRoutes ();
 }
 
@@ -121,11 +115,25 @@ function mapReload (res: express.Response) {
 }
 
 
+function optimizedLanguages () {
+
+	//Por defecto el idioma por defecto es el primero.
+	for (let lang of map.languages) {
+		if (lang.active) {
+			idiomas [lang.path] = true;
+			if (! idiomas.default) idiomas.default = lang.path;
+			if (lang.default) idiomas.default = lang.path;
+		}
+	}
+	if (idiomas.default) idiomas.idioma = idiomas.default;
+}
+
+
 function prepareRoutes () {
 
 	const pathToRegexp = require ('path-to-regexp');
 
-	if (idiomas.length) {
+	if (idiomas.idioma) {
 		for (let i in map.content) {
 			let route = map.content [i];
 			for (let language of map.languages) {
@@ -158,14 +166,14 @@ function routes (req: express.Request, res: express.Response, next: express.Next
 	if (ruta) {
 		res.locals.__route = ruta;
 		ruta.url = req.url;
-		if (idioma) {
-			traduceRuta (req, res, ruta.languages [idioma], ruta.router);
-		} else if (! idioma) {
+		if (idiomas.idioma) {
+			traduceRuta (req, res, ruta.languages [idiomas.idioma], ruta.router);
+		} else if (! idiomas.idioma) {
 			traduceRuta (req, res, ruta, ruta.router);
 		}
 	} else res.locals.__route = {url: req.url}
 
-	if (idioma) res.locals.__route.lng = idioma;
+	if (idiomas.idioma) res.locals.__route.lng = idiomas.idioma;
 	next ('route');
 }
 
@@ -173,42 +181,46 @@ function routes (req: express.Request, res: express.Response, next: express.Next
 function traduceRuta (req: express.Request, res: express.Response, ruta: any, router: any) {
 
 	let url = [];
-
 	if (ruta.redirect) return res.redirect (ruta.redirect);
 	if (! ruta.keysLength) return req.url = router.route;
-
 	url.push (router.route);
 	for (let i = 1; i <= ruta.keysLength; i++) {
-		if (ruta.keys [i] === undefined) break;
+		if (ruta.keys [i - 1] === undefined) break;
 		url.push (ruta.args [i]);
 	}
 	req.url = url.join ('/');
 }
 
 
-///////////////////////////////////////////
-///////////////////////////////////////////
-///////////////////////////////////////////
-
-
 function validarIdioma (req: express.Request, res: express.Response) {
 
 	// Si la url no trae idioma lo añade y lo redirige habria que analizar mejor este comportamiento
-	// Falta validar que el idioma este activado
 	if (! req.url) {
-		res.redirect ('/' + idiomas [0]);
+		res.redirect ('/' + idiomas.default);
 		return false;
 	}
 
 	if (! req.url.match (/^\/\w\w(\/|$)/)) {
-		res.redirect ('/' + idiomas [0] + req.url);
+		res.redirect ('/' + idiomas.default + req.url);
 		return false;
 	}
 
-	idioma  = req.url.substr (1,2);
+	idiomas.idioma  = req.url.substr (1,2);
+
+	//
+	if (! idiomas [idiomas.idioma]) {
+		res.redirect ('/' + idiomas.default);
+		return false;
+	}
 
 	return true;
 }
+
+
+///////////////////////////////////////////
+///////////////////////////////////////////
+///////////////////////////////////////////
+
 
 
 

@@ -41,6 +41,7 @@ languages:
     -   path: en
         text: English
         active: true
+        default: true
 
 content:
     -   content: 'Contenido 1'
@@ -79,9 +80,9 @@ content:
         id: 5
         languages:
             es:
-                exp: '/categorias(/.*)?'
+                url: '/categorias/:id(\\d+)?'
             en:
-                url: /categorys
+                url: /categorys/:id(\\d+)?
         router:
             route: /categorias
             view: vista-categorias
@@ -101,7 +102,8 @@ content:
 		{
 			"path": "en",
 			"text": "English",
-			"active": true
+			"active": true,
+            "default": true
 		}
     ],
 	"content": [
@@ -142,10 +144,10 @@ content:
 			"id": 5,
 			"languages": {
 								"es": {
-									"exp": "/categorias(/.*)?"
+									"url": "/categorias/:id(\\d+)?"
 								},
 								"en": {
-									"url": "/categorys"
+									"url": "/categorys/:id(\\d+)?"
 								}
 				},
 			"router": {
