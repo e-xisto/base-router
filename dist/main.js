@@ -24,35 +24,33 @@ exports.configure = (options) => {
     loadRoutes();
     loadMap();
 };
-function findRuta(req, res) {
+function findRoute(req, res) {
     if (req.url == '/map-reload')
         return mapReload(res);
     if (idiomas.length) {
-        if (!req.url) {
-            res.redirect('/' + idiomas[0]);
+        if (!validarIdioma(req, res))
             return false;
-        }
-        if (!req.url.match(/^\/\w\w(\/|$)/)) {
-            res.redirect('/' + idiomas[0] + req.url);
-            return false;
-        }
-        idioma = req.url.substr(1, 2);
-        let url = req.url.substr(3) || '/';
-        if (url == '/')
-            req.url = '/';
+        // Eliminamos el idioma de la URL
+        let url = req.url.substr(3);
         return map.content.find((ruta) => {
-            if (ruta.languages[idioma].exp && new RegExp(ruta.languages[idioma].exp).test(url))
-                return ruta;
-            else if (ruta.languages[idioma].url == url)
+            if (findRouteOk(ruta.languages[idioma], url))
                 return ruta;
         });
     }
     return map.content.find((ruta) => {
-        if (ruta.exp && new RegExp(ruta.exp).test(req.url))
-            return ruta;
-        else if (ruta.url == req.url)
+        if (findRouteOk(ruta, req.url))
             return ruta;
     });
+}
+function findRouteOk(ruta, url) {
+    if (ruta.path) {
+        let res = ruta.path.exec(url);
+        if (res) {
+            ruta.args = res;
+            return true;
+        }
+    }
+    return false;
 }
 function loadMap() {
     let mapFile = `${path}/${mapName}`;
@@ -78,9 +76,11 @@ function loadMap() {
             console.log(e);
         process.exit();
     }
-    for (let lang of map.languages)
+    for (let lang of map.languages) {
         if (lang.active)
             idiomas.push(lang.path);
+    }
+    prepareRoutes();
 }
 function loadRoutes() {
     let rutasFile = `${pathRoutes}/${routesFile}`;
@@ -100,28 +100,47 @@ function mapReload(res) {
     res.redirect('/');
     return false;
 }
+function prepareRoutes() {
+    const pathToRegexp = require('path-to-regexp');
+    if (idiomas.length) {
+        for (let i in map.content) {
+            let route = map.content[i];
+            for (let language of map.languages) {
+                if (route.languages[language.path].url) {
+                    route.languages[language.path].keys = [];
+                    route.languages[language.path].path = pathToRegexp(route.languages[language.path].url, route.languages[language.path].keys);
+                    route.languages[language.path].keysLength = route.languages[language.path].keys.length;
+                }
+                else
+                    console.log(chalk.red(`\nRuta ${language.path}/${route.content} sin url definida\n`));
+            }
+        }
+    }
+    else {
+        for (let i in map.content) {
+            let route = map.content[i];
+            if (route.url) {
+                route.keys = [];
+                route.path = pathToRegexp(route.url, route.keys);
+                route.keysLength = route.keys.length;
+            }
+            else
+                console.log(chalk.red(`\nRuta ${route.content} sin url definida\n`));
+        }
+    }
+}
 function routes(req, res, next) {
-    let ruta = findRuta(req, res);
+    let ruta = findRoute(req, res);
     if (ruta === false)
         return;
     if (ruta) {
         res.locals.__route = ruta;
         ruta.url = req.url;
         if (idioma) {
-            if (ruta.languages[idioma].redirect)
-                return res.redirect(ruta.languages[idioma].redirect);
-            if (ruta.languages[idioma].exp)
-                req.url = ruta.router.route + req.url.replace(/^\/[^\/]*/, '');
-            else
-                req.url = ruta.router.route;
+            traduceRuta(req, res, ruta.languages[idioma], ruta.router);
         }
         else if (!idioma) {
-            if (ruta.redirect)
-                return res.redirect(ruta.redirect);
-            if (ruta.exp)
-                req.url = ruta.router.route + req.url.replace(/^\/[^\/]*/, '');
-            else
-                req.url = ruta.router.route;
+            traduceRuta(req, res, ruta, ruta.router);
         }
     }
     else
@@ -130,6 +149,34 @@ function routes(req, res, next) {
         res.locals.__route.lng = idioma;
     next('route');
 }
+function traduceRuta(req, res, ruta, router) {
+    let url = [];
+    if (ruta.redirect)
+        return res.redirect(ruta.redirect);
+    if (!ruta.keysLength)
+        return req.url = router.route;
+    url.push(router.route);
+    for (let i = 1; i <= ruta.keysLength; i++) {
+        if (ruta.keys[i] === undefined)
+            break;
+        url.push(ruta.args[i]);
+    }
+    req.url = url.join('/');
+}
 ///////////////////////////////////////////
 ///////////////////////////////////////////
 ///////////////////////////////////////////
+function validarIdioma(req, res) {
+    // Si la url no trae idioma lo añade y lo redirige habria que analizar mejor este comportamiento
+    // Falta validar que el idioma este activado
+    if (!req.url) {
+        res.redirect('/' + idiomas[0]);
+        return false;
+    }
+    if (!req.url.match(/^\/\w\w(\/|$)/)) {
+        res.redirect('/' + idiomas[0] + req.url);
+        return false;
+    }
+    idioma = req.url.substr(1, 2);
+    return true;
+}
