@@ -3,6 +3,7 @@
     "version": "1.1.0",
     "description": "Enrutador dinamico para express",
     "main": "dist/main.js",
+    "types": "dist/main.d.ts",
     "scripts": {
         "dev": "clear; npx tsc --watch",
         "build": "clear; npx tsc -d"

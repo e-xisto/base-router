@@ -2,13 +2,22 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require('fs');
 const chalk = require('chalk');
-let idiomas = { idioma: false, default: false };
+let idiomas = { idiomas: false, lng: '', default: '', actives: {} };
 let map;
 let mapName = ''; // Nombre del fichero del mapa de rutas, por defecto map.json
 let path = ''; // Path de la aplicación
 let pathRoutes = ''; // Path de las rutas por defecto _path/routes
 let routesFile = ''; // Fichero con la declaración de rutas por defecto routes.js
-exports.configure = (options) => {
+function alternate(ruta, info) {
+    if (idiomas.idiomas) {
+        info.alternate = [];
+        for (let lng in idiomas.actives) {
+            if (ruta.languages[lng])
+                info.alternate.push({ lang: lng, href: `/${lng}${ruta.languages[lng].url}` });
+        }
+    }
+}
+function configure(options) {
     let app;
     mapName = options.map || 'map.yaml';
     path = options.path || '';
@@ -22,17 +31,33 @@ exports.configure = (options) => {
     app.use(routes);
     loadRoutes();
     loadMap();
-};
+}
+function evalRuta(req, res, ruta, router) {
+    let url = [];
+    if (ruta.redirect)
+        return res.redirect(ruta.redirect);
+    if (!ruta.keysLength)
+        return req.url = router.route;
+    url.push(router.route);
+    for (let i = 1; i <= ruta.keysLength; i++) {
+        if (ruta.keys[i - 1] === undefined)
+            break;
+        url.push(ruta.args[i]);
+    }
+    req.url = url.join('/');
+}
 function findRoute(req, res) {
     if (req.url == '/map-reload')
         return mapReload(res);
-    if (idiomas.idioma) {
+    if (idiomas.idiomas) {
         if (!validarIdioma(req, res))
             return false;
         // Eliminamos el idioma de la URL
         let url = req.url.substr(3);
+        if (!url)
+            url = '/';
         return map.content.find((ruta) => {
-            if (findRouteOk(ruta.languages[idiomas.idioma], url))
+            if (findRouteOk(ruta.languages[idiomas.lng], url))
                 return ruta;
         });
     }
@@ -96,32 +121,36 @@ function mapReload(res) {
     return false;
 }
 function optimizedLanguages() {
-    //Por defecto el idioma por defecto es el primero.
-    for (let lang of map.languages) {
-        if (lang.active) {
-            idiomas[lang.path] = true;
-            if (!idiomas.default)
-                idiomas.default = lang.path;
-            if (lang.default)
-                idiomas.default = lang.path;
+    if (map.languages) {
+        idiomas.idiomas = true;
+        for (let lng in map.languages) {
+            let lang = map.languages[lng];
+            if (lang.active) {
+                idiomas.actives[lng] = true;
+                //Por defecto el idioma por defecto es el primero.
+                if (!idiomas.default)
+                    idiomas.default = lng;
+                if (lang.default)
+                    idiomas.default = lng;
+            }
         }
+        if (idiomas.default)
+            idiomas.lng = idiomas.default;
     }
-    if (idiomas.default)
-        idiomas.idioma = idiomas.default;
 }
 function prepareRoutes() {
     const pathToRegexp = require('path-to-regexp');
-    if (idiomas.idioma) {
+    if (idiomas.idiomas) {
         for (let i in map.content) {
             let route = map.content[i];
-            for (let language of map.languages) {
-                if (route.languages[language.path].url) {
-                    route.languages[language.path].keys = [];
-                    route.languages[language.path].path = pathToRegexp(route.languages[language.path].url, route.languages[language.path].keys);
-                    route.languages[language.path].keysLength = route.languages[language.path].keys.length;
+            for (let lng in idiomas.actives) {
+                if (route.languages[lng].url) {
+                    route.languages[lng].keys = [];
+                    route.languages[lng].path = pathToRegexp(route.languages[lng].url, route.languages[lng].keys);
+                    route.languages[lng].keysLength = route.languages[lng].keys.length;
                 }
                 else
-                    console.log(chalk.red(`\nRuta ${language.path}/${route.content} sin url definida\n`));
+                    console.log(chalk.red(`\nRuta ${lng}/${route.content} sin url definida\n`));
             }
         }
     }
@@ -139,38 +168,48 @@ function prepareRoutes() {
     }
 }
 function routes(req, res, next) {
+    let url = req.url;
     let ruta = findRoute(req, res);
     if (ruta === false)
         return;
     if (ruta) {
-        res.locals.__route = ruta;
-        ruta.url = req.url;
-        if (idiomas.idioma) {
-            traduceRuta(req, res, ruta.languages[idiomas.idioma], ruta.router);
-        }
-        else if (!idiomas.idioma) {
-            traduceRuta(req, res, ruta, ruta.router);
-        }
+        if (idiomas.idiomas)
+            evalRuta(req, res, ruta.languages[idiomas.lng], ruta.router);
+        else
+            evalRuta(req, res, ruta, ruta.router);
     }
-    else
-        res.locals.__route = { url: req.url };
-    if (idiomas.idioma)
-        res.locals.__route.lng = idiomas.idioma;
+    setRoute(req, res, ruta, url);
     next('route');
 }
-function traduceRuta(req, res, ruta, router) {
-    let url = [];
-    if (ruta.redirect)
-        return res.redirect(ruta.redirect);
-    if (!ruta.keysLength)
-        return req.url = router.route;
-    url.push(router.route);
-    for (let i = 1; i <= ruta.keysLength; i++) {
-        if (ruta.keys[i - 1] === undefined)
-            break;
-        url.push(ruta.args[i]);
-    }
-    req.url = url.join('/');
+function setData(parent, info, property) {
+    if (parent[property] !== undefined)
+        info[property] = parent[property];
+}
+function setDefault(parent, property) {
+    let result = {};
+    if (!parent)
+        return result;
+    if (parent[property])
+        result = parent[property];
+    if (idiomas.idiomas && parent.languages && parent.languages[idiomas.lng][property])
+        return Object.assign({}, result, parent.languages[idiomas.lng][property]);
+    return result;
+}
+function setRoute(req, res, ruta, url) {
+    let info = {};
+    info.content = ruta.content;
+    info.id = ruta.id;
+    info.url = url;
+    info.lng = idiomas.lng;
+    info.meta = Object.assign({}, setDefault(map, 'meta'), setDefault(ruta, 'meta'));
+    info.og = Object.assign({}, setDefault(map, 'og'), setDefault(ruta, 'og'));
+    info.twitter = Object.assign({}, setDefault(map, 'twitter'), setDefault(ruta, 'twitter'));
+    info.router = ruta.router;
+    setData(map, info, 'xDefault');
+    setData(map, info, 'dnsPrefetch');
+    setData(map, info, 'scripts');
+    alternate(ruta, info);
+    res.locals.__route = info;
 }
 function validarIdioma(req, res) {
     // Si la url no trae idioma lo añade y lo redirige habria que analizar mejor este comportamiento
@@ -182,14 +221,14 @@ function validarIdioma(req, res) {
         res.redirect('/' + idiomas.default + req.url);
         return false;
     }
-    idiomas.idioma = req.url.substr(1, 2);
-    //
-    if (!idiomas[idiomas.idioma]) {
+    idiomas.lng = req.url.substr(1, 2);
+    if (!idiomas.actives[idiomas.lng]) {
         res.redirect('/' + idiomas.default);
         return false;
     }
     return true;
 }
-///////////////////////////////////////////
-///////////////////////////////////////////
-///////////////////////////////////////////
+exports.configure = configure;
+///////////////////////////////////
+///////////////////////////////////
+///////////////////////////////////
