@@ -4,6 +4,8 @@ import * as baseRouter from './interfaces/index';
 const fs    = require('fs');
 const chalk = require('chalk');
 
+import groups from './groups';
+
 
 let app: any;
 let idiomas: baseRouter.idiomas = { idiomas: false, lng: '', default: '', actives: {}};
@@ -13,6 +15,8 @@ let path: string              = '';	// Path de la aplicación
 let pathRoutes: string        = '';	// Path de las rutas por defecto _path/routes
 let routesFile: string        = '';	// Fichero con la declaración de rutas por defecto routes.js
 let server: baseRouter.server = {};
+// let groups: any;
+//baseRouter.groups = {};
 
 
 	function alternate (ruta: any, info: baseRouter.route) {
@@ -27,7 +31,7 @@ let server: baseRouter.server = {};
 	}
 
 
-	function configure (options: any) {
+    function configure (options: any) {
 
 		mapName    = options.map || 'map.yaml';
 		path       = options.path || '';
@@ -44,6 +48,7 @@ let server: baseRouter.server = {};
 		app.use (routes);
 		loadRoutes ();
 		loadMap ();
+		setGroups ();
 	}
 
 
@@ -146,8 +151,6 @@ let server: baseRouter.server = {};
 	function optimizedLanguages () {
 
 		if (map.languages) {
-			idiomas.idiomas = true;
-
 			for (let lng in map.languages) {
 				let lang = map.languages [lng];
 				if (lang.active) {
@@ -157,7 +160,10 @@ let server: baseRouter.server = {};
 					if (lang.default) idiomas.default = lng;
 				}
 			}
-			if (idiomas.default) idiomas.lng = idiomas.default;
+			if (idiomas.default) {
+				idiomas.lng     = idiomas.default;
+				idiomas.idiomas = true;
+			}
 		}
 	}
 
@@ -190,23 +196,6 @@ let server: baseRouter.server = {};
 	}
 
 
-	function routes (req: express.Request, res: express.Response, next: express.NextFunction) {
-
-		let url  = req.url;
-		let ruta = findRoute (req, res);
-
-		if (! ruta) return;
-
-		if (ruta) {
-			if (idiomas.idiomas) evalRuta (req, res, ruta.languages [idiomas.lng], ruta.router);
-			else evalRuta (req, res, ruta, ruta.router);
-		}
-		setRoute (req, res, ruta, url);
-console.log (res.locals);
-		next ('route');
-	}
-
-
 	function setData (parent: any, info: any, property: string): void {
 
 		if (parent [property] !== undefined) info [property] = parent [property];
@@ -231,6 +220,37 @@ console.log (res.locals);
 			return parent.languages [idiomas.lng][property];
 		if (parent [property]) return parent [property];
 		return '';
+	}
+
+
+	function setRoute (req: express.Request, res: express.Response, ruta: any, url: string) {
+
+		let info: baseRouter.route = {};
+
+		info.content     = ruta.content;
+		info.id          = ruta.id;
+		info.parent      = ruta.parent || 0;
+		info.description = setDefaultProperty (ruta, 'description');
+		info.url         = url;
+		info.lng         = idiomas.lng;
+		info.meta        = {...setDefault (map, 'meta'), ...setDefault (ruta, 'meta')}
+		info.og          = {...setDefault (map, 'og'), ...setDefault (ruta, 'og')};
+		info.twitter     = {...setDefault (map, 'twitter'), ...setDefault (ruta, 'twitter')};
+		info.router      = {...ruta.router};
+		setData (map, info, 'xDefault');
+		setData (map, info, 'dnsPrefetch');
+		setData (map, info, 'scripts');
+		alternate (ruta, info);
+		res.locals.__route  = info;
+		res.locals.__server = {...server};
+		res.locals.__groups = groups;
+	}
+
+
+	function setServer () {
+
+		server.name      = app.__args.serverName;
+		server.localPort = app.get('port');
 	}
 
 
@@ -259,6 +279,7 @@ console.log (res.locals);
 
 
 	exports.configure = configure;
+	exports.lng       = lng;
 
 
 	///////////////////////////////////
@@ -266,34 +287,50 @@ console.log (res.locals);
 	///////////////////////////////////
 
 
-	function setServer () {
 
-		server.name      = app.__args.serverName;
-		server.localPort = app.get('port');
+	function lng () { return idiomas.lng; }
+
+
+	function routes (req: express.Request, res: express.Response, next: express.NextFunction) {
+
+		let url  = req.url;
+		let ruta = findRoute (req, res);
+
+		if (! ruta) return;
+
+		if (ruta) {
+			if (idiomas.idiomas) evalRuta (req, res, ruta.languages [idiomas.lng], ruta.router);
+			else evalRuta (req, res, ruta, ruta.router);
+		}
+		setRoute (req, res, ruta, url);
+// console.log (res.locals.__groups);
+		next ('route');
 	}
 
 
-	function setRoute (req: express.Request, res: express.Response, ruta: any, url: string) {
+	function setGroups () {
 
-		let info: baseRouter.route = {};
+		// groups = new Groups ();
 
-		info.content     = ruta.content;
-		info.id          = ruta.id;
-		info.parent      = ruta.parent || 0;
-		info.description = setDefaultProperty (ruta, 'description');
-		info.url         = url;
-		info.lng         = idiomas.lng;
-		info.meta        = {...setDefault (map, 'meta'), ...setDefault (ruta, 'meta')}
-		info.og          = {...setDefault (map, 'og'), ...setDefault (ruta, 'og')};
-		info.twitter     = {...setDefault (map, 'twitter'), ...setDefault (ruta, 'twitter')};
-		info.router      = {...ruta.router};
-		setData (map, info, 'xDefault');
-		setData (map, info, 'dnsPrefetch');
-		setData (map, info, 'scripts');
-		alternate (ruta, info);
-		res.locals.__route  = info;
-		res.locals.__server = {...server};
+		if (map.groups) {
+			for (let name in map.groups) {
+				for (let item of map.groups [name]) {
+					groups.addItem (name, contentById (item.id), idiomas.actives);
+				}
+			}
+			// groups = {...map.groups};
+		}
+
+		console.log (groups.grupos);
 	}
 
+
+	function contentById (id: number): any {
+
+		return map.content.find ((ruta: any) => { if (ruta.id == id) return ruta; });
+	}
+
+
+// export function configure;
 
 
