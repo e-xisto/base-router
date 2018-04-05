@@ -238,6 +238,7 @@ let routesFile: string = '';	// Fichero con la declaración de rutas por defecto
 		setData (map, info, 'scripts');
 		alternate (ruta, info);
 		res.locals.__route = info;
+		res.locals.__base  = {}
 	}
 
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.1] - 2018-04-05
+### Add
+- Se normaliza la información de la ruta.
+
 ## [1.1.0] - 2018-03-15
 ### Added
 - Se añade la propiedad default al lenguaje para que coja un idioma por defecto sin tener que ser el primero.

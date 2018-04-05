@@ -20,6 +20,85 @@ const baseRouter = require ('@e-xisto/base-router');
 baseRouter.configure ({ path: __dirname, map: args.map });
 ```
 
+Crea una variable ``__base`` con la información del servidor.
+
+```javascript
+Por definir
+```
+
+Crea una variable ``__route`` con la información de la ruta.
+
+```javascript
+interface route {
+    alternate?: linkAlternate [];
+    content?: string;
+    dnsPrefetch?: string [];
+    id?: number;
+    lng?: boolean | string;
+    meta?: meta;
+    noIndex?: boolean;
+    og?: og;
+    router?: router;
+    scripts?: scripts;
+    twitter?: twitter;
+    url?: string;
+    xDefault?: string;
+}
+
+
+interface linkAlternate {
+    lang: string;
+    href: string;
+}
+
+
+interface meta {
+    canonical?: string;
+    descripcion?: string;
+    keywords?: string;
+    title?: string;
+}
+
+
+interface og {
+    admin?: string;
+    app_id?: string;
+    author?: string;
+    description?: string;
+    image?: string;
+    locale?: string;
+    site_name?: string;
+    title?: string;
+    type?: string;
+    url?: string;
+}
+
+
+interface router {
+    route?: string;
+    view?: string;
+}
+
+
+interface scripts {
+    googleAnalytics?: string;
+    googleSiteVerification?: string;
+	googleTagManager?: string;
+}
+
+
+interface twitter {
+    card?: string;
+    creator?: string;
+    description?: string;
+    image?: string;
+    site?: string;
+    title?: string;
+    url?: string;
+}
+
+```
+
 ## Variables de configuración
 
 ## Getting Started
@@ -29,6 +108,7 @@ baseRouter.configure ({ path: __dirname, map: args.map });
 |map|Nombre del fichero del mapa. Debe estar localizado en el path o ser una ruta relativa al path. Por defecto tiene el valor `map.json`|
 |pathRoutes|Ruta de la la carpeta de rutas. Por defecto `[path]/routes`|
 |routes|Nombre del fichero de rutas. Por defecto `routes.js`|
+
 
 ## Ejemplo de mapa de rutas en yaml
 

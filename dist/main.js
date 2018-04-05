@@ -210,6 +210,7 @@ function setRoute(req, res, ruta, url) {
     setData(map, info, 'scripts');
     alternate(ruta, info);
     res.locals.__route = info;
+    res.locals.__base = {};
 }
 function validarIdioma(req, res) {
     // Si la url no trae idioma lo añade y lo redirige habria que analizar mejor este comportamiento
