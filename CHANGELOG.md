@@ -1,5 +1,11 @@
 # Changelog
 
+## 2018-04-05 @cesaregarcia
+- Se separan las definiciones de tipo por fichero
+- Se añade una variable global __server con la información del servidor.
+- Añadir la propiedad parent a la ruta
+
+
 ## [1.1.1] - 2018-04-05
 ### Add
 - Se normaliza la información de la ruta.

@@ -2,12 +2,14 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require('fs');
 const chalk = require('chalk');
+let app;
 let idiomas = { idiomas: false, lng: '', default: '', actives: {} };
 let map;
 let mapName = ''; // Nombre del fichero del mapa de rutas, por defecto map.json
 let path = ''; // Path de la aplicación
 let pathRoutes = ''; // Path de las rutas por defecto _path/routes
 let routesFile = ''; // Fichero con la declaración de rutas por defecto routes.js
+let server = {};
 function alternate(ruta, info) {
     if (idiomas.idiomas) {
         info.alternate = [];
@@ -18,7 +20,6 @@ function alternate(ruta, info) {
     }
 }
 function configure(options) {
-    let app;
     mapName = options.map || 'map.yaml';
     path = options.path || '';
     pathRoutes = options.pathRoutes || options.path + '/routes';
@@ -27,7 +28,8 @@ function configure(options) {
         console.log(chalk.red("\nNo se puede cargar un mapa poque no se ha definido un path\n"));
         process.exit();
     }
-    app = require(path + '/server');
+    app = require(path + '/server.js');
+    setServer();
     app.use(routes);
     loadRoutes();
     loadMap();
@@ -170,7 +172,7 @@ function prepareRoutes() {
 function routes(req, res, next) {
     let url = req.url;
     let ruta = findRoute(req, res);
-    if (ruta === false)
+    if (!ruta)
         return;
     if (ruta) {
         if (idiomas.idiomas)
@@ -179,6 +181,7 @@ function routes(req, res, next) {
             evalRuta(req, res, ruta, ruta.router);
     }
     setRoute(req, res, ruta, url);
+    console.log(res.locals);
     next('route');
 }
 function setData(parent, info, property) {
@@ -195,22 +198,14 @@ function setDefault(parent, property) {
         return Object.assign({}, result, parent.languages[idiomas.lng][property]);
     return result;
 }
-function setRoute(req, res, ruta, url) {
-    let info = {};
-    info.content = ruta.content;
-    info.id = ruta.id;
-    info.url = url;
-    info.lng = idiomas.lng;
-    info.meta = Object.assign({}, setDefault(map, 'meta'), setDefault(ruta, 'meta'));
-    info.og = Object.assign({}, setDefault(map, 'og'), setDefault(ruta, 'og'));
-    info.twitter = Object.assign({}, setDefault(map, 'twitter'), setDefault(ruta, 'twitter'));
-    info.router = ruta.router;
-    setData(map, info, 'xDefault');
-    setData(map, info, 'dnsPrefetch');
-    setData(map, info, 'scripts');
-    alternate(ruta, info);
-    res.locals.__route = info;
-    res.locals.__base = {};
+function setDefaultProperty(parent, property) {
+    if (!parent)
+        return '';
+    if (idiomas.idiomas && parent.languages && parent.languages[idiomas.lng][property])
+        return parent.languages[idiomas.lng][property];
+    if (parent[property])
+        return parent[property];
+    return '';
 }
 function validarIdioma(req, res) {
     // Si la url no trae idioma lo añade y lo redirige habria que analizar mejor este comportamiento
@@ -233,3 +228,26 @@ exports.configure = configure;
 ///////////////////////////////////
 ///////////////////////////////////
 ///////////////////////////////////
+function setServer() {
+    server.name = app.__args.serverName;
+    server.localPort = app.get('port');
+}
+function setRoute(req, res, ruta, url) {
+    let info = {};
+    info.content = ruta.content;
+    info.id = ruta.id;
+    info.parent = ruta.parent || 0;
+    info.description = setDefaultProperty(ruta, 'description');
+    info.url = url;
+    info.lng = idiomas.lng;
+    info.meta = Object.assign({}, setDefault(map, 'meta'), setDefault(ruta, 'meta'));
+    info.og = Object.assign({}, setDefault(map, 'og'), setDefault(ruta, 'og'));
+    info.twitter = Object.assign({}, setDefault(map, 'twitter'), setDefault(ruta, 'twitter'));
+    info.router = Object.assign({}, ruta.router);
+    setData(map, info, 'xDefault');
+    setData(map, info, 'dnsPrefetch');
+    setData(map, info, 'scripts');
+    alternate(ruta, info);
+    res.locals.__route = info;
+    res.locals.__server = Object.assign({}, server);
+}

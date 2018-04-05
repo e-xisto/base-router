@@ -1,15 +1,19 @@
 import * as express from 'express';
-import * as baseRouter from './interfaces';
+import * as baseRouter from './interfaces/index';
 
 const fs    = require('fs');
 const chalk = require('chalk');
 
+
+let app: any;
 let idiomas: baseRouter.idiomas = { idiomas: false, lng: '', default: '', actives: {}};
 let map: any;
-let mapName: string    = ''; 	// Nombre del fichero del mapa de rutas, por defecto map.json
-let path: string       = '';	// Path de la aplicación
-let pathRoutes: string = '';	// Path de las rutas por defecto _path/routes
-let routesFile: string = '';	// Fichero con la declaración de rutas por defecto routes.js
+let mapName: string           = ''; 	// Nombre del fichero del mapa de rutas, por defecto map.json
+let path: string              = '';	// Path de la aplicación
+let pathRoutes: string        = '';	// Path de las rutas por defecto _path/routes
+let routesFile: string        = '';	// Fichero con la declaración de rutas por defecto routes.js
+let server: baseRouter.server = {};
+
 
 	function alternate (ruta: any, info: baseRouter.route) {
 
@@ -25,8 +29,6 @@ let routesFile: string = '';	// Fichero con la declaración de rutas por defecto
 
 	function configure (options: any) {
 
-		let app: any;
-
 		mapName    = options.map || 'map.yaml';
 		path       = options.path || '';
 		pathRoutes = options.pathRoutes || options.path + '/routes';
@@ -37,8 +39,8 @@ let routesFile: string = '';	// Fichero con la declaración de rutas por defecto
 			process.exit ();
 		}
 
-		app = require (path + '/server');
-
+		app = require (path + '/server.js');
+		setServer ();
 		app.use (routes);
 		loadRoutes ();
 		loadMap ();
@@ -193,13 +195,14 @@ let routesFile: string = '';	// Fichero con la declaración de rutas por defecto
 		let url  = req.url;
 		let ruta = findRoute (req, res);
 
-		if (ruta === false) return;
+		if (! ruta) return;
 
 		if (ruta) {
 			if (idiomas.idiomas) evalRuta (req, res, ruta.languages [idiomas.lng], ruta.router);
 			else evalRuta (req, res, ruta, ruta.router);
 		}
-		setRoute (req, res, ruta, url)
+		setRoute (req, res, ruta, url);
+console.log (res.locals);
 		next ('route');
 	}
 
@@ -221,24 +224,13 @@ let routesFile: string = '';	// Fichero con la declaración de rutas por defecto
 	}
 
 
-	function setRoute (req: express.Request, res: express.Response, ruta: any, url: string) {
+	function setDefaultProperty (parent: any, property: string): string {
 
-		let info: baseRouter.route = {};
-
-		info.content = ruta.content;
-		info.id      = ruta.id;
-		info.url     = url;
-		info.lng     = idiomas.lng;
-		info.meta    = {...setDefault (map, 'meta'), ...setDefault (ruta, 'meta')}
-		info.og      = {...setDefault (map, 'og'), ...setDefault (ruta, 'og')};
-		info.twitter = {...setDefault (map, 'twitter'), ...setDefault (ruta, 'twitter')};
-		info.router  = ruta.router;
-		setData (map, info, 'xDefault');
-		setData (map, info, 'dnsPrefetch');
-		setData (map, info, 'scripts');
-		alternate (ruta, info);
-		res.locals.__route = info;
-		res.locals.__base  = {}
+		if (! parent) return '';
+		if (idiomas.idiomas && parent.languages && parent.languages [idiomas.lng][property])
+			return parent.languages [idiomas.lng][property];
+		if (parent [property]) return parent [property];
+		return '';
 	}
 
 
@@ -272,3 +264,36 @@ let routesFile: string = '';	// Fichero con la declaración de rutas por defecto
 	///////////////////////////////////
 	///////////////////////////////////
 	///////////////////////////////////
+
+
+	function setServer () {
+
+		server.name      = app.__args.serverName;
+		server.localPort = app.get('port');
+	}
+
+
+	function setRoute (req: express.Request, res: express.Response, ruta: any, url: string) {
+
+		let info: baseRouter.route = {};
+
+		info.content     = ruta.content;
+		info.id          = ruta.id;
+		info.parent      = ruta.parent || 0;
+		info.description = setDefaultProperty (ruta, 'description');
+		info.url         = url;
+		info.lng         = idiomas.lng;
+		info.meta        = {...setDefault (map, 'meta'), ...setDefault (ruta, 'meta')}
+		info.og          = {...setDefault (map, 'og'), ...setDefault (ruta, 'og')};
+		info.twitter     = {...setDefault (map, 'twitter'), ...setDefault (ruta, 'twitter')};
+		info.router      = {...ruta.router};
+		setData (map, info, 'xDefault');
+		setData (map, info, 'dnsPrefetch');
+		setData (map, info, 'scripts');
+		alternate (ruta, info);
+		res.locals.__route  = info;
+		res.locals.__server = {...server};
+	}
+
+
+

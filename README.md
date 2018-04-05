@@ -126,9 +126,11 @@ languages:
 content:
     -   content: 'Contenido 1'
         id: 1
+        parent: 0
         languages:
             es:
                 url: /contenido-1
+                description: Descripcion
             en:
                 url: /content-1
         router:
@@ -140,6 +142,7 @@ content:
         languages:
             es:
                 url: /contenido-2
+                description: Descripcion
             en:
                 url: /content-2
         router:
@@ -152,6 +155,7 @@ content:
             es:
                 url: /contenido-3
                 redirect: /contenido-1
+                description: Descripcion
             en:
                 url: /content-2
                 redirect: /content-1
@@ -190,9 +194,11 @@ content:
 		{
 			"content": "Contenido 1",
 			"id": 1,
+            "parent": 0,
 			"languages": {
 					"es": {
-							"url": "/contenido-1"
+							"url": "/contenido-1",
+                            "description": "descripcion"
 						},
 					"en": {
 							"url": "/content-1"
@@ -214,6 +220,7 @@ content:
 							"url": "/content-2"
 						}
 				},
+            "description": "descripcion",
 			"router": {
 					"route": "/ruta1",
 					"view": "vista1"
@@ -224,7 +231,8 @@ content:
 			"id": 5,
 			"languages": {
 								"es": {
-									"url": "/categorias/:id(\\d+)?"
+									"url": "/categorias/:id(\\d+)?",
+                                    "description": "descripcion"
 								},
 								"en": {
 									"url": "/categorys/:id(\\d+)?"
