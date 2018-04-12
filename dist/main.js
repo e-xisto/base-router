@@ -14,8 +14,6 @@ let path = ''; // Path de la aplicación
 let pathRoutes = ''; // Path de las rutas por defecto _path/routes
 let routesFile = ''; // Fichero con la declaración de rutas por defecto routes.js
 let server = {};
-// let groups: any;
-//baseRouter.groups = {};
 function alternate(ruta, info) {
     if (idiomas.idiomas) {
         info.alternate = [];
@@ -41,6 +39,7 @@ function configure(options) {
     loadMap();
     setGroups();
 }
+exports.configure = configure;
 function evalRuta(req, res, ruta, router) {
     let url = [];
     if (ruta.redirect)
@@ -125,6 +124,7 @@ function loadRoutes() {
 }
 function mapReload(res) {
     console.log("\n" + chalk.green('Recargando mapa de contenidos') + "\n");
+    idiomas = { idiomas: false, lng: '', default: '', actives: {} };
     loadMap();
     res.redirect('/');
     return false;
@@ -200,26 +200,6 @@ function setDefaultProperty(parent, property) {
         return parent[property];
     return '';
 }
-function setRoute(req, res, ruta, url) {
-    let info = {};
-    info.content = ruta.content;
-    info.id = ruta.id;
-    info.parent = ruta.parent || 0;
-    info.description = setDefaultProperty(ruta, 'description');
-    info.url = url;
-    info.lng = idiomas.lng;
-    info.meta = Object.assign({}, setDefault(map, 'meta'), setDefault(ruta, 'meta'));
-    info.og = Object.assign({}, setDefault(map, 'og'), setDefault(ruta, 'og'));
-    info.twitter = Object.assign({}, setDefault(map, 'twitter'), setDefault(ruta, 'twitter'));
-    info.router = Object.assign({}, ruta.router);
-    setData(map, info, 'xDefault');
-    setData(map, info, 'dnsPrefetch');
-    setData(map, info, 'scripts');
-    alternate(ruta, info);
-    res.locals.__route = info;
-    res.locals.__server = Object.assign({}, server);
-    res.locals.__groups = groups_1.default;
-}
 function setServer() {
     server.name = app.__args.serverName;
     server.localPort = app.get('port');
@@ -241,17 +221,19 @@ function validarIdioma(req, res) {
     }
     return true;
 }
-exports.configure = configure;
+function lng() { return idiomas.lng; }
 exports.lng = lng;
 ///////////////////////////////////
 ///////////////////////////////////
 ///////////////////////////////////
-function lng() { return idiomas.lng; }
 function routes(req, res, next) {
     let url = req.url;
     let ruta = findRoute(req, res);
-    if (!ruta)
-        return;
+    if (!ruta) {
+        if (res.headersSent)
+            return;
+        return next('route');
+    }
     if (ruta) {
         if (idiomas.idiomas)
             evalRuta(req, res, ruta.languages[idiomas.lng], ruta.router);
@@ -259,23 +241,39 @@ function routes(req, res, next) {
             evalRuta(req, res, ruta, ruta.router);
     }
     setRoute(req, res, ruta, url);
-    // console.log (res.locals.__groups);
     next('route');
 }
 function setGroups() {
-    // groups = new Groups ();
     if (map.groups) {
         for (let name in map.groups) {
             for (let item of map.groups[name]) {
-                groups_1.default.addItem(name, contentById(item.id), idiomas.actives);
+                groups_1.default.addItem(name, item, idiomas.idiomas ? idiomas.actives : false);
             }
         }
-        // groups = {...map.groups};
     }
-    console.log(groups_1.default.grupos);
 }
 function contentById(id) {
     return map.content.find((ruta) => { if (ruta.id == id)
         return ruta; });
 }
-// export function configure;
+exports.contentById = contentById;
+function setRoute(req, res, ruta, url) {
+    let info = {};
+    info.content = ruta.content;
+    info.id = ruta.id;
+    info.parent = ruta.parent || 0;
+    info.description = setDefaultProperty(ruta, 'description');
+    info.url = url;
+    info.lng = idiomas.lng;
+    info.meta = Object.assign({}, setDefault(map, 'meta'), setDefault(ruta, 'meta'));
+    info.og = Object.assign({}, setDefault(map, 'og'), setDefault(ruta, 'og'));
+    info.twitter = Object.assign({}, setDefault(map, 'twitter'), setDefault(ruta, 'twitter'));
+    info.router = Object.assign({}, ruta.router);
+    setData(map, info, 'xDefault');
+    setData(map, info, 'dnsPrefetch');
+    setData(map, info, 'scripts');
+    alternate(ruta, info);
+    res.locals.__route = info;
+    res.locals.__server = Object.assign({}, server);
+    res.locals.__groups = groups_1.default;
+}
