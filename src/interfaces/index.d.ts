@@ -1,4 +1,6 @@
 
+export { GroupItem } from './group-item';
+export { GroupItemData } from './group-item-data';
 export { Groups } from './groups';
 export { idiomas } from './idiomas';
 export { linkAlternate } from './link-alternate';

@@ -183,7 +183,7 @@ function prepareRoutes() {
         for (let i in map.content) {
             let route = map.content[i];
             for (let lng in idiomas.actives) {
-                if (route.languages[lng].url) {
+                if (route.languages[lng] && route.languages[lng].url) {
                     route.languages[lng].keys = [];
                     route.languages[lng].path = pathToRegexp(route.languages[lng].url, route.languages[lng].keys);
                     route.languages[lng].keysLength = route.languages[lng].keys.length;
