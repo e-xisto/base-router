@@ -17,9 +17,12 @@ let server = {};
 function alternate(ruta, info) {
     if (idiomas.idiomas) {
         info.alternate = [];
+        info.link = {};
         for (let lng in idiomas.actives) {
-            if (ruta.languages[lng])
+            if (ruta.languages[lng]) {
                 info.alternate.push({ lang: lng, href: `/${lng}${ruta.languages[lng].url}` });
+                info.link[lng] = `/${lng}${ruta.languages[lng].url}`;
+            }
         }
     }
 }

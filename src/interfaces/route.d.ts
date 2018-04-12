@@ -8,6 +8,7 @@ export interface route {
     description?: string;
     dnsPrefetch?: string [];
     id?: number;
+    link?: any;
     lng?: boolean | string;
     meta?: baseRouter.meta;
     noIndex?: boolean;
