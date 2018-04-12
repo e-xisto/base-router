@@ -23,6 +23,27 @@ function alternate(ruta, info) {
         }
     }
 }
+function breadcrum(ruta) {
+    let result = [];
+    result.push(breadcrumData(ruta));
+    while (ruta.parent) {
+        ruta = contentById(ruta.parent);
+        result.unshift(breadcrumData(ruta));
+    }
+    return result;
+}
+function breadcrumData(content) {
+    let result = {};
+    if (content.languages && idiomas.idiomas && content.languages[idiomas.lng]) {
+        result.description = content.languages[idiomas.lng].description;
+        result.link = `/${idiomas.lng}${content.languages[idiomas.lng].url}`;
+    }
+    else {
+        result.description = content.description;
+        result.link = content.url;
+    }
+    return result;
+}
 function configure(options) {
     mapName = options.map || 'map.yaml';
     path = options.path || '';
@@ -40,6 +61,11 @@ function configure(options) {
     setGroups();
 }
 exports.configure = configure;
+function contentById(id) {
+    return map.content.find((ruta) => { if (ruta.id == id)
+        return ruta; });
+}
+exports.contentById = contentById;
 function evalRuta(req, res, ruta, router) {
     let url = [];
     if (ruta.redirect)
@@ -177,6 +203,23 @@ function prepareRoutes() {
         }
     }
 }
+function routes(req, res, next) {
+    let url = req.url;
+    let ruta = findRoute(req, res);
+    if (!ruta) {
+        if (res.headersSent)
+            return;
+        return next('route');
+    }
+    if (ruta) {
+        if (idiomas.idiomas)
+            evalRuta(req, res, ruta.languages[idiomas.lng], ruta.router);
+        else
+            evalRuta(req, res, ruta, ruta.router);
+    }
+    setRoute(req, res, ruta, url);
+    next('route');
+}
 function setData(parent, info, property) {
     if (parent[property] !== undefined)
         info[property] = parent[property];
@@ -199,6 +242,36 @@ function setDefaultProperty(parent, property) {
     if (parent[property])
         return parent[property];
     return '';
+}
+function setGroups() {
+    if (map.groups) {
+        for (let name in map.groups) {
+            for (let item of map.groups[name]) {
+                groups_1.default.addItem(name, item, idiomas.idiomas ? idiomas.actives : false);
+            }
+        }
+    }
+}
+function setRoute(req, res, ruta, url) {
+    let info = {};
+    info.content = ruta.content;
+    info.id = ruta.id;
+    info.parent = ruta.parent || 0;
+    info.description = setDefaultProperty(ruta, 'description');
+    info.url = url;
+    info.lng = idiomas.lng;
+    info.meta = Object.assign({}, setDefault(map, 'meta'), setDefault(ruta, 'meta'));
+    info.og = Object.assign({}, setDefault(map, 'og'), setDefault(ruta, 'og'));
+    info.twitter = Object.assign({}, setDefault(map, 'twitter'), setDefault(ruta, 'twitter'));
+    info.router = Object.assign({}, ruta.router);
+    info.breadcrum = breadcrum(ruta);
+    setData(map, info, 'xDefault');
+    setData(map, info, 'dnsPrefetch');
+    setData(map, info, 'scripts');
+    alternate(ruta, info);
+    res.locals.__route = info;
+    res.locals.__server = Object.assign({}, server);
+    res.locals.__groups = groups_1.default;
 }
 function setServer() {
     server.name = app.__args.serverName;
@@ -226,54 +299,3 @@ exports.lng = lng;
 ///////////////////////////////////
 ///////////////////////////////////
 ///////////////////////////////////
-function routes(req, res, next) {
-    let url = req.url;
-    let ruta = findRoute(req, res);
-    if (!ruta) {
-        if (res.headersSent)
-            return;
-        return next('route');
-    }
-    if (ruta) {
-        if (idiomas.idiomas)
-            evalRuta(req, res, ruta.languages[idiomas.lng], ruta.router);
-        else
-            evalRuta(req, res, ruta, ruta.router);
-    }
-    setRoute(req, res, ruta, url);
-    next('route');
-}
-function setGroups() {
-    if (map.groups) {
-        for (let name in map.groups) {
-            for (let item of map.groups[name]) {
-                groups_1.default.addItem(name, item, idiomas.idiomas ? idiomas.actives : false);
-            }
-        }
-    }
-}
-function contentById(id) {
-    return map.content.find((ruta) => { if (ruta.id == id)
-        return ruta; });
-}
-exports.contentById = contentById;
-function setRoute(req, res, ruta, url) {
-    let info = {};
-    info.content = ruta.content;
-    info.id = ruta.id;
-    info.parent = ruta.parent || 0;
-    info.description = setDefaultProperty(ruta, 'description');
-    info.url = url;
-    info.lng = idiomas.lng;
-    info.meta = Object.assign({}, setDefault(map, 'meta'), setDefault(ruta, 'meta'));
-    info.og = Object.assign({}, setDefault(map, 'og'), setDefault(ruta, 'og'));
-    info.twitter = Object.assign({}, setDefault(map, 'twitter'), setDefault(ruta, 'twitter'));
-    info.router = Object.assign({}, ruta.router);
-    setData(map, info, 'xDefault');
-    setData(map, info, 'dnsPrefetch');
-    setData(map, info, 'scripts');
-    alternate(ruta, info);
-    res.locals.__route = info;
-    res.locals.__server = Object.assign({}, server);
-    res.locals.__groups = groups_1.default;
-}

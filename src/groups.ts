@@ -12,9 +12,6 @@ function contentGroup (content: any, idiomas: any): any {
 
 	let result: any = {};
 
-	if (! content)
-		console.log (chalk.red ("\nNo se puede cargar un mapa poque no se ha definido un path\n"));
-
 	if (content.languages && idiomas) {
 		for (let lng in idiomas) {
 			if (content.languages [lng]) {
@@ -49,6 +46,7 @@ function findContent (item: any) {
 
 	return content;
 }
+
 
 function itemData (item: any, idiomas: any) {
 

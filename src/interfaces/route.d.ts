@@ -3,6 +3,7 @@ import * as baseRouter from './index';
 
 export interface route {
     alternate?: baseRouter.linkAlternate [];
+    breadcrum?: any [];
     content?: string;
     description?: string;
     dnsPrefetch?: string [];
