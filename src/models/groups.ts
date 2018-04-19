@@ -1,4 +1,6 @@
 
+import { GroupItem } from '../interfaces/group-item';
+import { GroupItemData } from '../interfaces/group-item-data';
 import { Groups } from '../interfaces/groups';
 import { contentById, lng } from '../main';
 
@@ -8,9 +10,9 @@ const chalk = require('chalk');
 let grupos: any [any];
 
 
-function contentGroup (content: any, idiomas: any): any {
+function contentGroup (content: any, idiomas: any): GroupItemData {
 
-	let result: any = {};
+	let result: GroupItemData = {};
 
 	if (content.languages && idiomas) {
 		for (let lng in idiomas) {
@@ -23,15 +25,15 @@ function contentGroup (content: any, idiomas: any): any {
 }
 
 
-function contentGroupData (content: any, lng: string) {
+function contentGroupData (content: any, lng: string): GroupItemData {
 
-	let result: any = {};
+	let item: GroupItemData = {};
 
-	result.description = content.description;
-	if (lng) result.link = `/${ lng }${ content.url }`;
-	else result.link = content.url;
+	item.description = content.description;
+	if (lng) item.link = `/${ lng }${ content.url }`;
+	else item.link = content.url;
 
-	return result;
+	return item;
 }
 
 
@@ -48,10 +50,11 @@ function findContent (item: any) {
 }
 
 
-function itemData (item: any, idiomas: any) {
+function itemData (item: GroupItem, idiomas: any) {
 
 	let content = contentGroup (findContent (item), idiomas);
 	if (item.items) {
+		// content.items = <GroupItemData>[];
 		content.items = [];
 		for (let subitem of item.items)
 			content.items.push (itemData (subitem, idiomas));
@@ -86,7 +89,7 @@ class Grupos implements Groups {
 	}
 
 
-	public addItem (grupo: string, item: any, idiomas: any) {
+	public addItem (grupo: string, item: GroupItem, idiomas: any) {
 
 		if (! grupos [grupo]) grupos [grupo] = [];
 		grupos [grupo].push (itemData (item, idiomas));

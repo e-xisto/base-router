@@ -17,13 +17,13 @@ function contentGroup(content, idiomas) {
     return result;
 }
 function contentGroupData(content, lng) {
-    let result = {};
-    result.description = content.description;
+    let item = {};
+    item.description = content.description;
     if (lng)
-        result.link = `/${lng}${content.url}`;
+        item.link = `/${lng}${content.url}`;
     else
-        result.link = content.url;
-    return result;
+        item.link = content.url;
+    return item;
 }
 function findContent(item) {
     let content = main_1.contentById(item.id);
@@ -36,6 +36,7 @@ function findContent(item) {
 function itemData(item, idiomas) {
     let content = contentGroup(findContent(item), idiomas);
     if (item.items) {
+        // content.items = <GroupItemData>[];
         content.items = [];
         for (let subitem of item.items)
             content.items.push(itemData(subitem, idiomas));
