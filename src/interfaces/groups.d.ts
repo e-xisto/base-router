@@ -1,5 +1,6 @@
 
 export interface Groups {
 	[key: string]: any;
-	// addGroup (name: string, value: any, find: any): any;
+	addItem (grupo: string, item: any, idiomas: any): void;
+	items (name: string): any;
 }

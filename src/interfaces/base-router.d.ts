@@ -10,4 +10,3 @@ export { scripts } from './scripts';
 export { server } from './server';
 export { twitter } from './twitter';
 
-import groups from '../groups';

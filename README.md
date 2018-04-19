@@ -20,27 +20,35 @@ const baseRouter = require ('@e-xisto/base-router');
 baseRouter.configure ({ path: __dirname, map: args.map });
 ```
 
-Crea una variable ``__base`` con la información del servidor.
+Crea una variable ``__server`` con la información del servidor.
 
 ```javascript
-Por definir
+interface server {
+    localPort?: number;
+    name?: string;
+    protocol?: string;
+}
 ```
 
 Crea una variable ``__route`` con la información de la ruta.
 
 ```javascript
 interface route {
-    alternate?: linkAlternate [];
+    alternate?: baseRouter.linkAlternate [];
+    breadcrum?: any [];
     content?: string;
+    description?: string;
     dnsPrefetch?: string [];
     id?: number;
+    link?: any;
     lng?: boolean | string;
-    meta?: meta;
+    meta?: baseRouter.meta;
     noIndex?: boolean;
-    og?: og;
-    router?: router;
-    scripts?: scripts;
-    twitter?: twitter;
+    og?: baseRouter.og;
+    parent?:number;
+    router?: baseRouter.router;
+    scripts?: baseRouter.scripts;
+    twitter?: baseRouter.twitter;
     url?: string;
     xDefault?: string;
 }
@@ -114,138 +122,206 @@ interface twitter {
 
 ```yaml
 languages:
-    -   path: es
+    es:
         text: Español
         active: true
+        meta:
+            title: t
+            description: s language
+        og:
+            app_id:
+            admin:
+            url:
+            type:
+            title:
+            image:
+            description:
+            site_name:
+            locale:
+            author:
+        twitter:
+            card:
+            title:
+            description:
+            image:
 
-    -   path: en
+    en:
         text: English
         active: true
-        default: true
+        default: false
+
+groups:
+    menu:
+        -   id: 1
+            content: Contenido 1
+        -   id: 2
+            content: Contenido 2
+            items:
+                -   id: 5
+                    content: Contenido 5
+                    items:
+                        -   id: 5
+                            content: Contenido 5
+                        -   id: 19
+                            content: Contenido 9
+                -   id: 9
+                    content: Contenido 9
+    pie:
+        -   id: 3
+            content: Contenido 3
+
+xDefault: /es
+
+dnsPrefetch:
+    - //www.youtube.com
+    - //www.twitter.com
+
+scripts:
+    googleAnalytics:
+    googleTagManager:
+    googleSiteVerification:
+
+meta:
+    title: t,
+    description: s,
+    keywords: ddddd map
 
 content:
-    -   content: 'Contenido 1'
+    -   content: Sitemap
         id: 1
-        parent: 0
         languages:
             es:
-                url: /contenido-1
-                description: Descripcion
+                url: /sitemap.xml
+                description: Sitemap
             en:
-                url: /content-1
+                 url: /sitemap.xml
         router:
-            route: /ruta1
-            view: vista1
+            route: /sitemap
 
-    -   content: 'Contenido 2'
+    -   content: Inicio
+        id: 10
+        languages:
+            es:
+                url: /
+                meta:
+                    title: inicio tt
+            en:
+                url: /
+        description: inicio2
+        url: /
+        router:
+            route: /template
+            view: home
+
+    -   content: Sobre nosotros
         id: 2
         languages:
             es:
-                url: /contenido-2
-                description: Descripcion
+                description: Sobre nosotros
+                url: /sobre-nosotros
+                meta:
+                    title: Sobre nosotros
+                    description:
+                    keywords: palabraclave1 palabraclave2
+                    canonical: /es/sobre-nosotros
             en:
-                url: /content-2
+                description: About us
+                url: /about-us
+                meta:
+                    title: About us
+                    description:
+                    keywords: keyword1 keyword2
+                    canonical:
+        url: /sobre
         router:
-            route: /ruta1
-            view: vista1
+            route: /editor
+            view: editor
+        noIndex: true
 
-    -   content: 'Contenido 3'
+    -   content: Servicios
         id: 3
         languages:
             es:
-                url: /contenido-3
-                redirect: /contenido-1
-                description: Descripcion
+                description: Servicios
+                url: /servicios
+                meta:
+                    title: Servicios
+                    keywords: palabraclave1 palabraclave2
             en:
-                url: /content-2
-                redirect: /content-1
+                description: Services
+                url: /services
+                meta:
+                    title: Services
+                    keywords: keyword1 keyword2
+        router:
+            route: /editor
+            view: editor
 
-    -   content: Categorias
+    -   content: Noticias
         id: 5
         languages:
             es:
-                url: '/categorias/:id(\\d+)?'
+                url: /noticias/:id(\\d+)?
+                meta:
+                    title: Noticias
+                    keywords: noticiasclave1 noticiasclave2
             en:
-                url: /categorys/:id(\\d+)?
+                url: /news/:id(\\d+)?
+                link: /news
+                meta:
+                    title: New
+                    keywords: newslist1
         router:
-            route: /categorias
-            view: vista-categorias
+            route: /noticias
+            view: noticias
+
+    -   content: Proyectos
+        id: 8
+        languages:
+            es:
+                url: /proyectos
+                meta:
+                    title: Proyectos
+                    keywords: proyectosclave1
+            en:
+                url: /projects
+                meta:
+                    title: Projects
+                    keywords: projectskeyword1
+        router:
+            route: /proyectos
+            view: proyectos
+
+    -   content: Contacto
+        id: 9
+        parent: 1
+        languages:
+            es:
+                url: /contacto
+                description: Contacto ES
+                meta:
+                    title: Contacto
+                    keywords: contactoclave1
+            en:
+                url: /contact-us
+                description: Contacto EN
+                meta:
+                    title: Contact us
+                    keywords: contactkeyword1
+        url: /contacto
+        router:
+            route: /template
+            view: contacto
+
+    -   content: Enlace
+        id: 10
+        languages:
+            es:
+                url: /enlace
+                redirect: /sobre-nosotros
+            en:
+                url: /link
+                redirect: https://www.google.com
+                code: 410
 ```
-
-
-## Ejemplo de mapa de rutas en json
-
-```json
-{
-	"languages": [
-		{
-			"path": "es",
-			"text": "Español",
-			"active": true
-		},
-		{
-			"path": "en",
-			"text": "English",
-			"active": true,
-            "default": true
-		}
-    ],
-	"content": [
-		{
-			"content": "Contenido 1",
-			"id": 1,
-            "parent": 0,
-			"languages": {
-					"es": {
-							"url": "/contenido-1",
-                            "description": "descripcion"
-						},
-					"en": {
-							"url": "/content-1"
-						}
-				},
-			"router": {
-					"route": "/ruta1",
-					"view": "vista1"
-				}
-		},
-		{
-			"content": "Contenido 2",
-			"id": 2,
-			"languages": {
-					"es": {
-							"url": "/contenido-2"
-						},
-					"en": {
-							"url": "/content-2"
-						}
-				},
-            "description": "descripcion",
-			"router": {
-					"route": "/ruta1",
-					"view": "vista1"
-				}
-		},
-		{
-			"content": "Categorias",
-			"id": 5,
-			"languages": {
-								"es": {
-									"url": "/categorias/:id(\\d+)?",
-                                    "description": "descripcion"
-								},
-								"en": {
-									"url": "/categorys/:id(\\d+)?"
-								}
-				},
-			"router": {
-							"route": "/categorias",
-							"view":  "vista-categorias"
-				}
-		}
-	]
-}
-```
-
-
 

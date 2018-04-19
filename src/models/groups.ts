@@ -1,6 +1,6 @@
 
-import { Groups } from './interfaces/groups';
-import { contentById, lng } from './main';
+import { Groups } from '../interfaces/groups';
+import { contentById, lng } from '../main';
 
 const chalk = require('chalk');
 

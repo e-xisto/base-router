@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require('fs');
 const chalk = require('chalk');
-const groups_1 = __importDefault(require("./groups"));
+const groups_1 = __importDefault(require("./models/groups"));
 let app;
 let idiomas = { idiomas: false, lng: '', default: '', actives: {} };
 let map;
@@ -18,9 +18,10 @@ function alternate(ruta, info) {
     if (idiomas.idiomas) {
         info.alternate = [];
         info.link = {};
+        let serverName = `${server.protocol}://${server.name}`;
         for (let lng in idiomas.actives) {
             if (ruta.languages[lng]) {
-                info.alternate.push({ lang: lng, href: `/${lng}${ruta.languages[lng].url}` });
+                info.alternate.push({ lang: lng, href: `${serverName}/${lng}${ruta.languages[lng].url}` });
                 info.link[lng] = `/${lng}${ruta.languages[lng].url}`;
             }
         }
@@ -113,6 +114,8 @@ function findRouteOk(ruta, url) {
     }
     return false;
 }
+function lng() { return idiomas.lng; }
+exports.lng = lng;
 function loadMap() {
     let mapFile = `${path}/${mapName}`;
     try {
@@ -279,6 +282,7 @@ function setRoute(req, res, ruta, url) {
 function setServer() {
     server.name = app.__args.serverName;
     server.localPort = app.get('port');
+    server.protocol = app.__args.protocol;
 }
 function validarIdioma(req, res) {
     // Si la url no trae idioma lo añade y lo redirige habria que analizar mejor este comportamiento
@@ -297,8 +301,6 @@ function validarIdioma(req, res) {
     }
     return true;
 }
-function lng() { return idiomas.lng; }
-exports.lng = lng;
 ///////////////////////////////////
 ///////////////////////////////////
 ///////////////////////////////////

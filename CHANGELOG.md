@@ -1,6 +1,9 @@
 # Changelog
 
-## 2018-04-05 @cesaregarcia
+## 2018-04-19 @cesaregarcia
+- Se crean los grupos
+- Se corrige el mapa yaml
+- Se añade la variable protocol a __server
 - Se separan las definiciones de tipo por fichero
 - Se añade una variable global __server con la información del servidor.
 - Añadir la propiedad parent a la ruta

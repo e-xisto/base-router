@@ -1,10 +1,10 @@
 import * as express from 'express';
-import * as baseRouter from './interfaces/index';
+import * as baseRouter from './interfaces/base-router';
 
 const fs    = require('fs');
 const chalk = require('chalk');
 
-import groups from './groups';
+import groups from './models/groups';
 
 
 let app: any;
@@ -22,11 +22,12 @@ let server: baseRouter.server = {};
 		if (idiomas.idiomas) {
 			info.alternate = [];
 			info.link      = {};
+			let serverName = `${ server.protocol }://${ server.name }`;
 			for (let lng in idiomas.actives) {
 				if (ruta.languages [lng]) {
-					info.alternate.push ({lang: lng, href: `/${ lng }${ ruta.languages [lng].url}`});
-                    info.link [lng] = `/${ lng }${ ruta.languages [lng].url}`;
-                }
+					info.alternate.push ({lang: lng, href: `${ serverName }/${ lng }${ ruta.languages [lng].url}`});
+					info.link [lng] = `/${ lng }${ ruta.languages [lng].url}`;
+				}
 			}
 		}
 	}
@@ -132,6 +133,9 @@ let server: baseRouter.server = {};
 		}
 		return false;
 	}
+
+
+	function lng (): string { return idiomas.lng; }
 
 
 	function loadMap () {
@@ -319,6 +323,7 @@ let server: baseRouter.server = {};
 
 		server.name      = app.__args.serverName;
 		server.localPort = app.get('port');
+		server.protocol  = app.__args.protocol;
 	}
 
 
@@ -344,9 +349,6 @@ let server: baseRouter.server = {};
 
 		return true;
 	}
-
-
-	function lng (): string { return idiomas.lng; }
 
 
 	export { configure, contentById, lng };
