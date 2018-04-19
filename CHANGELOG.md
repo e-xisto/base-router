@@ -1,6 +1,6 @@
 # Changelog
 
-## 2018-04-19 @cesaregarcia
+## [1.1.2] - 2018-04-19 @cesaregarcia
 - Se crean los grupos
 - Se corrige el mapa yaml
 - Se añade la variable protocol a __server
