@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const main_1 = require("../main");
-const chalk = require('chalk');
 let grupos;
 function contentGroup(content, idiomas) {
     let result = {};
@@ -18,17 +17,18 @@ function contentGroup(content, idiomas) {
 }
 function contentGroupData(content, lng) {
     let item = {};
+    let url = content.url ? content.url.replace(/\/(\w+)?:(.*?)$/, '') : '';
     item.description = content.description;
     if (lng)
-        item.link = `/${lng}${content.url}`;
+        item.link = `/${lng}${url}`;
     else
-        item.link = content.url;
+        item.link = url;
     return item;
 }
 function findContent(item) {
     let content = main_1.contentById(item.id);
     if (!content) {
-        console.log(chalk.red(`\nNo se encuentra el cotenido ${item.id} ${item.content}\n`));
+        console.log(`\n\x1b[31mNo se encuentra el cotenido ${item.id} ${item.content}\x1b[0m\n`);
         return {};
     }
     return content;
@@ -36,7 +36,6 @@ function findContent(item) {
 function itemData(item, idiomas) {
     let content = contentGroup(findContent(item), idiomas);
     if (item.items) {
-        // content.items = <GroupItemData>[];
         content.items = [];
         for (let subitem of item.items)
             content.items.push(itemData(subitem, idiomas));
@@ -66,6 +65,9 @@ class Grupos {
         if (!grupos[grupo])
             grupos[grupo] = [];
         grupos[grupo].push(itemData(item, idiomas));
+    }
+    clear() {
+        grupos = [];
     }
     items(name) {
         // Todo se puede optimizar guardando la información estáticamente

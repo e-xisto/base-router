@@ -4,8 +4,6 @@ import { GroupItemData } from '../interfaces/group-item-data';
 import { Groups } from '../interfaces/groups';
 import { contentById, lng } from '../main';
 
-const chalk = require('chalk');
-
 
 let grupos: any [any];
 
@@ -28,10 +26,11 @@ function contentGroup (content: any, idiomas: any): GroupItemData {
 function contentGroupData (content: any, lng: string): GroupItemData {
 
 	let item: GroupItemData = {};
+	let url: string = content.url ? content.url.replace (/\/(\w+)?:(.*?)$/, '') : '';
 
 	item.description = content.description;
-	if (lng) item.link = `/${ lng }${ content.url }`;
-	else item.link = content.url;
+	if (lng) item.link = `/${ lng }${ url }`;
+	else item.link = url;
 
 	return item;
 }
@@ -42,7 +41,7 @@ function findContent (item: any) {
 	let content = contentById (item.id);
 
 	if (! content) {
-		console.log (chalk.red (`\nNo se encuentra el cotenido ${ item.id } ${ item.content }\n`));
+		console.log (`\n\x1b[31mNo se encuentra el cotenido ${ item.id } ${ item.content }\x1b[0m\n`);
 		return {};
 	}
 
@@ -54,7 +53,6 @@ function itemData (item: GroupItem, idiomas: any) {
 
 	let content = contentGroup (findContent (item), idiomas);
 	if (item.items) {
-		// content.items = <GroupItemData>[];
 		content.items = [];
 		for (let subitem of item.items)
 			content.items.push (itemData (subitem, idiomas));
@@ -96,6 +94,11 @@ class Grupos implements Groups {
 	}
 
 
+	public clear () {
+
+		grupos = [];
+	}
+
 	public items (name: string): any {
 
 		// Todo se puede optimizar guardando la información estáticamente
@@ -113,7 +116,7 @@ class Grupos implements Groups {
 
 let groups = new Grupos ();
 
-export default groups;
+export default groups as Groups;
 
 ////////////////////////////////////////////////
 ////////////////////////////////////////////////

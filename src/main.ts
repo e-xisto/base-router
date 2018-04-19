@@ -2,7 +2,6 @@ import * as express from 'express';
 import * as baseRouter from './interfaces/base-router';
 
 const fs    = require('fs');
-const chalk = require('chalk');
 
 import groups from './models/groups';
 
@@ -69,7 +68,7 @@ let server: baseRouter.server = {};
 		routesFile = options.routes || 'routes.js';
 
 		if (! path) {
-			console.log (chalk.red ("\nNo se puede cargar un mapa poque no se ha definido un path\n"));
+			console.log ("\n\x1b[31mNo se puede cargar un mapa poque no se ha definido un path\x1b[0m\n");
 			process.exit ();
 		}
 
@@ -148,11 +147,11 @@ let server: baseRouter.server = {};
 			else map = JSON.parse (fs.readFileSync (mapFile, 'utf8'));
 		} catch (e) {
 			if (e.code == 'MODULE_NOT_FOUND' || e.code == 'ENOENT') {
-				console.log ("\n" + chalk.red ('No se ha encontrado el mapa de rutas'));
-				console.log ('    ' + chalk.red.inverse (mapFile) + "\n");
+				console.log ("\n\x1b[31mNo se ha encontrado el mapa de rutas");
+				console.log ("    \x1b[41m" + mapFile + "\x1b[0m\n");
 			} else if (e.code == undefined) {
-				console.log ("\n" + chalk.red ('Error en el mapa de rutas'));
-				console.log ('    ' + chalk.red.inverse (mapFile) + "\n");
+				console.log ("\n\x1b[31mError en el mapa de rutas");
+				console.log ("    \x1b[41m" + mapFile + "\x1b[0m\n");
 				console.log (e);
 			} else console.log (e);
 			process.exit ();
@@ -170,8 +169,8 @@ let server: baseRouter.server = {};
 		try {
 			require (rutasFile);
 		} catch (e) {
-			console.log ("\n" + chalk.red ('No se ha podido cargar el fichero de rutas'));
-			console.log ('    ' + chalk.red.inverse (rutasFile) + "\n");
+			console.log ("\n\x1b[31mNo se ha podido cargar el fichero de rutas");
+			console.log ("    \x1b[41m" + rutasFile + "\x1b[0m\n");
 			console.log (e);
 			process.exit ();
 		}
@@ -180,9 +179,10 @@ let server: baseRouter.server = {};
 
 	function mapReload (res: express.Response) {
 
-		console.log ("\n" + chalk.green ('Recargando mapa de contenidos') + "\n");
+		console.log ("\n\x1b[32mRecargando mapa de contenidos\x1b[0m\n");
 		idiomas = { idiomas: false, lng: '', default: '', actives: {}};
 		loadMap ();
+        setGroups ();
 		res.redirect ('/');
 		return false;
 	}
@@ -212,15 +212,17 @@ let server: baseRouter.server = {};
 
 		const pathToRegexp = require ('path-to-regexp');
 
+
 		if (idiomas.idiomas) {
 			for (let i in map.content) {
 				let route = map.content [i];
 				for (let lng in idiomas.actives) {
+
 					if (route.languages [lng] && route.languages [lng].url) {
 						route.languages [lng].keys = [];
 						route.languages [lng].path = pathToRegexp (route.languages [lng].url, route.languages [lng].keys);
 						route.languages [lng].keysLength = route.languages [lng].keys.length;
-					} else	console.log (chalk.red (`\nRuta ${ lng }/${ route.content } sin url definida\n`));
+					} else	console.log (`\n\x1b[32mRuta ${ lng }/${ route.content } sin url definida\x1b[0m\n`);
 				}
 			}
 		} else {
@@ -230,7 +232,7 @@ let server: baseRouter.server = {};
 					route.keys       = [];
 					route.path       = pathToRegexp (route.url, route.keys);
 					route.keysLength = route.keys.length;
-				} else	console.log (chalk.red (`\nRuta ${ route.content } sin url definida\n`));
+				} else	console.log (`\n\x1b[32mRuta ${ route.content } sin url definida\x1b[0m\n`);
 			}
 		}
 	}
@@ -243,6 +245,7 @@ let server: baseRouter.server = {};
 
 		if (! ruta) {
 			if (res.headersSent) return
+			setRoute (req, res, ruta, url);
 			return next ('route');
 		}
 
@@ -284,6 +287,7 @@ let server: baseRouter.server = {};
 
 	function setGroups () {
 
+		groups.clear ();
 		if (map.groups) {
 			for (let name in map.groups) {
 				for (let item of map.groups [name]) {
@@ -298,21 +302,23 @@ let server: baseRouter.server = {};
 
 		let info: baseRouter.route = {};
 
-		info.content     = ruta.content;
-		info.id          = ruta.id;
-		info.parent      = ruta.parent || 0;
-		info.description = setDefaultProperty (ruta, 'description');
+		if (ruta) {
+			info.content     = ruta.content;
+			info.id          = ruta.id;
+			info.parent      = ruta.parent || 0;
+			info.description = setDefaultProperty (ruta, 'description');
+			info.router      = {...ruta.router};
+			info.breadcrum   = breadcrum (ruta);
+			alternate (ruta, info);
+		}
 		info.url         = url;
 		info.lng         = idiomas.lng;
 		info.meta        = {...setDefault (map, 'meta'), ...setDefault (ruta, 'meta')}
 		info.og          = {...setDefault (map, 'og'), ...setDefault (ruta, 'og')};
 		info.twitter     = {...setDefault (map, 'twitter'), ...setDefault (ruta, 'twitter')};
-		info.router      = {...ruta.router};
-		info.breadcrum   = breadcrum (ruta);
 		setData (map, info, 'xDefault');
 		setData (map, info, 'dnsPrefetch');
 		setData (map, info, 'scripts');
-		alternate (ruta, info);
 		res.locals.__route  = info;
 		res.locals.__server = {...server};
 		res.locals.__groups = groups;

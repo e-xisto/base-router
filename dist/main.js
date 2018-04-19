@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require('fs');
-const chalk = require('chalk');
 const groups_1 = __importDefault(require("./models/groups"));
 let app;
 let idiomas = { idiomas: false, lng: '', default: '', actives: {} };
@@ -54,7 +53,7 @@ function configure(options) {
     pathRoutes = options.pathRoutes || options.path + '/routes';
     routesFile = options.routes || 'routes.js';
     if (!path) {
-        console.log(chalk.red("\nNo se puede cargar un mapa poque no se ha definido un path\n"));
+        console.log("\n\x1b[31mNo se puede cargar un mapa poque no se ha definido un path\x1b[0m\n");
         process.exit();
     }
     app = require(path + '/server.js');
@@ -127,12 +126,12 @@ function loadMap() {
     }
     catch (e) {
         if (e.code == 'MODULE_NOT_FOUND' || e.code == 'ENOENT') {
-            console.log("\n" + chalk.red('No se ha encontrado el mapa de rutas'));
-            console.log('    ' + chalk.red.inverse(mapFile) + "\n");
+            console.log("\n\x1b[31mNo se ha encontrado el mapa de rutas");
+            console.log("    \x1b[41m" + mapFile + "\x1b[0m\n");
         }
         else if (e.code == undefined) {
-            console.log("\n" + chalk.red('Error en el mapa de rutas'));
-            console.log('    ' + chalk.red.inverse(mapFile) + "\n");
+            console.log("\n\x1b[31mError en el mapa de rutas");
+            console.log("    \x1b[41m" + mapFile + "\x1b[0m\n");
             console.log(e);
         }
         else
@@ -148,16 +147,17 @@ function loadRoutes() {
         require(rutasFile);
     }
     catch (e) {
-        console.log("\n" + chalk.red('No se ha podido cargar el fichero de rutas'));
-        console.log('    ' + chalk.red.inverse(rutasFile) + "\n");
+        console.log("\n\x1b[31mNo se ha podido cargar el fichero de rutas");
+        console.log("    \x1b[41m" + rutasFile + "\x1b[0m\n");
         console.log(e);
         process.exit();
     }
 }
 function mapReload(res) {
-    console.log("\n" + chalk.green('Recargando mapa de contenidos') + "\n");
+    console.log("\n\x1b[32mRecargando mapa de contenidos\x1b[0m\n");
     idiomas = { idiomas: false, lng: '', default: '', actives: {} };
     loadMap();
+    setGroups();
     res.redirect('/');
     return false;
 }
@@ -192,7 +192,7 @@ function prepareRoutes() {
                     route.languages[lng].keysLength = route.languages[lng].keys.length;
                 }
                 else
-                    console.log(chalk.red(`\nRuta ${lng}/${route.content} sin url definida\n`));
+                    console.log(`\n\x1b[32mRuta ${lng}/${route.content} sin url definida\x1b[0m\n`);
             }
         }
     }
@@ -205,7 +205,7 @@ function prepareRoutes() {
                 route.keysLength = route.keys.length;
             }
             else
-                console.log(chalk.red(`\nRuta ${route.content} sin url definida\n`));
+                console.log(`\n\x1b[32mRuta ${route.content} sin url definida\x1b[0m\n`);
         }
     }
 }
@@ -215,6 +215,7 @@ function routes(req, res, next) {
     if (!ruta) {
         if (res.headersSent)
             return;
+        setRoute(req, res, ruta, url);
         return next('route');
     }
     if (ruta) {
@@ -250,6 +251,7 @@ function setDefaultProperty(parent, property) {
     return '';
 }
 function setGroups() {
+    groups_1.default.clear();
     if (map.groups) {
         for (let name in map.groups) {
             for (let item of map.groups[name]) {
@@ -260,21 +262,23 @@ function setGroups() {
 }
 function setRoute(req, res, ruta, url) {
     let info = {};
-    info.content = ruta.content;
-    info.id = ruta.id;
-    info.parent = ruta.parent || 0;
-    info.description = setDefaultProperty(ruta, 'description');
+    if (ruta) {
+        info.content = ruta.content;
+        info.id = ruta.id;
+        info.parent = ruta.parent || 0;
+        info.description = setDefaultProperty(ruta, 'description');
+        info.router = Object.assign({}, ruta.router);
+        info.breadcrum = breadcrum(ruta);
+        alternate(ruta, info);
+    }
     info.url = url;
     info.lng = idiomas.lng;
     info.meta = Object.assign({}, setDefault(map, 'meta'), setDefault(ruta, 'meta'));
     info.og = Object.assign({}, setDefault(map, 'og'), setDefault(ruta, 'og'));
     info.twitter = Object.assign({}, setDefault(map, 'twitter'), setDefault(ruta, 'twitter'));
-    info.router = Object.assign({}, ruta.router);
-    info.breadcrum = breadcrum(ruta);
     setData(map, info, 'xDefault');
     setData(map, info, 'dnsPrefetch');
     setData(map, info, 'scripts');
-    alternate(ruta, info);
     res.locals.__route = info;
     res.locals.__server = Object.assign({}, server);
     res.locals.__groups = groups_1.default;

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.3] - 2018-04-19
+- Eliminar dependencia de chalk
+- Se solucionan las urls parametrizadas con expresiones
+- Se solucionan los links cuando tienen parametros eliminando los parametros
+- Se propaga la información de la ruta cuando hay un error
+- Al recargar el mapa también recarga los grupos
+
 ## [1.1.2] - 2018-04-19 @cesaregarcia
 - Se crean los grupos
 - Se corrige el mapa yaml
