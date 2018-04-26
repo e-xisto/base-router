@@ -1,5 +1,12 @@
 # Changelog
 
+
+## [1.1.4] - 2018-04-26
+- Variable serverName añadida a __server, que concatena protocolo y nombre del servidor @atrinidad
+- La variable breadcrum ahora se llama breadcrumb @atrinidad
+- Enlaces sin patrones @atrinidad
+
+
 ## [1.1.3] - 2018-04-19
 - Eliminar dependencia de chalk
 - Se solucionan las urls parametrizadas con expresiones

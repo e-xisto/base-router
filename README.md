@@ -26,6 +26,7 @@ Crea una variable ``__server`` con la información del servidor.
 interface server {
     localPort?: number;
     name?: string;
+    serverName?: string;
     protocol?: string;
 }
 ```
@@ -35,7 +36,7 @@ Crea una variable ``__route`` con la información de la ruta.
 ```javascript
 interface route {
     alternate?: baseRouter.linkAlternate [];
-    breadcrum?: any [];
+    breadcrumb?: any [];
     content?: string;
     description?: string;
     dnsPrefetch?: string [];
@@ -324,4 +325,3 @@ content:
                 redirect: https://www.google.com
                 code: 410
 ```
-
