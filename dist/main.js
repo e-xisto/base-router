@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require('fs');
 const groups_1 = __importDefault(require("./models/groups"));
 let app;
-let idiomas = { idiomas: false, lng: '', default: '', actives: {} };
+let idiomas = { idiomas: false, lng: '', default: '', actives: {}, dictionary: '', t: {} };
 let map;
 let mapName = ''; // Nombre del fichero del mapa de rutas, por defecto map.json
 let path = ''; // Path de la aplicación
@@ -157,7 +157,7 @@ function loadRoutes() {
 }
 function mapReload(res) {
     console.log("\n\x1b[32mRecargando mapa de contenidos\x1b[0m\n");
-    idiomas = { idiomas: false, lng: '', default: '', actives: {} };
+    idiomas = { idiomas: false, lng: '', default: '', actives: {}, dictionary: '', t: {} };
     loadMap();
     setGroups();
     res.redirect('/');
@@ -174,6 +174,13 @@ function optimizedLanguages() {
                     idiomas.default = lng;
                 if (lang.default)
                     idiomas.default = lng;
+                let dictionary = '';
+                if (!idiomas.dictionary)
+                    dictionary = `${path}/public/lang/${lng}.js`;
+                else
+                    dictionary = idiomas.dictionary;
+                if (fs.existsSync(dictionary))
+                    idiomas.t = require(dictionary);
             }
         }
         if (idiomas.default) {
@@ -284,6 +291,7 @@ function setRoute(req, res, ruta, url) {
     res.locals.__route = info;
     res.locals.__server = Object.assign({}, server);
     res.locals.__groups = groups_1.default;
+    res.locals.t = idiomas.t;
 }
 function setServer() {
     server.name = app.__args.serverName;

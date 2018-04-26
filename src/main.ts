@@ -7,7 +7,7 @@ import groups from './models/groups';
 
 
 let app: any;
-let idiomas: baseRouter.idiomas = { idiomas: false, lng: '', default: '', actives: {}};
+let idiomas: baseRouter.idiomas = { idiomas: false, lng: '', default: '', actives: {}, dictionary: '', t: {}};
 let map: any;
 let mapName: string           = ''; // Nombre del fichero del mapa de rutas, por defecto map.json
 let path: string              = '';	// Path de la aplicación
@@ -65,7 +65,7 @@ let server: baseRouter.server = {};
 	}
 
 
-    function configure (options: any) {
+	function configure (options: any) {
 
 		mapName    = options.map || 'map.yaml';
 		path       = options.path || '';
@@ -185,9 +185,9 @@ let server: baseRouter.server = {};
 	function mapReload (res: express.Response) {
 
 		console.log ("\n\x1b[32mRecargando mapa de contenidos\x1b[0m\n");
-		idiomas = { idiomas: false, lng: '', default: '', actives: {}};
+		idiomas = { idiomas: false, lng: '', default: '', actives: {}, dictionary: '', t: {}};
 		loadMap ();
-        setGroups ();
+		setGroups ();
 		res.redirect ('/');
 		return false;
 	}
@@ -203,6 +203,11 @@ let server: baseRouter.server = {};
 					//Por defecto el idioma por defecto es el primero.
 					if (! idiomas.default) idiomas.default = lng;
 					if (lang.default) idiomas.default = lng;
+
+					let dictionary: string = '';
+					if (! idiomas.dictionary) dictionary = `${path}/public/lang/${lng}.js`;
+					else dictionary = idiomas.dictionary;
+					if (fs.existsSync(dictionary)) idiomas.t = require(dictionary);
 				}
 			}
 			if (idiomas.default) {
@@ -327,6 +332,7 @@ let server: baseRouter.server = {};
 		res.locals.__route  = info;
 		res.locals.__server = {...server};
 		res.locals.__groups = groups;
+		res.locals.t = idiomas.t;
 	}
 
 
