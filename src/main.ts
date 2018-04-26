@@ -21,42 +21,47 @@ let server: baseRouter.server = {};
 		if (idiomas.idiomas) {
 			info.alternate = [];
 			info.link      = {};
-			let serverName = `${ server.protocol }://${ server.name }`;
 			for (let lng in idiomas.actives) {
 				if (ruta.languages [lng]) {
-					info.alternate.push ({lang: lng, href: `${ serverName }/${ lng }${ ruta.languages [lng].url}`});
-					info.link [lng] = `/${ lng }${ ruta.languages [lng].url}`;
+					info.alternate.push ({lang: lng, href: `${ server.serverName }/${ lng }${ clearParams(ruta.languages [lng].url) }`});
+					info.link [lng] = `/${ lng }${ clearParams(ruta.languages [lng].url) }`;
 				}
 			}
 		}
 	}
 
 
-	function breadcrum (ruta: any): any [] {
+	function breadcrumb (ruta: any): any [] {
 
 		let result: any [] = [];
 
-		result.push (breadcrumData (ruta));
+		result.push (breadcrumbData (ruta));
 		while (ruta.parent) {
 			ruta = contentById (ruta.parent);
-			result.unshift (breadcrumData (ruta));
+			result.unshift (breadcrumbData (ruta));
 		}
 		return result;
 	}
 
 
-	function breadcrumData (content: any): any {
+	function breadcrumbData (content: any): any {
 
 		let result: any = {};
 
 		if (content.languages && idiomas.idiomas && content.languages [idiomas.lng]) {
 			result.description = content.languages [idiomas.lng].description;
-			result.link = `/${ idiomas.lng }${ content.languages [idiomas.lng].url }`;
+			result.link = `/${ idiomas.lng }${ clearParams(content.languages [idiomas.lng].url) }`;
 		} else {
 			result.description = content.description;
-			result.link        = content.url;
+			result.link        = clearParams(content.url);
 		}
 		return result;
+	}
+
+
+	function clearParams (url: string): string {
+
+		return url ? url.replace (/\/(\w+)?:(.*?)$/, '') : '';
 	}
 
 
@@ -308,7 +313,7 @@ let server: baseRouter.server = {};
 			info.parent      = ruta.parent || 0;
 			info.description = setDefaultProperty (ruta, 'description');
 			info.router      = {...ruta.router};
-			info.breadcrum   = breadcrum (ruta);
+			info.breadcrumb  = breadcrumb (ruta);
 			alternate (ruta, info);
 		}
 		info.url         = url;
@@ -330,6 +335,7 @@ let server: baseRouter.server = {};
 		server.name      = app.__args.serverName;
 		server.localPort = app.get('port');
 		server.protocol  = app.__args.protocol;
+		server.serverName = `${ server.protocol }://${ server.name }`;
 	}
 
 

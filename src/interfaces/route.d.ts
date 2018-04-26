@@ -3,7 +3,7 @@ import * as baseRouter from './base-router';
 
 export interface route {
     alternate?: baseRouter.linkAlternate [];
-    breadcrum?: any [];
+    breadcrumb?: any [];
     content?: string;
     description?: string;
     dnsPrefetch?: string [];
