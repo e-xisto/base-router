@@ -93,19 +93,19 @@ Pongamos un ejemplo:
 languages:
   es:
     text: Español
-	active: true
-	default: true
-	meta:
-	  title: Mi primera web
-	  description: Lorem ipsum dolor sit amet, consectetur adipiscing.
-	  keywords: palabraclave1 palabraclave2 palabraclave3
+    active: true
+    default: true
+    meta:
+      title: Mi primera web
+      description: Lorem ipsum dolor sit amet, consectetur adipiscing.
+      keywords: palabraclave1 palabraclave2 palabraclave3
   en:
     text: English
-	active: true
-	default: false
-	meta:
-	  title: My first website
-	  description: Praesent sapien massa, convallis a pellentesque nec.
+    active: true
+    default: false
+    meta:
+      title: My first website
+      description: Praesent sapien massa, convallis a pellentesque nec.
       keywords: keyword1 keyword2 keyword3			
 ```
 
@@ -121,14 +121,14 @@ Un ejemplo completo con todas las propiedades de marcado Open Graph habilitadas 
 languages:
   es:
     text: Español
-	active: true
-	default: true
-	meta:
-	  title: Mi primera web
-	  description: Lorem ipsum dolor sit amet, consectetur adipiscing.
-	  keywords: palabraclave1 palabraclave2 palabraclave3
-	og:
-	  app_id: 123456789012345
+    active: true
+    default: true
+    meta:
+      title: Mi primera web
+      description: Lorem ipsum dolor sit amet, consectetur adipiscing.
+      keywords: palabraclave1 palabraclave2 palabraclave3
+    og:
+      app_id: 123456789012345
       admin: 123456789012345
       url: www.minuevowebsite.com
       type: website
@@ -159,14 +159,14 @@ Un ejemplo completo con todas las propiedades de marcado habilitadas sería:
 languages:
   es:
     text: Español
-	active: true
-	default: true
-	meta:
-	  title: Mi primera web
-	  description: Lorem ipsum dolor sit amet, consectetur adipiscing.
-	  keywords: palabraclave1 palabraclave2 palabraclave3
+    active: true
+    default: true
+    meta:
+      title: Mi primera web
+      description: Lorem ipsum dolor sit amet, consectetur adipiscing.
+      keywords: palabraclave1 palabraclave2 palabraclave3
     twitter:
-	  card: summary_large_image
+      card: summary_large_image
       title: Mi primera web
       description: Lorem ipsum dolor sit amet, consectetur adipiscing
       image: http://www.minuevowebsite.com/logo.png
@@ -205,10 +205,10 @@ content:
   - content: Inicio
   	id: 1
   	description: Inicio
-	url: /
-	router:
-	  route: /home
-	  view: home
+    url: /
+    router:
+      route: /home
+      view: home
   - content: Presentación
     id: 2
     description: Presentación
@@ -227,14 +227,14 @@ content:
   - content: Inicio
   	id: 1
   	description: Inicio
-	url: /
-	meta:
+    url: /
+    meta:
       title: Bienvenidos a mi website
       description: Vivamus magna justo, lacinia eget consectetur sed.
       keywords: palabraclave1 palabraclave2
-	router:
-	  route: /home
-	  view: home
+    router:
+      route: /home
+      view: home
   - content: Presentación
     id: 2
     description: Presentación
@@ -258,37 +258,37 @@ En el caso de gestionar el contenido por idiomas debemos incluir la información
 content:
   - content: Inicio
   	id: 1
-	languages:
-	  es:
-	    description: Inicio
-	    url: /
+    languages:
+      es:
+        description: Inicio
+        url: /
         meta:
           title: Bienvenidos a mi website
           description: Vivamus magna justo, lacinia eget consectetur sed.
           keywords: palabraclave1 palabraclave2	    
-	  en:
-	    description: Home
-	    url: /
+      en:
+        description: Home
+        url: /
         meta:
           title: Welcome to my website
           description: Vivamus magna justo, lacinia eget consectetur sed.
           keywords: keyword1 keyword2	    
-	router:
-	  route: /home
-	  view: home
+    router:
+      route: /home
+      view: home
   - content: Presentación
     id: 2
-	languages:
-	  es:
-	    description: Presentación
-	    url: /presentacion   
+    languages:
+      es:
+        description: Presentación
+        url: /presentacion   
         meta:
         title: Todo sobre nuestra empresa
         description: Vivamus magna justo, lacinia eget consectetur sed.
         keywords: palabraclave1 palabraclave2	    
-	  en:
-	    description: About us
-	    url: /about-us  
+      en:
+        description: About us
+        url: /about-us  
         meta:
           title: All about our company
           description: Vivamus magna justo, lacinia eget consectetur sed.
@@ -310,7 +310,7 @@ content:
     id: 200
     description: Aviso Legal
     url: /aviso-legal
-	meta:
+    meta:
       title: Aviso Legal
       description: Vivamus magna justo, lacinia eget consectetur sed.
       keywords: palabraclave1 palabraclave2
@@ -332,26 +332,26 @@ En el caso de una web multilingüe gestionaremos la canonical por idiomas:
 content:
   - content: Aviso Legal
   	id: 200
-	languages:
-	  es:
-	    description: Aviso Legal
-	    url: /aviso-legal
+    languages:
+      es:
+        description: Aviso Legal
+        url: /aviso-legal
         meta:
           title: Aviso Legal
           description: Vivamus magna justo, lacinia eget consectetur sed.
           keywords: palabraclave1 palabraclave2
           canonical: https://www.minuevowebsite.com/es/legal	    
-	  en:
-	    description: Legal Warning
-	    url: /legal-warning
+      en:
+        description: Legal Warning
+        url: /legal-warning
         meta:
           title: Legal Warning
           description: Vivamus magna justo, lacinia eget consectetur sed.
           keywords: keyword1 keyword2
           canonical: https://www.minuevowebsite.com/en/legal	    
-	router:
-	  route: /home
-	  view: home
+    router:
+      route: /home
+      view: home
 ```
 
 
@@ -390,14 +390,14 @@ El mismo ejemplo por idiomas:
 content:
   - content: Presentación
     id: 2
-	languages:
-	  es:
-	    description: Presentación
-	    url: /presentacion
-	    redirect: https://www.google.com
-	  en:
-	    description: About us
-	    url: /about-us  
+    languages:
+      es:
+        description: Presentación
+        url: /presentacion
+        redirect: https://www.google.com
+      en:
+        description: About us
+        url: /about-us  
     router:
       route: /presentacion
       view: presentacion
@@ -443,7 +443,7 @@ content:
     id: 200
     description: Aviso Legal
     url: /aviso-legal
-	meta:
+    meta:
       title: Aviso Legal
       description: Vivamus magna justo, lacinia eget consectetur sed.
       keywords: palabraclave1 palabraclave2
@@ -459,15 +459,15 @@ Si nuestro website es multilingüe:
 content:
   - content: Presentación
     id: 2
-	languages:
-	  es:
-	    description: Presentación
-	    url: /presentacion
-	    redirect: https://www.google.com
-	  en:
-	    description: About us
-	    url: /about-us
-	   	meta:
+    languages:
+      es:
+        description: Presentación
+        url: /presentacion
+        redirect: https://www.google.com
+      en:
+        description: About us
+        url: /about-us
+        meta:
           title: About us
           description: Vivamus magna justo, lacinia eget consectetur sed.
           keywords: palabraclave1 palabraclave2	    
@@ -490,13 +490,13 @@ content:
   - content: Inicio
   	id: 1
   	description: Inicio
-	url: /
-	meta:
+    url: /
+    meta:
       title: Página inicial
       description: Vivamus magna justo, lacinia eget consectetur sed.
       keywords: palabraclave1 palabraclave2
-	  og:
-	    app_id: 123456789012345
+      og:
+        app_id: 123456789012345
         admin: 123456789012345
         url: www.minuevowebsite.com
         type: website
@@ -506,9 +506,9 @@ content:
         site_name: Mi nuevo website
         locale: es
         author: existo.es      
-	router:
-	  route: /home
-	  view: home
+    router:
+      route: /home
+      view: home
 ```
 
 
@@ -521,11 +521,11 @@ Y por idiomas:
 content:
   - content: Inicio
   	id: 1
-	languages:
-	  es:
-	    description: Inicio
-	    url: /
-	   	meta:
+    languages:
+      es:
+        description: Inicio
+        url: /
+        meta:
           title: Página inicial
           description: Vivamus magna justo, lacinia eget consectetur sed.
           keywords: palabraclave1 palabraclave2
@@ -540,10 +540,10 @@ content:
             site_name: Mi nuevo website
             locale: es
             author: existo.es             
-	  en:
-	    description: Home
-	    url: /
-	   	meta:
+      en:
+        description: Home
+        url: /
+        meta:
           title: Home Page
           description: Vivamus magna justo, lacinia eget consectetur sed.
           keywords: keyword1 keyword2
@@ -558,9 +558,9 @@ content:
             site_name: Mi nuevo website
             locale: es
             author: existo.es             
-	router:
-	  route: /home
-	  view: home
+    router:
+      route: /home
+      view: home
 ```
 
 Al definir la propiedad `meta` dentro de nuestro contenido, el router procederá a sobreescribir los valores definidos por defecto y de manera global en las propiedades `languages` o `meta` del mapa para sustituirlos por los configurados en el `meta` del contenido específico. Si un contenido no tiene definido las propiedades `meta` el enrutador le asignará por defecto las globales (siempre que están definidas).
@@ -598,34 +598,34 @@ content:
   	id: 1
   	ulr: /
   	router:
-	  route: /home
-	  view: home	
+      route: /home
+      view: home	
    - content: Quienes somos
      id: 2
   	 ulr: /quienes-somos
   	 router:
-	   route: /editor
-	   view: editor 	 
+       route: /editor
+       view: editor 	 
    - content: Presentación
      id: 3
   	 ulr: /quienes-somos/presentacion
   	 parent: 2
   	 router:
-	   route: /editor
-	   view: editor        
+       route: /editor
+       view: editor        
    - content: Nuestro equipo
      id: 4
   	 ulr: /quienes-somos/nuestro-equipo
   	 parent: 2
   	 router:
-	   route: /editor
-	   view: editor
+       route: /editor
+       view: editor
    - content: Proyectos
      id: 5
   	 ulr: /proyectos
   	 router:
-	   route: /proyectos
-	   view: proyectos   
+       route: /proyectos
+       view: proyectos   
  ...
 ```
 
@@ -648,34 +648,34 @@ content:
   	id: 1
   	ulr: /
   	router:
-	  route: /home
-	  view: home	
+      route: /home
+      view: home	
    - content: Quienes somos
      id: 2
   	 ulr: /quienes-somos
   	 router:
-	   route: /editor
-	   view: editor 	 
+       route: /editor
+       view: editor 	 
    - content: Presentación
      id: 3
   	 ulr: /quienes-somos/presentacion
   	 parent: 2
   	 router:
-	   route: /editor
-	   view: editor        
+       route: /editor
+       view: editor        
    - content: Nuestro equipo
      id: 4
   	 ulr: /quienes-somos/presentacion/nuestro-equipo
   	 parent: 3
   	 router:
-	   route: /editor
-	   view: editor
+       route: /editor
+       view: editor
    - content: Proyectos
      id: 5
   	 ulr: /proyectos
   	 router:
-	   route: /proyectos
-	   view: proyectos   
+       route: /proyectos
+       view: proyectos   
  ...
 ```
 
@@ -687,12 +687,12 @@ content:
   	id: 1
   	languages:
   	  es:
-	    description: Inicio
-	    url: /
-	  en:
-	    description: Home
-	    url: /
-  	router:
+        description: Inicio
+        url: /
+      en:
+        description: Home
+        url: /
+    router:
 	  route: /home
 	  view: home	
    - content: Quienes somos
@@ -704,9 +704,9 @@ content:
        en:
          description: About us
          url: /about-us
-  	 router:
-	   route: /editor
-	   view: editor 	 
+     router:
+       route: /editor
+       view: editor 	 
    - content: Presentación
      id: 3
   	 parent: 2
@@ -718,8 +718,8 @@ content:
          description: Our Company
          url: /about-us/our-company 	 
   	 router:
-	   route: /editor
-	   view: editor          
+  	   route: /editor
+  	   view: editor          
  ...
 ```
 
@@ -881,12 +881,12 @@ content:
 groups:
 	...
 dnsPrefetch:
-	- //connect.facebook.net
-	- //disqus.com
-	- //facebook.com
-	- //googleads.g.doubleclick.net
-	- //pagead2.googlesyndication.com
-	- //google-analytics.com	
+  - //connect.facebook.net
+  - //disqus.com
+  - //facebook.com
+  - //googleads.g.doubleclick.net
+  - //pagead2.googlesyndication.com
+  - //google-analytics.com	
 ...
 ```
 
