@@ -17,7 +17,7 @@ function contentGroup(content, idiomas) {
 }
 function contentGroupData(content, lng) {
     let item = {};
-    let url = content.url ? content.url.replace(/\/(\w+)?:(.*?)$/, '') : '';
+    let url = content.url ? main_1.urlToLink(content.url) : '';
     item.description = content.description;
     if (lng)
         item.link = `/${lng}${url}`;

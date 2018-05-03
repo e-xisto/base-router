@@ -7,10 +7,11 @@ import groups from './models/groups';
 
 
 let app: any;
-let idiomas: baseRouter.idiomas = { idiomas: false, lng: '', default: '', actives: {}, dictionary: '', t: {}};
+let idiomas: baseRouter.idiomas = { idiomas: false, lng: '', default: '', actives: {}, t: {}};
 let map: any;
 let mapName: string           = ''; // Nombre del fichero del mapa de rutas, por defecto map.json
 let path: string              = '';	// Path de la aplicación
+let pathLanguages: string     = '';	// Path de los idiomas
 let pathRoutes: string        = '';	// Path de las rutas por defecto _path/routes
 let routesFile: string        = '';	// Fichero con la declaración de rutas por defecto routes.js
 let server: baseRouter.server = {};
@@ -69,6 +70,7 @@ let server: baseRouter.server = {};
 
 		mapName    = options.map || 'map.yaml';
 		path       = options.path || '';
+		pathLanguages = options.pathLanguages || '/public/lang/';
 		pathRoutes = options.pathRoutes || options.path + '/routes';
 		routesFile = options.routes || 'routes.js';
 
@@ -185,7 +187,7 @@ let server: baseRouter.server = {};
 	function mapReload (res: express.Response) {
 
 		console.log ("\n\x1b[32mRecargando mapa de contenidos\x1b[0m\n");
-		idiomas = { idiomas: false, lng: '', default: '', actives: {}, dictionary: '', t: {}};
+		idiomas = { idiomas: false, lng: '', default: '', actives: {}, t: {}};
 		loadMap ();
 		setGroups ();
 		res.redirect ('/');
@@ -204,10 +206,9 @@ let server: baseRouter.server = {};
 					if (! idiomas.default) idiomas.default = lng;
 					if (lang.default) idiomas.default = lng;
 
-					let dictionary: string = '';
-					if (! idiomas.dictionary) dictionary = `${path}/public/lang/${lng}.js`;
-					else dictionary = idiomas.dictionary;
-					if (fs.existsSync(dictionary)) idiomas.t = require(dictionary);
+					let dictionary: string = `${path}${pathLanguages}${lng}.js`;
+					if (fs.existsSync(dictionary)) idiomas.t[lng] = require(dictionary);
+					else idiomas.t[lng] = {};
 				}
 			}
 			if (idiomas.default) {
@@ -332,7 +333,7 @@ let server: baseRouter.server = {};
 		res.locals.__route  = info;
 		res.locals.__server = {...server};
 		res.locals.__groups = groups;
-		res.locals.t = idiomas.t;
+		res.locals.__t = idiomas.t[idiomas.lng];
 	}
 
 

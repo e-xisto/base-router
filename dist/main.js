@@ -6,10 +6,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require('fs');
 const groups_1 = __importDefault(require("./models/groups"));
 let app;
-let idiomas = { idiomas: false, lng: '', default: '', actives: {}, dictionary: '', t: {} };
+let idiomas = { idiomas: false, lng: '', default: '', actives: {}, t: {} };
 let map;
 let mapName = ''; // Nombre del fichero del mapa de rutas, por defecto map.json
 let path = ''; // Path de la aplicación
+let pathLanguages = ''; // Path de los idiomas
 let pathRoutes = ''; // Path de las rutas por defecto _path/routes
 let routesFile = ''; // Fichero con la declaración de rutas por defecto routes.js
 let server = {};
@@ -19,8 +20,8 @@ function alternate(ruta, info) {
         info.link = {};
         for (let lng in idiomas.actives) {
             if (ruta.languages[lng]) {
-                info.alternate.push({ lang: lng, href: `${server.serverName}/${lng}${clearParams(ruta.languages[lng].url)}` });
-                info.link[lng] = `/${lng}${clearParams(ruta.languages[lng].url)}`;
+                info.alternate.push({ lang: lng, href: `${server.serverName}/${lng}${urlToLink(ruta.languages[lng].url)}` });
+                info.link[lng] = `/${lng}${urlToLink(ruta.languages[lng].url)}`;
             }
         }
     }
@@ -38,20 +39,22 @@ function breadcrumbData(content) {
     let result = {};
     if (content.languages && idiomas.idiomas && content.languages[idiomas.lng]) {
         result.description = content.languages[idiomas.lng].description;
-        result.link = `/${idiomas.lng}${clearParams(content.languages[idiomas.lng].url)}`;
+        result.link = `/${idiomas.lng}${urlToLink(content.languages[idiomas.lng].url)}`;
     }
     else {
         result.description = content.description;
-        result.link = clearParams(content.url);
+        result.link = urlToLink(content.url);
     }
     return result;
 }
-function clearParams(url) {
+function urlToLink(url) {
     return url ? url.replace(/\/(\w+)?:(.*?)$/, '') : '';
 }
+exports.urlToLink = urlToLink;
 function configure(options) {
     mapName = options.map || 'map.yaml';
     path = options.path || '';
+    pathLanguages = options.pathLanguages || '/public/lang/';
     pathRoutes = options.pathRoutes || options.path + '/routes';
     routesFile = options.routes || 'routes.js';
     if (!path) {
@@ -157,7 +160,7 @@ function loadRoutes() {
 }
 function mapReload(res) {
     console.log("\n\x1b[32mRecargando mapa de contenidos\x1b[0m\n");
-    idiomas = { idiomas: false, lng: '', default: '', actives: {}, dictionary: '', t: {} };
+    idiomas = { idiomas: false, lng: '', default: '', actives: {}, t: {} };
     loadMap();
     setGroups();
     res.redirect('/');
@@ -174,13 +177,11 @@ function optimizedLanguages() {
                     idiomas.default = lng;
                 if (lang.default)
                     idiomas.default = lng;
-                let dictionary = '';
-                if (!idiomas.dictionary)
-                    dictionary = `${path}/public/lang/${lng}.js`;
-                else
-                    dictionary = idiomas.dictionary;
+                let dictionary = `${path}${pathLanguages}${lng}.js`;
                 if (fs.existsSync(dictionary))
-                    idiomas.t = require(dictionary);
+                    idiomas.t[lng] = require(dictionary);
+                else
+                    idiomas.t[lng] = {};
             }
         }
         if (idiomas.default) {
@@ -291,7 +292,7 @@ function setRoute(req, res, ruta, url) {
     res.locals.__route = info;
     res.locals.__server = Object.assign({}, server);
     res.locals.__groups = groups_1.default;
-    res.locals.t = idiomas.t;
+    res.locals.__t = idiomas.t[idiomas.lng];
 }
 function setServer() {
     server.name = app.__args.serverName;
