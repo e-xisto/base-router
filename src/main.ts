@@ -23,8 +23,8 @@ let server: baseRouter.server = {};
 			info.link      = {};
 			for (let lng in idiomas.actives) {
 				if (ruta.languages [lng]) {
-					info.alternate.push ({lang: lng, href: `${ server.serverName }/${ lng }${ clearParams(ruta.languages [lng].url) }`});
-					info.link [lng] = `/${ lng }${ clearParams(ruta.languages [lng].url) }`;
+					info.alternate.push ({lang: lng, href: `${ server.serverName }/${ lng }${ urlToLink(ruta.languages [lng].url) }`});
+					info.link [lng] = `/${ lng }${ urlToLink(ruta.languages [lng].url) }`;
 				}
 			}
 		}
@@ -50,16 +50,16 @@ let server: baseRouter.server = {};
 
 		if (content.languages && idiomas.idiomas && content.languages [idiomas.lng]) {
 			result.description = content.languages [idiomas.lng].description;
-			result.link = `/${ idiomas.lng }${ clearParams(content.languages [idiomas.lng].url) }`;
+			result.link = `/${ idiomas.lng }${ urlToLink(content.languages [idiomas.lng].url) }`;
 		} else {
 			result.description = content.description;
-			result.link        = clearParams(content.url);
+			result.link        = urlToLink(content.url);
 		}
 		return result;
 	}
 
 
-	function clearParams (url: string): string {
+	function urlToLink (url: string): string {
 
 		return url ? url.replace (/\/(\w+)?:(.*?)$/, '') : '';
 	}
@@ -369,7 +369,7 @@ let server: baseRouter.server = {};
 	}
 
 
-	export { configure, contentById, lng };
+	export { configure, contentById, lng, urlToLink };
 
 	///////////////////////////////////
 	///////////////////////////////////
