@@ -1,5 +1,10 @@
 # Changelog
 
+## [Unreleased]
+
+- 2018-05-03 Actualizo documentación del componente
+
+
 
 ## [1.1.4] - 2018-04-26
 - Variable serverName añadida a __server, que concatena protocolo y nombre del servidor @atrinidad
