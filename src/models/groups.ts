@@ -2,7 +2,7 @@
 import { GroupItem } from '../interfaces/group-item';
 import { GroupItemData } from '../interfaces/group-item-data';
 import { Groups } from '../interfaces/groups';
-import { contentById, lng } from '../main';
+import { contentById, lng, urlToLink } from '../main';
 
 
 let grupos: any [any];
@@ -26,7 +26,7 @@ function contentGroup (content: any, idiomas: any): GroupItemData {
 function contentGroupData (content: any, lng: string): GroupItemData {
 
 	let item: GroupItemData = {};
-	let url: string = content.url ? content.url.replace (/\/(\w+)?:(.*?)$/, '') : '';
+	let url: string = content.url ? urlToLink(content.url) : '';
 
 	item.description = content.description;
 	if (lng) item.link = `/${ lng }${ url }`;
@@ -79,7 +79,6 @@ function itemsGroup (grupo: any, idioma: string): any {
 
 class Grupos implements Groups {
 
-	get grupos (): any { return grupos; };
 
 	public constructor () {
 
@@ -99,6 +98,7 @@ class Grupos implements Groups {
 		grupos = [];
 	}
 
+
 	public items (name: string): any {
 
 		// Todo se puede optimizar guardando la información estáticamente
@@ -111,7 +111,8 @@ class Grupos implements Groups {
 		}
 		return items;
 	}
-}
+
+}	// end Grupos
 
 
 let groups = new Grupos ();

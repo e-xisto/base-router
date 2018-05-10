@@ -17,7 +17,7 @@ function contentGroup(content, idiomas) {
 }
 function contentGroupData(content, lng) {
     let item = {};
-    let url = content.url ? content.url.replace(/\/(\w+)?:(.*?)$/, '') : '';
+    let url = content.url ? main_1.urlToLink(content.url) : '';
     item.description = content.description;
     if (lng)
         item.link = `/${lng}${url}`;
@@ -56,8 +56,6 @@ function itemsGroup(grupo, idioma) {
     return result;
 }
 class Grupos {
-    get grupos() { return grupos; }
-    ;
     constructor() {
         grupos = [];
     }
@@ -80,7 +78,7 @@ class Grupos {
         }
         return items;
     }
-}
+} // end Grupos
 let groups = new Grupos();
 exports.default = groups;
 ////////////////////////////////////////////////
