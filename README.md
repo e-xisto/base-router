@@ -6,7 +6,7 @@ Base-router es el enrutador personalizado que utilizamos por defecto en nuestra 
 
 ### Índice de contenidos
 
-- [Esquema de funcionamiento](#esquemadefuncionamiento)
+- [Esquema de funcionamiento](#esquema-de-funcionamiento)
 - [Instalación y configuración](#instalación)
 - [Mapa (map.yaml)](./docs/mapa.md)
 - [Variables](./docs/variables.md)
