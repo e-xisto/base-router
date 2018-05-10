@@ -1,6 +1,6 @@
 # @e-xisto/base-router
 
-Base-router es el enrutador personalizado que utilizamos por defecto en nuestra esctructura de [proyecto BASE](https://github.com/e-xisto/base). Mediante la carga de un archivo de configuración tipo YAML (o JSON opcionalmente) definimos la arquitectura de contenidos y enrutado de nuestro website.
+Base-router es el enrutador personalizado que utilizamos por defecto en nuestra esctructura de [proyecto BASE](https://github.com/e-xisto/base). Este router nos permite, mediante la carga de un archivo de configuración tipo YAML (o JSON opcionalmente), definir la arquitectura de contenidos y enrutado de nuestro website.
 
 
 
@@ -10,9 +10,9 @@ Base-router es el enrutador personalizado que utilizamos por defecto en nuestra 
 
 ![Diagrama funcionamiento](./docs/base-router.png)
 
-Base-router actúa como middleware recibiendo todas las peticiones URL que llegan a nuestro servidor express. Para cada petición realiza una consulta a nuestro mapa de configuración (`map.yaml`) y comprueba si la URL recibida está definida o no en él. Si la URL está definida en nuestro mapa le pedirá a express que se encargue de renderizar la respuesta indicándole que configuración de router y vista que debe utilizar. Si la ruta no existe en el mapa, el servidor devolverá como respuesta un error.
+Base-router actúa como middleware recibiendo todas las peticiones URL que llegan a nuestro servidor express. Para cada petición, realiza una consulta a nuestro mapa de configuración (`map.yaml`) y comprueba si la URL recibida está definida o no en él. Si la URL está definida en nuestro mapa le pedirá a express que se encargue de renderizar la respuesta indicándole que configuración de router y vista que debe utilizar. Si la ruta no existe en el mapa, el servidor devolverá como respuesta un error.
 
-Además de la configuración de router y vista, base-router inyecta diferentes variables que definen propiedades del servidor, de la ruta recibida, los elementos de menús que podemos representar y los idiomas y traducciones de nuestro website.
+Además de la configuración de router y vista, base-router inyecta diferentes variables que definen propiedades del servidor, de la ruta recibida, información de los elementos de menús que podemos representar y los idiomas o traducciones de nuestro website.
 
 
 
@@ -261,21 +261,37 @@ res.render (res.locals.__route.router.view, { noticias: response.data });
 
 # Variables
 
-Base-router expone de forma pública diferentes variables a las que podemos acceder a nivel de programación de nuestro router y de la vista que queremos cargar para renderizar.
+Base-router expone de forma pública diferentes variables que contiene infomación sobre la petición recibida en nuestro servidor web, y a las que podemos acceder a nivel de programación de nuestro router y de la vista que queremos cargar para renderizar.
 
 Las variables expuestas son las siguiente:
 
-| Variable | Propiedades                                       | Descripción                                                  |
-| -------- | ------------------------------------------------- | ------------------------------------------------------------ |
-| __server | localPort<br />name<br />protocol<br />serverName | Contiene la información del servidor web: Perto, nombre de dominio, protocolo y SeverName. |
-| __route  |                                                   |                                                              |
-| __groups |                                                   |                                                              |
+| Variable              | Tipo   | Descripción                                                  |
+| --------------------- | ------ | :----------------------------------------------------------- |
+| [__server](#__server) | Objeto | Contiene la información del servidor web: Puerto, nombre de dominio, protocolo y SeverName. |
+| __route               | Objeto | Incluye toda la información de la ruta que se está cargando. Si el website es multilíngue, la información contenida únicamente será la del idioma activo. |
+| __groups              | Objeto | Almacena todas las agrupaciones de contenido definidas en el mapa que nos facilitará representar diferentes menús de navegación. Ver configuración de `groups` en mapa ([link](#groups)) |
 
 A nivel de vista, la carga de variables es directa:
 
 ```javascript
 <script> console.log({{__route | dump | safe}}) </script>
 ```
+
+
+
+## __server
+
+
+
+
+
+## __route
+
+
+
+
+
+## __groups
 
 
 
