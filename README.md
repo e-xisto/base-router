@@ -1096,7 +1096,7 @@ meta:
     locale: es
     author: existo.es      
   twitter:
-	card: summary_large_image
+    card: summary_large_image
     title: Mi primera web
     description: Lorem ipsum dolor sit amet, consectetur adipiscing
     image: http://www.minuevowebsite.com/logo.png
