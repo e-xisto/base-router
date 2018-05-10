@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 - 2018-05-03 Actualizo documentación del componente
+- 2018-05-10 Carga de idiomas en __t @atrinidad
 
 
 
