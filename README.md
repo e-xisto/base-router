@@ -2,6 +2,18 @@
 
 Base-router es el enrutador personalizado que utilizamos por defecto en nuestra esctructura de [proyecto BASE](https://github.com/e-xisto/base). Mediante la carga de un archivo de configuración tipo YAML (o JSON opcionalmente) definimos la arquitectura de contenidos y enrutado de nuestro website.
 
+
+
+### Esquema de funcionamiento
+
+
+
+![Diagrama funcionamiento](./docs/base-router.png)
+
+base-router actuará como middleware recibiendo todas las peticiones URL que llegan a nuestro servidor express. Para cada petición realizará una consulta a nuestro mapa de configuración (`map.yaml`) para comprobar si la URL recibida está definida o no en él. Si la URL está definida en nuestro mapa le pedirá a express que se encargue de renderizar la respuesta indicándole que configuración de router y vista debe utilizar. Si la ruta no existe en el mapa express devolverá como respuesta un error.
+
+
+
 ### Instalación
 
 El primer paso consiste en instalar el paquete dentro de nuestro proyecto:
