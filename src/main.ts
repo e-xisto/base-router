@@ -348,7 +348,7 @@ let server: baseRouter.server = {};
 		res.locals.__route  = info;
 		res.locals.__server = {...server};
 		res.locals.__groups = groups;
-		res.locals.__t      = {...idiomas.t[idiomas.lng]};
+		res.locals.t        = {...idiomas.t[idiomas.lng]};
 	}
 
 
