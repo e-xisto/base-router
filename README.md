@@ -265,11 +265,11 @@ Base-router expone de forma pública diferentes variables a las que podemos acce
 
 Las variables expuestas son las siguiente:
 
-| Variable | Propiedades                                                  | Descripción                                                  |
-| -------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| __server | __server.localPort<br />__server.name<br />__server.protocol<br />__server.serverName | Contiene la información del servidor web: Perto, nombre de dominio, protocolo y SeverName. |
-| __route  |                                                              |                                                              |
-| __groups |                                                              |                                                              |
+| Variable | Propiedades                                       | Descripción                                                  |
+| -------- | ------------------------------------------------- | ------------------------------------------------------------ |
+| __server | localPort<br />name<br />protocol<br />serverName | Contiene la información del servidor web: Perto, nombre de dominio, protocolo y SeverName. |
+| __route  |                                                   |                                                              |
+| __groups |                                                   |                                                              |
 
 A nivel de vista, la carga de variables es directa:
 
