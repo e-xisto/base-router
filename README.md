@@ -2,33 +2,171 @@
 
 Base-router es el enrutador personalizado que utilizamos por defecto en nuestra esctructura de [proyecto BASE](https://github.com/e-xisto/base). Mediante la carga de un archivo de configuración tipo YAML (o JSON opcionalmente) definimos la arquitectura de contenidos y enrutado de nuestro website.
 
-#### Instalación
+### Instalación
 
-Lo primero instalar el paquete dentro de nuestro proyecto.
+El primer paso consiste en instalar el paquete dentro de nuestro proyecto:
 
 ```bash
 npm install @e-xisto/base-router
 ```
 
-#### Configuración
+
+
+### Configuración
 
 En el archivo de configuración de nuestra aplicación express incluiremos:
 
 ```javascript
 const baseRouter = require ('@e-xisto/base-router');
 
-// Configurarlo
-baseRouter.configure ({ path: __dirname, map: args.map });
+// Configurar e iniciar nuestro router
+baseRouter.configure ({ path: __dirname, map: 'map.yaml' });
 ```
 
-| Variable   | Description                                                  |
-| ---------- | ------------------------------------------------------------ |
-| path       | Ruta de la aplicación, esta variable es obligatoria e indica la ruta donde empezar a localizar el mapa y las rutas estáticas. |
-| map        | Nombre del fichero del mapa. Debe estar localizado en el path o ser una ruta relativa al path. Por defecto tiene el valor `map.json` |
-| pathRoutes | Ruta de la la carpeta de rutas. Por defecto `[path]/routes`  |
-| routes     | Nombre del fichero de rutas. Por defecto `routes.js`         |
 
-## Variables
+
+Opciones de configuración:
+
+| Variable          | Description                                                  |
+| :---------------- | ------------------------------------------------------------ |
+| **path**          | Ruta de la aplicación, esta variable es obligatoria e indica la ruta donde empezar a localizar el mapa y las rutas estáticas. |
+| map               | Nombre del fichero del mapa. Debe estar localizado en el path o ser una ruta relativa al path. Por defecto tiene el valor `map.yaml` |
+| pathRoutes        | Ruta de la la carpeta de rutas. Por defecto `[path]/routes`  |
+| [routes](#routes) | Nombre del fichero de rutas. Por defecto `routes.js`         |
+
+Un ejemplo de configuración básica para nuestra aplicación express sería:
+
+```javascript
+// Archivo /server.js
+
+const express      = require ('express');
+const http         = require('http');
+const debug        = require('debug');
+const path         = require ('path');
+const cookieParser = require ('cookie-parser');
+const bodyParser   = require ('body-parser');
+const nunjucks     = require ('nunjucks');
+
+// Requerimos nuestro enrutador
+const baseRouter   = require ('@e-xisto/base-router');
+
+// Iniciamos nuestra aplicación express
+const app  = module.exports = express ();
+
+// Capturamos el puerto por defecto o lo capturamos de la variable de entorno
+const port = normalizePort (process.env.PORT || '3000');
+
+// Seteamos una pariable con el puerto
+app.set ('port', port);
+
+// Congiguramos nuestro motor de plantillas
+app.set('view engine', 'njk');
+app.set('views', path.join(__dirname, 'views'));
+
+nunjucks.configure('views', {
+  autoescape: true,
+  noCache: true,
+  express   : app
+});
+
+// Parseamos las peticiones recibidas con un middleware
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// Parseamos los accesos a las cookies
+app.use(cookieParser());
+
+// Configuramos nuestra carpeta de contenido público
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Configuramos nuestro router
+baseRouter.configure ({ path: __dirname, map: app.__args.map });
+
+// Cartura de errores 404
+app.use(function(req, res, next) {
+  var err = new Error('Not Found');
+  err.status = 404;
+  next(err);
+});
+
+// Función para normalizar el puerto
+function normalizePort (val) {
+
+    var port = parseInt (val, 10);
+
+  if (isNaN (port)) return val;
+  if (port >= 0) return port;
+  return false;
+}
+
+// Event listener for HTTP server "error" event
+function onError(error) {
+
+    if (error.syscall !== 'listen') throw error;
+
+    let bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
+
+    // handle specific listen errors with friendly messages
+    switch (error.code) {
+        case 'EACCES':
+            console.error(bind + ' requires elevated privileges');
+            process.exit(1);
+            break;
+        case 'EADDRINUSE':
+            console.error(bind + ' is already in use');
+            process.exit(1);
+            break;
+        default:
+            throw error;
+    }
+}
+
+// Event listener for HTTP server "listening" event.
+function onListening() {
+
+    let addr = server.address();
+    let bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
+
+    console.log ("\n\x1b[32mAplicación escuchando en el puerto " + addr.port + "\x1b[0m\n");
+
+    debug('Listening on ' + bind);
+}
+
+```
+
+
+
+# Routes
+
+El trabajo de nuestro router no es otro que procesar las peticiones que recibe el servidor y elegir qué ruta o  `route` interna debe cargar según la configuración indicada en nuestro [mapa](#mapa).
+
+Para que esto sea posible debemos definir nuestro mapa de rutas disponibles. Para ello definimos un archivo de rutas (por defecto `/routes/routes.js`) donde asociaremos las rutas disponibles y el script de enrutado que finalmente pasaremos a nuestro servidor para renderizar la petición.
+
+Un ejemplo de nuestro archivo de rutas:
+
+```javascript
+// Archivo /routes/routes.js
+
+// Requerimos nuestro aplicación servidor
+var app = require ('../server');
+
+// Carga de rutas
+app.use ('/sitemap', require ('./sitemap'));
+app.use ('/template', require ('./template'));
+app.use ('/editor', require ('./editor'));
+app.use ('/home', require ('./home'));
+app.use ('/noticias', require ('./noticias'));
+app.use ('/proyectos', require ('./proyectos'));
+
+// En este caso no necesitamos vincular a una ruta
+app.use (require ('./breadcrumb'));
+```
+
+
+
+
+
+# Variables
 
 | Variable | Descripción |
 | -------- | ----------- |
@@ -55,8 +193,8 @@ La estructura de este archivo yaml es la siguiente:
 | [languages](#languages)     | Objeto | Define los idiomas con los que podremos navegar en nuestro website. Cada idioma se añadirá al objeto como una nueva propiedad que contendrá la configuración por defecto del idioma. Tomaremos la norma [ISO 639-1](https://es.wikipedia.org/wiki/ISO_639-1) para nombrar los idiomas. |
 | [content](#content)         | Array  | Los elementos de este array contienen la información de todas las rutas URL que forman el contenido de nuestro website. Para cada una de las rutas, además de la URL y sus metadatos de descripción por idioma, asignaremos la configuración del enrutador y la vista que deseamos cargar. Es muy importante no olvidar asignar un identificador `id` único a cada uno de los contenidos que nos ayude a identificarlos. |
 | [groups](#groups)           | Objeto | Nos permite organizar el contenido de nuestro website en diferentes grupos que podremos utilizar en nuestra vista como menús de navegación. |
-| [xDefault](#xDefault)       | Texto  | Define el atributo "hreflang" con valor "x-default" lo que nos permitirá auto-redireccionar al idioma que elijamos por defecto. |
-| [dnsPrefetch](#dnsPrefetch) | Array  | Contiene las URLs para las cuales queremos que el navegador resuelva las DNS realizando un "prefetching" al comenzar a cargar nuestro website. |
+| [xDefault](#xdefault)       | Texto  | Define el atributo "hreflang" con valor "x-default" lo que nos permitirá auto-redireccionar al idioma que elijamos por defecto. |
+| [dnsPrefetch](#dnsprefetch) | Array  | Contiene las URLs para las cuales queremos que el navegador resuelva las DNS realizando un "prefetching" al comenzar a cargar nuestro website. |
 | [scripts](#scripts)         | Objeto | Reservado para definir los bloques de código para Google Analytics y Tag Manager. |
 | [meta](#meta)               | Objeto | Define de forma global y por defecto los metadatos incluidos en el `<head>` de nuestro website. Esto incluye title, description, keywords, etiquetas Open Graph para Facebook y las de Twitter Card. |
 
@@ -78,14 +216,14 @@ languages:
 
 Para cada idioma **(lng)** podremos definir las siguientes propiedades:
 
-| Propiedades                                     | Tipo     | Descripción                                                  |
-| ----------------------------------------------- | -------- | ------------------------------------------------------------ |
-| languages.lng.text                              | Texto    | Texto descripción del idioma. Esta descripción deberá ir traducida a su idioma pues será la que utilizaremos para mostrar en menús de cambio de idioma. |
-| languages.lng.active                            | Booleano | Nos permite activa o desactivar un idioma. Si está `true` el idioma estará activo y si está a `false` estará desactivado. |
-| languages.lng.meta                              | Objeto   | Podremos configurar los metas por defecto en toda la web para cada idioma. |
-| languages.lng.default                           | Booleano | Esta propiedad nos pemite elegir el idioma por defecto en nuestro website. Solo podremos elegir un único idioma como default. Para ello tendremos que definir esta propiedad con valor `true`. El resto de idiomas la tendrán a `false`. Por defecto, si no declaramos un default activo, se elegirá el primer idioma definido como default. |
-| [languages.lng.og](#languages.lng.og)           | Objeto   | Configuramos los metadatos para Facebook Open Graph por defecto para este idioma en todo el website. |
-| [languages.lng.twitter](#languages.lng.twitter) | Objeto   | Configuramos los metadatos para Twitter Card por defecto para este idioma en todo el website. |
+| Propiedades                                   | Tipo     | Descripción                                                  |
+| --------------------------------------------- | -------- | ------------------------------------------------------------ |
+| languages.lng.text                            | Texto    | Texto descripción del idioma. Esta descripción deberá ir traducida a su idioma pues será la que utilizaremos para mostrar en menús de cambio de idioma. |
+| languages.lng.active                          | Booleano | Nos permite activa o desactivar un idioma. Si está `true` el idioma estará activo y si está a `false` estará desactivado. |
+| languages.lng.meta                            | Objeto   | Podremos configurar los metas por defecto en toda la web para cada idioma. |
+| languages.lng.default                         | Booleano | Esta propiedad nos pemite elegir el idioma por defecto en nuestro website. Solo podremos elegir un único idioma como default. Para ello tendremos que definir esta propiedad con valor `true`. El resto de idiomas la tendrán a `false`. Por defecto, si no declaramos un default activo, se elegirá el primer idioma definido como default. |
+| [languages.lng.og](#languageslngog)           | Objeto   | Configuramos los metadatos para Facebook Open Graph por defecto para este idioma en todo el website. |
+| [languages.lng.twitter](#languageslngtwitter) | Objeto   | Configuramos los metadatos para Twitter Card por defecto para este idioma en todo el website. |
 
 Pongamos un ejemplo:
 
@@ -111,7 +249,9 @@ languages:
 
 En este ejemplo de mapa hemos configurado un website con dos idiomas: Español e Inglés. Ambos idiomas están activos, se ha seleccionado el Español como idioma por defecto y dentro de cada idioma se han definido los metas que aparecerán por defecto para todos los contenidos de ese idioma en nuestra web.
 
-#### languages.lng.og
+
+
+### languages.lng.og
 
 Podemos añadir marcado Facebook Open Graph a nuestro web site por idioma. Este marcado aparecerá por defecto en todos los contenidos siempre que no definamos otros valores para cada contenido de forma específica.
 
@@ -147,7 +287,7 @@ Para más información consultar los sugientes enlaces:
 
 
 
-#### languages.lng.twitter
+### languages.lng.twitter
 
 Al igual que la opción de marcado Open Graph podemos incluir en el `<head>` de nuestro website las etiquetas de marcado Twitter Cards.
 
@@ -186,17 +326,17 @@ Es muy importante no olvidar asignar un identificador `id` único a cada uno de 
 
 Para cada entrada en `content` podremos definir las siguientes opciones:
 
-| Propiedad                               | Tipo     | Descripción                                                  |
-| --------------------------------------- | -------- | ------------------------------------------------------------ |
-| content.content                         | Texto    | Descripción del contenido. Solo de utiliza internamente en el componente para identificar el contenido dentro del mapa. |
-| content.id                              | Entero   | Identificador numérico único del contenido.                  |
-| content.description                     | Texto    | Texto descripción del contenido. Esta descripción será la que utilizaremos para mostrar en menús y será compartida con el motor de plantillas. Solo necesaria si no se definen múltiples idiomas. |
-| content.url                             | Texto    | Punto de entrada o URL absoluta de la ruta que nos llevará al contenido. No incluye el nombre de dominio ni el protocolo. Solo necesaria si no se definen múltiples idiomas. |
-| [content.parent](#content.parent)       | Número   | Esta propiedad indica si este contenido depende de un contenido padre. Nos permite dibujar la miga de pan (breadcrumb) de nuestra ruta en la vista. |
-| content.meta                            | Objeto   | Define de forma específica para este contenido los metadatos incluidos en el `<head>` de nuestro website. Esta información sobreescribe a la información por defecto especificada en la propiedad meta del idioma dentro de la opción languages. Solo necesaria si no se definen múltiples idiomas. |
-| [content.languages](#content.languages) | Objeto   | Destro de esta propiedad se define la configuración del contenido para los diferentes idiomas activos en la web. En el caso de definir una configuración por idiomas las propiedades description, meta y url anteriores quedarán definidas dentro de este objeto por idiomas. |
-| [content.router](#content.router)       | Objeto   | Asignación de la vista y enrutador a cargar en express. No necesaria si configuramos la opción [content.redirect](#content.redirect) |
-| [content.noIndex](#content.noIndex)     | Booleano | Opción de incluir el meta robots content="noindex"  para evitar que la URL sea indexada por los buscadores. Por defecto siempre está a `false` |
+| Propiedad                              | Tipo     | Descripción                                                  |
+| -------------------------------------- | -------- | ------------------------------------------------------------ |
+| content.content                        | Texto    | Descripción del contenido. Solo de utiliza internamente en el componente para identificar el contenido dentro del mapa. |
+| content.id                             | Entero   | Identificador numérico único del contenido.                  |
+| content.description                    | Texto    | Texto descripción del contenido. Esta descripción será la que utilizaremos para mostrar en menús y será compartida con el motor de plantillas. Solo necesaria si no se definen múltiples idiomas. |
+| content.url                            | Texto    | Punto de entrada o URL absoluta de la ruta que nos llevará al contenido. No incluye el nombre de dominio ni el protocolo. Solo necesaria si no se definen múltiples idiomas. |
+| [content.parent](#contentparent)       | Número   | Esta propiedad indica si este contenido depende de un contenido padre. Nos permite dibujar la miga de pan (breadcrumb) de nuestra ruta en la vista. |
+| content.meta                           | Objeto   | Define de forma específica para este contenido los metadatos incluidos en el `<head>` de nuestro website. Esta información sobreescribe a la información por defecto especificada en la propiedad meta del idioma dentro de la opción languages. Solo necesaria si no se definen múltiples idiomas. |
+| [content.languages](#contentlanguages) | Objeto   | Destro de esta propiedad se define la configuración del contenido para los diferentes idiomas activos en la web. En el caso de definir una configuración por idiomas las propiedades description, meta y url anteriores quedarán definidas dentro de este objeto por idiomas. |
+| [contentrouter](#content.router)       | Objeto   | Asignación de la vista y enrutador a cargar en express. No necesaria si configuramos la opción [content.redirect](#contentredirect) |
+| [content.noIndex](#contentnoindex)     | Booleano | Opción de incluir el meta robots content="noindex"  para evitar que la URL sea indexada por los buscadores. Por defecto siempre está a `false` |
 
 Un ejemplo de contenido básico:
 
@@ -250,7 +390,7 @@ content:
 
 
 
-#### content.languages
+### content.languages
 
 En el caso de gestionar el contenido por idiomas debemos incluir la información por idiomas definiendo las propiedades `description`, `url` y `meta` dentro de cada idioma:
 
@@ -300,7 +440,7 @@ content:
 
 
 
-#### content.meta.canonical
+### content.meta.canonical
 
 Podemos añadir opcionalmente una URL canónica a cada ruta:
 
@@ -324,7 +464,7 @@ La URL canonical debe ser completa, incluyendo nombre de dominio y protocolo.
 
 
 
-#### content.languages.lng.meta.canonical
+### content.languages.lng.meta.canonical
 
 En el caso de una web multilingüe gestionaremos la canonical por idiomas:
 
@@ -356,7 +496,7 @@ content:
 
 
 
-#### content.redirect
+### content.redirect
 
 En muchas ocasiones necesitamos crear una URL que no carga directamente ningún contenido y simplemente nos redirige a otra URL interna o exterta a nuestro website.
 
@@ -382,7 +522,7 @@ Cuando definimos la propiedad `redirect` la información de `router` no se tiene
 
 
 
-#### content.languages.lng.redirect
+### content.languages.lng.redirect
 
 El mismo ejemplo por idiomas:
 
@@ -407,7 +547,7 @@ En el ejemplo comprobamos que podemos definir diferentes comportamientos según 
 
 
 
-#### content.code y content.languages.lng.code
+### content.code y content.languages.lng.code
 
 En ocasiones nos interesa realizar una redirección pero devolver un código de estado http diferente al 301 por defecto. Para ello debemos definir la propiedad `code`.
 
@@ -431,7 +571,7 @@ Para saber más sobre los códigos de estado http:
 
 
 
-#### content.noIndex
+### content.noIndex
 
 Si definimos la propiedad `noIndex` para una ruta estaremos informando de que no queremos que esta ruta sea rastreada e indexada por los buscadores.
 
@@ -481,7 +621,7 @@ Esta propiedad es del contenido y no se define por idiomas.
 
 
 
-#### content.meta
+### content.meta
 
 Del mismo modo que podemos definir de forma global los metas para nuestro website, también podemos definir los meta para cada una de nuestras rutas.
 
@@ -513,7 +653,7 @@ content:
 
 
 
-#### content.languajes.lng.meta
+### content.languajes.lng.meta
 
 Y por idiomas:
 
@@ -567,7 +707,7 @@ Al definir la propiedad `meta` dentro de nuestro contenido, el router procederá
 
 
 
-#### content.parent
+### content.parent
 
 En esta propiedada identificamos el `id` del contenido padre al que pertenece este contenido.
 
@@ -693,8 +833,8 @@ content:
         description: Home
         url: /
     router:
-	  route: /home
-	  view: home	
+      route: /home
+      view: home	
    - content: Quienes somos
      id: 2
      languages:     
@@ -727,9 +867,7 @@ Independientemente de la gerarquía de contenidos que se establezca identificand
 
 
 
-
-
-#### content.router
+### content.router
 
 Dentro de la propiedad `router` configuraremos la vista y el enrutador que express deberá cargar para cada contenido.
 
@@ -742,7 +880,9 @@ Definiremos las siguientes propiedades:
 
 En el proyecto BASE se han definido unos tipos de configuraciones estándares para `content.router`:
 
-#### content.router.route = template
+
+
+### content.router.route = template
 
 Esta configuración nos ayuda a cargar de forma directa una plantilla. Solo tendremos que indicar que vista cargar y este `route` prodecerá a renderizarla directamente.
 
@@ -758,7 +898,9 @@ content:
 
 Este contenido cargará la vista `contacto`  dentro de la carpeta `views` y la enviará a express para que renderice y la muestre en el navegador.
 
-#### content.router.route = editor
+
+
+### content.router.route = editor
 
 Esta configuración realizará una carga de contenido externa y la montará en la vista elegida.
 
@@ -954,7 +1096,7 @@ meta:
     locale: es
     author: existo.es      
   twitter:
-	card: summary_large_image
+    card: summary_large_image
     title: Mi primera web
     description: Lorem ipsum dolor sit amet, consectetur adipiscing
     image: http://www.minuevowebsite.com/logo.png

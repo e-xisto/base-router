@@ -4,4 +4,5 @@ export interface idiomas {
     default: string;
     idiomas: boolean;
     lng:     string;
+    t:       {[key: string]: {[key: string]: string}};
 }
