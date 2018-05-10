@@ -10,7 +10,7 @@ Base-router es el enrutador personalizado que utilizamos por defecto en nuestra 
 
 ![Diagrama funcionamiento](./docs/base-router.png)
 
-base-router actuará como middleware recibiendo todas las peticiones URL que llegan a nuestro servidor express. Para cada petición realizará una consulta a nuestro mapa de configuración (`map.yaml`) para comprobar si la URL recibida está definida o no en él. Si la URL está definida en nuestro mapa le pedirá a express que se encargue de renderizar la respuesta indicándole que configuración de router y vista debe utilizar. Si la ruta no existe en el mapa express devolverá como respuesta un error.
+base-router actúa como middleware recibiendo todas las peticiones URL que llegan a nuestro servidor express. Para cada petición realizará una consulta a nuestro mapa de configuración (`map.yaml`) y comprobará si la URL recibida está definida o no en él. Si la URL está definida en nuestro mapa le pedirá a express que se encargue de renderizar la respuesta indicándole que configuración de router y vista debe utilizar. Si la ruta no existe en el mapa express devolverá como respuesta un error.
 
 
 
