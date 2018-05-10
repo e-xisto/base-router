@@ -206,7 +206,7 @@ let server: baseRouter.server = {};
 					if (! idiomas.default) idiomas.default = lng;
 					if (lang.default) idiomas.default = lng;
 
-					let dictionary: string = `${path}${pathLanguages}${lng}.js`;
+					let dictionary: string = `${path}${pathLanguages}${lng}.json`;
 					if (fs.existsSync(dictionary)) idiomas.t[lng] = require(dictionary);
 					else idiomas.t[lng] = {};
 				}

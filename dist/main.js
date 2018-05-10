@@ -177,7 +177,7 @@ function optimizedLanguages() {
                     idiomas.default = lng;
                 if (lang.default)
                     idiomas.default = lng;
-                let dictionary = `${path}${pathLanguages}${lng}.js`;
+                let dictionary = `${path}${pathLanguages}${lng}.json`;
                 if (fs.existsSync(dictionary))
                     idiomas.t[lng] = require(dictionary);
                 else
