@@ -1,6 +1,6 @@
 # @e-xisto/base-router
 
-Base-router es el enrutador personalizado que utilizamos por defecto en nuestra esctructura de [proyecto BASE](https://github.com/e-xisto/base). Este router nos permite, mediante la carga de un archivo de configuración tipo YAML (o JSON opcionalmente), definir la arquitectura de contenidos y enrutado de nuestro website.
+Base-router es el enrutador personalizado configurado por defecto en nuestra esctructura de [proyecto BASE](https://github.com/e-xisto/base). Este router nos permite, mediante la carga de un archivo de configuración tipo YAML (o JSON opcionalmente), definir la arquitectura de contenidos y enrutado de nuestro website.
 
 
 
@@ -8,9 +8,11 @@ Base-router es el enrutador personalizado que utilizamos por defecto en nuestra 
 
 - [Esquema de funcionamiento](#esquema-de-funcionamiento)
 - [Instalación y configuración](#instalación)
+- [Forzar la recarga del mapa](#recarga-de-mapa)
 - [Mapa (map.yaml)](./docs/mapa.md)
 - [Variables](./docs/variables.md)
 - [Routes](./docs/routes.md)
+- [Notas de revisión y TODOs](#Notas-de-revisión-y-TODOs)
 
 
 
@@ -160,9 +162,15 @@ function onListening() {
 
 
 
+### Recarga de mapa
 
+Si realizamos cambios sobre nuestro archivo de mapa podemos forzar la carga del mapa sin necesidad de reiniciar nuestro servidor web. Para ello existe una URL reservada:
 
+```
+> https://www.nombrededominio.com/map-reload
 
+> localhost:3000/map-reload
+```
 
 
 
@@ -187,4 +195,4 @@ function onListening() {
 
 
 
-Versión 0.0.2 (2018-05-10) 
+Versión 0.1.0 (2018-05-10) 
