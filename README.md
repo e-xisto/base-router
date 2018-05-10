@@ -10,7 +10,9 @@ Base-router es el enrutador personalizado que utilizamos por defecto en nuestra 
 
 ![Diagrama funcionamiento](./docs/base-router.png)
 
-base-router actúa como middleware recibiendo todas las peticiones URL que llegan a nuestro servidor express. Para cada petición realizará una consulta a nuestro mapa de configuración (`map.yaml`) y comprobará si la URL recibida está definida o no en él. Si la URL está definida en nuestro mapa le pedirá a express que se encargue de renderizar la respuesta indicándole que configuración de router y vista debe utilizar. Si la ruta no existe en el mapa express devolverá como respuesta un error.
+Base-router actúa como middleware recibiendo todas las peticiones URL que llegan a nuestro servidor express. Para cada petición realiza una consulta a nuestro mapa de configuración (`map.yaml`) y comprueba si la URL recibida está definida o no en él. Si la URL está definida en nuestro mapa le pedirá a express que se encargue de renderizar la respuesta indicándole que configuración de router y vista que debe utilizar. Si la ruta no existe en el mapa, el servidor devolverá como respuesta un error.
+
+Además de la configuración de router y vista, base-router inyecta diferentes variables que definen propiedades del servidor, de la ruta recibida, los elementos de menús que podemos representar y los idiomas y traducciones de nuestro website.
 
 
 
@@ -259,11 +261,21 @@ res.render (res.locals.__route.router.view, { noticias: response.data });
 
 # Variables
 
-| Variable | Descripción |
-| -------- | ----------- |
-| __server |             |
-| __route  |             |
-| __groups |             |
+Base-router expone de forma pública diferentes variables a las que podemos acceder a nivel de programación de nuestro router y de la vista que queremos cargar para renderizar.
+
+Las variables expuestas son las siguiente:
+
+| Variable | Propiedades                                                  | Descripción                                                  |
+| -------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| __server | __server.localPort<br />__server.name<br />__server.protocol<br />__server.serverName | Contiene la información del servidor web: Perto, nombre de dominio, protocolo y SeverName. |
+| __route  |                                                              |                                                              |
+| __groups |                                                              |                                                              |
+
+A nivel de vista, la carga de variables es directa:
+
+```javascript
+<script> console.log({{__route | dump | safe}}) </script>
+```
 
 
 
