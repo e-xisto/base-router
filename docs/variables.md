@@ -10,13 +10,13 @@ Las variables expuestas son las siguiente:
 | [__route](#__route)   | Objeto | Incluye toda la información de la ruta que se está cargando. Si el website es multilíngue, la información contenida únicamente será la del idioma activo. |
 | [__groups](__groups)  | Objeto | Almacena todas las agrupaciones de contenido definidas en el mapa que nos facilitará representar diferentes menús de navegación. Ver configuración de `groups` en mapa ([link](#groups)) |
 
-A nivel de vista, la carga de variables es directa ( `__route` ):
+A nivel de vista, en nuestra plantilla HTML, la carga de variables es directa ( `__route` ):
 
 ```javascript
 <script> console.log({{ __route.router.view }}) </script>
 ```
 
-Desde la configuración del  router de express debemos invocarla como parte de las variables tipo locals del  router ( `.res.locals.__route` ):
+Desde la configuración del  router de express debemos invocarla como parte de las variables tipo locals del  router (Ej:  `.res.locals.__route` ):
 
 ```javascript
 res.locals.__route.router.view

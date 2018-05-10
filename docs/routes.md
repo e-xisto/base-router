@@ -1,6 +1,6 @@
 # Routes
 
-El trabajo de nuestro router no es otro que procesar las peticiones que recibe el servidor y elegir qué ruta o  `route` interna debe cargar según la configuración indicada en nuestro [mapa](#mapa).
+El trabajo de nuestro router no es otro que procesar las peticiones que recibe el servidor y elegir qué ruta o  `route` interna debe cargar según la configuración indicada en nuestro [mapa](./mapa.md).
 
 Para que esto sea posible debemos definir nuestro mapa de rutas disponibles. Para ello definimos un archivo de rutas (por defecto `/routes/routes.js`) donde asociaremos las rutas disponibles y el script de enrutado que finalmente pasaremos a nuestro servidor para renderizar la petición.
 
@@ -24,7 +24,7 @@ app.use ('/proyectos', require ('./proyectos'));
 app.use (require ('./breadcrumb'));
 ```
 
-En este ejemplo definimos una ruta `/template` que podremos incluir en nuestro [mapa](#mapa) y que asociamos a la carga de nuestro archivo de enrutado de express `/routes/template.js` .
+En este ejemplo definimos una ruta `/template` que podremos incluir en nuestro [mapa](./mapa.md) y que asociamos a la carga de nuestro archivo de enrutado de express `/routes/template.js` .
 
 Nuestro archivo de enrutado podría quedar de la siguiente forma:
 
@@ -48,7 +48,7 @@ Esta variable nos devuelve el nombre de la vista que hemos configurado para la r
 
 Nuestro enrutador expone 3 variables locales que podemos usar en la configuración del nuestro router y en la vista. Estas variables son `res.locals.__route`, `res.locals.__server` y  `res.locals.__groups`.
 
-Para saber más sobre estas variables consultar la sección [Variables](#variables).
+Para saber más sobre estas variables consultar la sección [Variables](./variables.md).
 
 Un ejemplo de configuración de router más compleja podría ser el de unas noticias:
 
