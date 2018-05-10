@@ -79,7 +79,6 @@ function itemsGroup (grupo: any, idioma: string): any {
 
 class Grupos implements Groups {
 
-	get grupos (): any { return grupos; };
 
 	public constructor () {
 
@@ -99,6 +98,7 @@ class Grupos implements Groups {
 		grupos = [];
 	}
 
+
 	public items (name: string): any {
 
 		// Todo se puede optimizar guardando la información estáticamente
@@ -111,7 +111,8 @@ class Grupos implements Groups {
 		}
 		return items;
 	}
-}
+
+}	// end Grupos
 
 
 let groups = new Grupos ();

@@ -88,7 +88,7 @@ let server: baseRouter.server = {};
 
 	function contentById (id: number): any {
 
-		return map.content.find ((ruta: any) => { if (ruta.id == id) return ruta; });
+		return map.contents.find ((ruta: any) => { if (ruta.id == id) return ruta; });
 	}
 
 
@@ -115,12 +115,12 @@ let server: baseRouter.server = {};
 			// Eliminamos el idioma de la URL
 			let url = req.url.substr (3);
 			if (! url) url = '/';
-			return map.content.find ((ruta: any) => {
+			return map.contents.find ((ruta: any) => {
 					if (findRouteOk (ruta.languages [idiomas.lng], url)) return ruta;
 				});
 		}
 
-		return map.content.find ((ruta: any) => {
+		return map.contents.find ((ruta: any) => {
 				if (findRouteOk (ruta, req.url)) return ruta;
 			});
 	}
@@ -136,6 +136,21 @@ let server: baseRouter.server = {};
 			}
 		}
 		return false;
+	}
+
+
+	function idiomaNavegador (req: express.Request) {
+
+		if (req.headers && req.headers ['accept-language']) {
+			let accept: string = String (req.headers ['accept-language']).replace (/q=\d+(\.\d+)?(,|\b)/g, '');
+			for (let lng of accept.split (';')) {
+				if (lng && lng.length >=2) {
+					lng = lng.substr (0,2).toLowerCase ();
+					if (idiomas.actives [lng]) return lng;
+				}
+			}
+		}
+		return idiomas.default;
 	}
 
 
@@ -219,8 +234,8 @@ let server: baseRouter.server = {};
 
 
 		if (idiomas.idiomas) {
-			for (let i in map.content) {
-				let route = map.content [i];
+			for (let i in map.contents) {
+				let route = map.contents [i];
 				for (let lng in idiomas.actives) {
 
 					if (route.languages [lng] && route.languages [lng].url) {
@@ -231,8 +246,8 @@ let server: baseRouter.server = {};
 				}
 			}
 		} else {
-			for (let i in map.content) {
-				let route = map.content [i];
+			for (let i in map.contents) {
+				let route = map.contents [i];
 				if (route.url) {
 					route.keys       = [];
 					route.path       = pathToRegexp (route.url, route.keys);
@@ -343,19 +358,19 @@ let server: baseRouter.server = {};
 
 		// Si la url no trae idioma lo añade y lo redirige habria que analizar mejor este comportamiento
 		if (! req.url) {
-			res.redirect ('/' + idiomas.default);
+			res.redirect ('/' + idiomaNavegador (req));
 			return false;
 		}
 
 		if (! req.url.match (/^\/\w\w(\/|$)/)) {
-			res.redirect ('/' + idiomas.default + req.url);
+			res.redirect ('/' + idiomaNavegador (req) + req.url);
 			return false;
 		}
 
 		idiomas.lng  = req.url.substr (1,2);
 
 		if (! idiomas.actives [idiomas.lng]) {
-			res.redirect ('/' + idiomas.default);
+			res.redirect ('/' + idiomaNavegador (req));
 			return false;
 		}
 

@@ -67,7 +67,7 @@ function configure(options) {
 }
 exports.configure = configure;
 function contentById(id) {
-    return map.content.find((ruta) => { if (ruta.id == id)
+    return map.contents.find((ruta) => { if (ruta.id == id)
         return ruta; });
 }
 exports.contentById = contentById;
@@ -95,12 +95,12 @@ function findRoute(req, res) {
         let url = req.url.substr(3);
         if (!url)
             url = '/';
-        return map.content.find((ruta) => {
+        return map.contents.find((ruta) => {
             if (findRouteOk(ruta.languages[idiomas.lng], url))
                 return ruta;
         });
     }
-    return map.content.find((ruta) => {
+    return map.contents.find((ruta) => {
         if (findRouteOk(ruta, req.url))
             return ruta;
     });
@@ -114,6 +114,19 @@ function findRouteOk(ruta, url) {
         }
     }
     return false;
+}
+function idiomaNavegador(req) {
+    if (req.headers && req.headers['accept-language']) {
+        let accept = String(req.headers['accept-language']).replace(/q=\d+(\.\d+)?(,|\b)/g, '');
+        for (let lng of accept.split(';')) {
+            if (lng && lng.length >= 2) {
+                lng = lng.substr(0, 2).toLowerCase();
+                if (idiomas.actives[lng])
+                    return lng;
+            }
+        }
+    }
+    return idiomas.default;
 }
 function lng() { return idiomas.lng; }
 exports.lng = lng;
@@ -185,8 +198,8 @@ function optimizedLanguages() {
 function prepareRoutes() {
     const pathToRegexp = require('path-to-regexp');
     if (idiomas.idiomas) {
-        for (let i in map.content) {
-            let route = map.content[i];
+        for (let i in map.contents) {
+            let route = map.contents[i];
             for (let lng in idiomas.actives) {
                 if (route.languages[lng] && route.languages[lng].url) {
                     route.languages[lng].keys = [];
@@ -199,8 +212,8 @@ function prepareRoutes() {
         }
     }
     else {
-        for (let i in map.content) {
-            let route = map.content[i];
+        for (let i in map.contents) {
+            let route = map.contents[i];
             if (route.url) {
                 route.keys = [];
                 route.path = pathToRegexp(route.url, route.keys);
@@ -294,16 +307,16 @@ function setServer() {
 function validarIdioma(req, res) {
     // Si la url no trae idioma lo añade y lo redirige habria que analizar mejor este comportamiento
     if (!req.url) {
-        res.redirect('/' + idiomas.default);
+        res.redirect('/' + idiomaNavegador(req));
         return false;
     }
     if (!req.url.match(/^\/\w\w(\/|$)/)) {
-        res.redirect('/' + idiomas.default + req.url);
+        res.redirect('/' + idiomaNavegador(req) + req.url);
         return false;
     }
     idiomas.lng = req.url.substr(1, 2);
     if (!idiomas.actives[idiomas.lng]) {
-        res.redirect('/' + idiomas.default);
+        res.redirect('/' + idiomaNavegador(req));
         return false;
     }
     return true;

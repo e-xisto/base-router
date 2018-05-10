@@ -56,8 +56,6 @@ function itemsGroup(grupo, idioma) {
     return result;
 }
 class Grupos {
-    get grupos() { return grupos; }
-    ;
     constructor() {
         grupos = [];
     }
@@ -80,7 +78,7 @@ class Grupos {
         }
         return items;
     }
-}
+} // end Grupos
 let groups = new Grupos();
 exports.default = groups;
 ////////////////////////////////////////////////
