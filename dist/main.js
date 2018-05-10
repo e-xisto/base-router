@@ -305,7 +305,7 @@ function setRoute(req, res, ruta, url) {
     res.locals.__route = info;
     res.locals.__server = Object.assign({}, server);
     res.locals.__groups = groups_1.default;
-    res.locals.__t = idiomas.t[idiomas.lng];
+    res.locals.t = Object.assign({}, idiomas.t[idiomas.lng]);
 }
 function setServer() {
     server.name = app.__args.serverName;

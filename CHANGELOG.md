@@ -2,18 +2,23 @@
 
 ## [Unreleased]
 
+
+## [1.1.6] - 2018-05-10
+
+- 2018-05-10 Carga de idiomas en t @atrinidad
+
+## [1.1.5] - 2018-05-10
+
 - 2018-05-10 Abrir la etiqueta scripts para que admita cualquier cosa @cesaregarcia
 - 2018-05-10 El el mapa cambiar la sección content por contents @cesaregarcia
 - 2018-05-10 Identificar el idioma por defecto del navegador para aconsejarlo en caso de que no se indique ninguno @cesaregarcia
 - 2018-05-10 Carga de idiomas en __t @atrinidad
 - 2018-05-03 Actualizo documentación del componente
 
-
 ## [1.1.4] - 2018-04-26
 - Variable serverName añadida a __server, que concatena protocolo y nombre del servidor @atrinidad
 - La variable breadcrum ahora se llama breadcrumb @atrinidad
 - Enlaces sin patrones @atrinidad
-
 
 ## [1.1.3] - 2018-04-19
 - Eliminar dependencia de chalk
