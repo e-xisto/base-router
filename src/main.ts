@@ -223,7 +223,10 @@ let server: baseRouter.server = {};
 
 					let dictionary: string = `${path}${pathLanguages}${lng}.json`;
 					if (fs.existsSync(dictionary)) idiomas.t[lng] = require(dictionary);
-					else idiomas.t[lng] = {};
+					else {
+						console.log ("\n\x1b[31mNo se ha podido cargar el fichero de traducciones " + `${pathLanguages}${lng}.json`);
+						idiomas.t[lng] = {};
+					}
 				}
 			}
 			if (idiomas.default) {
