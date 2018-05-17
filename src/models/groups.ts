@@ -1,7 +1,7 @@
 
-import { GroupItem } from '../interfaces/group-item';
-import { GroupItemData } from '../interfaces/group-item-data';
-import { Groups } from '../interfaces/groups';
+import { GroupItem } from '../../typings/group-item';
+import { GroupItemData } from '../../typings/group-item-data';
+import { Groups } from '../../typings/groups';
 import { contentById, lng, urlToLink } from '../main';
 
 

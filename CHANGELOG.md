@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- 2018-05-17 Se mueven de interfaces a typings la definición de typos @cesaregarcia
 - 2018-05-10 Actualización de documentación del componente @juanmniguelguerrero
 
 

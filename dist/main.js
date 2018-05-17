@@ -289,11 +289,13 @@ function setRoute(req, res, ruta, url) {
         info.content = ruta.content;
         info.id = ruta.id;
         info.parent = ruta.parent || 0;
+        info.noIndex = ruta.noIndex || false;
         info.description = setDefaultProperty(ruta, 'description');
         info.router = Object.assign({}, ruta.router);
         info.breadcrumb = breadcrumb(ruta);
         alternate(ruta, info);
     }
+    console.log(info.noIndex);
     info.url = url;
     info.lng = idiomas.lng;
     info.meta = Object.assign({}, setDefault(map, 'meta'), setDefault(ruta, 'meta'));

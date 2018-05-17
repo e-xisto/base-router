@@ -1,5 +1,5 @@
 import * as express from 'express';
-import * as baseRouter from './interfaces/base-router';
+import * as baseRouter from '../typings/base-router';
 
 const fs    = require('fs');
 
@@ -332,12 +332,13 @@ let server: baseRouter.server = {};
 			info.content     = ruta.content;
 			info.id          = ruta.id;
 			info.parent      = ruta.parent || 0;
+            info.noIndex     = ruta.noIndex || false;
 			info.description = setDefaultProperty (ruta, 'description');
 			info.router      = {...ruta.router};
 			info.breadcrumb  = breadcrumb (ruta);
 			alternate (ruta, info);
 		}
-		info.url         = url;
+        info.url         = url;
 		info.lng         = idiomas.lng;
 		info.meta        = {...setDefault (map, 'meta'), ...setDefault (ruta, 'meta')}
 		info.og          = {...setDefault (map, 'og'), ...setDefault (ruta, 'og')};
