@@ -1,6 +1,9 @@
 # Changelog
 
-## [Unreleased]
+## [1.1.9] - 2018-06-07
+
+- 2018-06-07 Añadir un metodo sitemap, que devuelve el contenido del sitemap basado en el mapa @cesaregarcia
+- 2018-06-07 Añadir al contenido del mapa una propiedad sitemap con la información del sitemap @cesaregarcia
 
 ## [1.1.8] - 2018-05-10
 

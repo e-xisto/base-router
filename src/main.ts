@@ -16,15 +16,13 @@ let pathRoutes: string        = '';	// Path de las rutas por defecto _path/route
 let routesFile: string        = '';	// Fichero con la declaración de rutas por defecto routes.js
 let server: baseRouter.Server = {};
 
-console.log ('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
-
 	function alternate (ruta: any, info: baseRouter.Route) {
 
 		if (idiomas.idiomas) {
 			info.alternate = [];
 			info.link      = {};
 			for (let lng in idiomas.actives) {
-				if (ruta.languages [lng]) {
+				if (ruta.languages && ruta.languages [lng]) {
 					info.alternate.push ({lang: lng, href: `${ server.serverName }/${ lng }${ urlToLink(ruta.languages [lng].url) }`});
 					info.link [lng] = `/${ lng }${ urlToLink(ruta.languages [lng].url) }`;
 				}
@@ -58,12 +56,6 @@ console.log ('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
 			result.link        = urlToLink(content.url);
 		}
 		return result;
-	}
-
-
-	function urlToLink (url: string): string {
-
-		return url ? url.replace (/\/(\w+)?:(.*?)$/, '') : '';
 	}
 
 
@@ -278,6 +270,7 @@ console.log ('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
 		let url  = req.url;
 		let ruta = findRoute (req, res);
 
+		// OJO NO DEBERIAMOS RENDERIZAR TODO EL CONTENIDO
 		if (! ruta.id) {
 			if (res.headersSent) return
 			setRoute (req, res, ruta, url);
@@ -371,6 +364,44 @@ console.log ('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
 	}
 
 
+	function sitemap (): Array<baseRouter.SitemapItem> {
+
+		let sitemap = [];
+		for (let ruta of map.contents) {
+			if (ruta.noIndex) continue;
+			let url: any = {};
+			if (idiomas.idiomas) {
+				let locs = 0;
+				url.loc = {};
+				for (let lng in idiomas.actives) {
+					if (ruta.languages && ruta.languages [lng]) {
+						if (ruta.languages [lng].redirect) continue;
+						url.loc [lng] = `/${ lng }${ urlToLink(ruta.languages [lng].url) }`;
+						locs++;
+					}
+				}
+				if (! locs) continue;
+			} else {
+				if (ruta.redirect) continue;
+				url.loc = `/${ urlToLink (String (ruta.url)) }`;
+			}
+			if (ruta.sitemap) {
+				if (ruta.sitemap.changefreq) url.changefreq = ruta.sitemap.changefreq;
+				if (ruta.sitemap.lastmod) url.lastmod = ruta.sitemap.lastmod;
+				if (ruta.sitemap.priority) url.priority = ruta.sitemap.priority;
+			}
+			sitemap.push (url);
+		}
+		return sitemap;
+	}
+
+
+	function urlToLink (url: string): string {
+
+		return url ? url.replace (/\/(\w+)?:(.*?)$/, '') : '';
+	}
+
+
 	function validarIdioma (req: express.Request, res: express.Response) {
 
 		// Si la url no trae idioma lo añade y lo redirige habria que analizar mejor este comportamiento
@@ -402,10 +433,3 @@ console.log ('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
 	///////////////////////////////////
 
 
-	function sitemap () {
-
-		let r = [];
-		
-		r.push (1);
-		r.push (2);
-	}

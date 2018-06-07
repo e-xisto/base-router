@@ -11,6 +11,7 @@ export interface Content {
     languages?: any;
     noIndex: boolean
     path?: any;
+    redirect?: string;
     router?: Router;
     sitemap?: Sitemap
     url?: string;

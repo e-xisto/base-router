@@ -12,5 +12,7 @@ export { Route } from './route';
 export { Router } from './router';
 export { Scripts } from './scripts';
 export { Server } from './server';
+export { Sitemap } from './sitemap';
+export { SitemapItem } from './sitemap-item';
 export { Twitter } from './twitter';
 

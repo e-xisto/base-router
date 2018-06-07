@@ -74,3 +74,4 @@ Cada uno de nuestros menús se identifica como una clave dentro de este objeto (
 | __groups.menu.description | Texto | Texto que utilizaremos para representar la opción de menú en nuestra vista. Si el website es multilíngüe solo incluirá la información del idioma cargado. |
 | __groups.menu.link        | Texto | Incluye la URL que sirve de enlace para la opción de menú. Si el website es multilíngüe solo incluirá la información del idioma cargado. |
 | __groups.menu.items       | Array | Si exiten anidaciones dentro de una opción de menú se incluirán dentro de este array con el mismo esquema (descripción + link + items) |
+

@@ -159,6 +159,7 @@ Para cada entrada en `content` podremos definir las siguientes opciones:
 | [content.languages](#contentlanguages) | Objeto   | Destro de esta propiedad se define la configuración del contenido para los diferentes idiomas activos en la web. En el caso de definir una configuración por idiomas las propiedades description, meta y url anteriores quedarán definidas dentro de este objeto por idiomas. |
 | [contentrouter](#contentrouter)        | Objeto   | Asignación de la vista y enrutador a cargar en express. No necesaria si configuramos la opción [content.redirect](#contentredirect) |
 | [content.noIndex](#contentnoindex)     | Booleano | Opción de incluir el meta robots content="noindex"  para evitar que la URL sea indexada por los buscadores. Por defecto siempre está a `false` |
+| [content.sitemap](#contentnositemap)     | sitemap | Opciones del sitemap para la ruta |
 
 Un ejemplo de contenido básico:
 
@@ -740,6 +741,25 @@ El router `/editor ` se encargará de cargar el contenido mediante una llamada a
 
 Para la carga de contenido, el router tomará el `id` del contenido como valor clave.
 
+
+## content.sitemap
+
+Información para el sitemap de la ruta
+
+```yaml
+content:
+  - content: Presentación
+    id: 2
+    description: Presentación
+    url: /presentacion
+    router:
+      route: /presentacion
+      view: presentacion
+     sitemap: 
+         changefreq: daily
+         lastmod: 2018-01-01
+         priority: 1
+```
 
 
 ## groups

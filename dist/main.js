@@ -14,13 +14,12 @@ let pathLanguages = ''; // Path de los idiomas
 let pathRoutes = ''; // Path de las rutas por defecto _path/routes
 let routesFile = ''; // Fichero con la declaración de rutas por defecto routes.js
 let server = {};
-console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
 function alternate(ruta, info) {
     if (idiomas.idiomas) {
         info.alternate = [];
         info.link = {};
         for (let lng in idiomas.actives) {
-            if (ruta.languages[lng]) {
+            if (ruta.languages && ruta.languages[lng]) {
                 info.alternate.push({ lang: lng, href: `${server.serverName}/${lng}${urlToLink(ruta.languages[lng].url)}` });
                 info.link[lng] = `/${lng}${urlToLink(ruta.languages[lng].url)}`;
             }
@@ -48,10 +47,6 @@ function breadcrumbData(content) {
     }
     return result;
 }
-function urlToLink(url) {
-    return url ? url.replace(/\/(\w+)?:(.*?)$/, '') : '';
-}
-exports.urlToLink = urlToLink;
 function configure(options) {
     mapName = options.map || 'map.yaml';
     path = options.path || '';
@@ -243,6 +238,7 @@ function prepareRoutes() {
 function routes(req, res, next) {
     let url = req.url;
     let ruta = findRoute(req, res);
+    // OJO NO DEBERIAMOS RENDERIZAR TODO EL CONTENIDO
     if (!ruta.id) {
         if (res.headersSent)
             return;
@@ -322,6 +318,48 @@ function setServer() {
     server.protocol = app.__args.protocol;
     server.serverName = `${server.protocol}://${server.name}`;
 }
+function sitemap() {
+    let sitemap = [];
+    for (let ruta of map.contents) {
+        if (ruta.noIndex)
+            continue;
+        let url = {};
+        if (idiomas.idiomas) {
+            let locs = 0;
+            url.loc = {};
+            for (let lng in idiomas.actives) {
+                if (ruta.languages && ruta.languages[lng]) {
+                    if (ruta.languages[lng].redirect)
+                        continue;
+                    url.loc[lng] = `/${lng}${urlToLink(ruta.languages[lng].url)}`;
+                    locs++;
+                }
+            }
+            if (!locs)
+                continue;
+        }
+        else {
+            if (ruta.redirect)
+                continue;
+            url.loc = `/${urlToLink(String(ruta.url))}`;
+        }
+        if (ruta.sitemap) {
+            if (ruta.sitemap.changefreq)
+                url.changefreq = ruta.sitemap.changefreq;
+            if (ruta.sitemap.lastmod)
+                url.lastmod = ruta.sitemap.lastmod;
+            if (ruta.sitemap.priority)
+                url.priority = ruta.sitemap.priority;
+        }
+        sitemap.push(url);
+    }
+    return sitemap;
+}
+exports.sitemap = sitemap;
+function urlToLink(url) {
+    return url ? url.replace(/\/(\w+)?:(.*?)$/, '') : '';
+}
+exports.urlToLink = urlToLink;
 function validarIdioma(req, res) {
     // Si la url no trae idioma lo añade y lo redirige habria que analizar mejor este comportamiento
     if (!req.url) {
@@ -342,9 +380,3 @@ function validarIdioma(req, res) {
 ///////////////////////////////////
 ///////////////////////////////////
 ///////////////////////////////////
-function sitemap() {
-    let r = [];
-    r.push(1);
-    r.push(2);
-}
-exports.sitemap = sitemap;
