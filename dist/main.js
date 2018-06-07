@@ -14,6 +14,7 @@ let pathLanguages = ''; // Path de los idiomas
 let pathRoutes = ''; // Path de las rutas por defecto _path/routes
 let routesFile = ''; // Fichero con la declaración de rutas por defecto routes.js
 let server = {};
+console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
 function alternate(ruta, info) {
     if (idiomas.idiomas) {
         info.alternate = [];
@@ -341,3 +342,9 @@ function validarIdioma(req, res) {
 ///////////////////////////////////
 ///////////////////////////////////
 ///////////////////////////////////
+function sitemap() {
+    let r = [];
+    r.push(1);
+    r.push(2);
+}
+exports.sitemap = sitemap;

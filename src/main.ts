@@ -16,6 +16,7 @@ let pathRoutes: string        = '';	// Path de las rutas por defecto _path/route
 let routesFile: string        = '';	// Fichero con la declaración de rutas por defecto routes.js
 let server: baseRouter.Server = {};
 
+console.log ('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
 
 	function alternate (ruta: any, info: baseRouter.Route) {
 
@@ -393,9 +394,18 @@ let server: baseRouter.Server = {};
 		return true;
 	}
 
-	export { configure, contentById, lng, urlToLink };
+
+	export { configure, contentById, lng, urlToLink, sitemap };
 
 	///////////////////////////////////
 	///////////////////////////////////
 	///////////////////////////////////
 
+
+	function sitemap () {
+
+		let r = [];
+		
+		r.push (1);
+		r.push (2);
+	}
