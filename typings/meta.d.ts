@@ -1,5 +1,5 @@
 
-export interface meta {
+export interface Meta {
     canonical?: string;
     descripcion?: string;
     keywords?: string;

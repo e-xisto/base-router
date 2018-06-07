@@ -7,17 +7,17 @@ import groups from './models/groups';
 
 
 let app: any;
-let idiomas: baseRouter.idiomas = { idiomas: false, lng: '', default: '', actives: {}, t: {}};
-let map: any;
+let idiomas: baseRouter.Idiomas = { idiomas: false, lng: '', default: '', actives: {}, t: {}};
+let map: baseRouter.Map;
 let mapName: string           = ''; // Nombre del fichero del mapa de rutas, por defecto map.json
 let path: string              = '';	// Path de la aplicación
 let pathLanguages: string     = '';	// Path de los idiomas
 let pathRoutes: string        = '';	// Path de las rutas por defecto _path/routes
 let routesFile: string        = '';	// Fichero con la declaración de rutas por defecto routes.js
-let server: baseRouter.server = {};
+let server: baseRouter.Server = {};
 
 
-	function alternate (ruta: any, info: baseRouter.route) {
+	function alternate (ruta: any, info: baseRouter.Route) {
 
 		if (idiomas.idiomas) {
 			info.alternate = [];
@@ -108,23 +108,29 @@ let server: baseRouter.server = {};
 	}
 
 
-	function findRoute (req: express.Request, res: express.Response): any {
+	function findRoute (req: express.Request, res: express.Response): baseRouter.Content {
 
-		if (req.url == '/map-reload') return mapReload (res);
+		let ruta;
+		
+		if (req.url == '/map-reload') {
+			mapReload (res);
+			return <baseRouter.Content>{id: 0};
+		}
 
 		if (idiomas.idiomas) {
-			if (! validarIdioma (req, res)) return false;
+			if (! validarIdioma (req, res)) return <baseRouter.Content>{id: 0};
 			// Eliminamos el idioma de la URL
 			let url = req.url.substr (3);
 			if (! url) url = '/';
-			return map.contents.find ((ruta: any) => {
-					if (findRouteOk (ruta.languages [idiomas.lng], url)) return ruta;
-				});
-		}
+			ruta = map.contents.find ((ruta: any) => {
+							if (findRouteOk (ruta.languages [idiomas.lng], url)) return ruta;
+						});
 
-		return map.contents.find ((ruta: any) => {
-				if (findRouteOk (ruta, req.url)) return ruta;
-			});
+		} else 
+			ruta = map.contents.find ((ruta: any) => {
+							if (findRouteOk (ruta, req.url)) return ruta;
+						});
+		return ruta ? ruta : <baseRouter.Content>{id: 0};
 	}
 
 
@@ -241,7 +247,6 @@ let server: baseRouter.server = {};
 
 		const pathToRegexp = require ('path-to-regexp');
 
-
 		if (idiomas.idiomas) {
 			for (let i in map.contents) {
 				let route = map.contents [i];
@@ -272,7 +277,7 @@ let server: baseRouter.server = {};
 		let url  = req.url;
 		let ruta = findRoute (req, res);
 
-		if (! ruta) {
+		if (! ruta.id) {
 			if (res.headersSent) return
 			setRoute (req, res, ruta, url);
 			return next ('route');
@@ -329,7 +334,7 @@ let server: baseRouter.server = {};
 
 	function setRoute (req: express.Request, res: express.Response, ruta: any, url: string) {
 
-		let info: baseRouter.route = {};
+		let info: baseRouter.Route = {};
 
 		if (ruta) {
 			info.content     = ruta.content;
@@ -387,7 +392,6 @@ let server: baseRouter.server = {};
 
 		return true;
 	}
-
 
 	export { configure, contentById, lng, urlToLink };
 

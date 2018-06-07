@@ -1,5 +1,5 @@
 
-export interface og {
+export interface Og {
     admin?: string;
     app_id?: string;
     author?: string;

@@ -1,5 +1,5 @@
 
-export interface idiomas {
+export interface Idiomas {
     actives: {[key: string]: boolean};
     default: string;
     idiomas: boolean;

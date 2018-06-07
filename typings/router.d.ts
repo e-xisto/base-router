@@ -1,5 +1,5 @@
 
-export interface router {
+export interface Router {
     route?: string;
     view?: string;
 }

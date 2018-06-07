@@ -1,8 +1,8 @@
 
 import * as baseRouter from './base-router';
 
-export interface route {
-    alternate?: baseRouter.linkAlternate [];
+export interface Route {
+    alternate?: baseRouter.LinkAlternate [];
     breadcrumb?: any [];
     content?: string;
     description?: string;
@@ -10,13 +10,13 @@ export interface route {
     id?: number;
     link?: any;
     lng?: boolean | string;
-    meta?: baseRouter.meta;
+    meta?: baseRouter.Meta;
     noIndex?: boolean;
-    og?: baseRouter.og;
+    og?: baseRouter.Og;
     parent?:number;
-    router?: baseRouter.router;
-    scripts?: baseRouter.scripts;
-    twitter?: baseRouter.twitter;
+    router?: baseRouter.Router;
+    scripts?: baseRouter.Scripts;
+    twitter?: baseRouter.Twitter;
     url?: string;
     xDefault?: string;
 }

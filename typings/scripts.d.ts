@@ -1,4 +1,4 @@
 
-export interface scripts {
+export interface Scripts {
     [key: string]: string;
 }

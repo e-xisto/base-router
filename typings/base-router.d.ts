@@ -1,14 +1,16 @@
 
+export { Content } from './content';
 export { GroupItem } from './group-item';
 export { GroupItemData } from './group-item-data';
 export { Groups } from './groups';
-export { idiomas } from './idiomas';
-export { linkAlternate } from './link-alternate';
-export { meta } from './meta';
-export { og } from './og';
-export { route } from './route';
-export { router } from './router';
-export { scripts } from './scripts';
-export { server } from './server';
-export { twitter } from './twitter';
+export { Idiomas } from './idiomas';
+export { LinkAlternate } from './link-alternate';
+export { Map } from './map';
+export { Meta } from './meta';
+export { Og } from './og';
+export { Route } from './route';
+export { Router } from './router';
+export { Scripts } from './scripts';
+export { Server } from './server';
+export { Twitter } from './twitter';
 

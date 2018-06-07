@@ -1,5 +1,5 @@
 
-export interface twitter {
+export interface Twitter {
     card?: string;
     creator?: string;
     description?: string;

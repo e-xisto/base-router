@@ -89,29 +89,24 @@ function evalRuta(req, res, ruta, router) {
     req.url = url.join('/');
 }
 function findRoute(req, res) {
-    let ruta;
-    if (req.url == '/map-reload') {
-        mapReload(res);
-        return { id: 0 };
-    }
+    if (req.url == '/map-reload')
+        return mapReload(res);
     if (idiomas.idiomas) {
         if (!validarIdioma(req, res))
-            return { id: 0 };
+            return false;
         // Eliminamos el idioma de la URL
         let url = req.url.substr(3);
         if (!url)
             url = '/';
-        ruta = map.contents.find((ruta) => {
+        return map.contents.find((ruta) => {
             if (findRouteOk(ruta.languages[idiomas.lng], url))
                 return ruta;
         });
     }
-    else
-        ruta = map.contents.find((ruta) => {
-            if (findRouteOk(ruta, req.url))
-                return ruta;
-        });
-    return ruta ? ruta : { id: 0 };
+    return map.contents.find((ruta) => {
+        if (findRouteOk(ruta, req.url))
+            return ruta;
+    });
 }
 function findRouteOk(ruta, url) {
     if (ruta.path) {
@@ -242,7 +237,7 @@ function prepareRoutes() {
 function routes(req, res, next) {
     let url = req.url;
     let ruta = findRoute(req, res);
-    if (!ruta.id) {
+    if (!ruta) {
         if (res.headersSent)
             return;
         setRoute(req, res, ruta, url);
