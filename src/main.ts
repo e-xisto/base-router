@@ -4,18 +4,21 @@ import * as baseRouter from '../typings/base-router';
 const fs    = require('fs');
 
 import groups from './models/groups';
+import { StaticContent } from './models/staticContent';
 
 
-let app: any;
-let idiomas: baseRouter.Idiomas = { idiomas: false, lng: '', default: '', actives: {}, t: {}};
-let map: baseRouter.Map;
-let mapName: string           = ''; // Nombre del fichero del mapa de rutas, por defecto map.json
-let path: string              = '';	// Path de la aplicación
-let pathLanguages: string     = '';	// Path de los idiomas
-let pathRoutes: string        = '';	// Path de las rutas por defecto _path/routes
-let routesFile: string        = '';	// Fichero con la declaración de rutas por defecto routes.js
-let server: baseRouter.Server = {};
-let sinIdiomas: Array<baseRouter.Content> = [];
+	let app: any;
+	let idiomas: baseRouter.Idiomas = { idiomas: false, lng: '', default: '', actives: {}, t: {}};
+	let map: baseRouter.Map;
+	let mapName: string           = ''; // Nombre del fichero del mapa de rutas, por defecto map.json
+	let path: string              = '';	// Path de la aplicación
+	let pathLanguages: string     = '';	// Path de los idiomas
+	let pathRoutes: string        = '';	// Path de las rutas por defecto _path/routes
+	let routesFile: string        = '';	// Fichero con la declaración de rutas por defecto routes.js
+	let server: baseRouter.Server = {};
+	let sinIdiomas: Array<baseRouter.Content> = [];
+	let staticContents: Array<StaticContent> = [];
+
 
 	function alternate (ruta: any, info: baseRouter.Route) {
 
@@ -161,6 +164,20 @@ let sinIdiomas: Array<baseRouter.Content> = [];
 	}
 
 
+	function isStaticRoute (req: express.Request, res: express.Response, next: express.NextFunction) {
+
+		for (let content of staticContents) {
+			if (content.match (req.url)) {
+				res.locals.url = req.url;
+				req.url        = '/static-not-found';
+				next ();
+				return true;
+			}
+		}
+		return false;
+	}
+
+
 	function lng (): string { return idiomas.lng; }
 
 
@@ -185,6 +202,7 @@ let sinIdiomas: Array<baseRouter.Content> = [];
 		}
 
 		optimizedLanguages ();
+		prepareStaticContents ();
 		prepareRoutes ();
 	}
 
@@ -282,11 +300,24 @@ let sinIdiomas: Array<baseRouter.Content> = [];
 	}
 
 
+	function prepareStaticContents () {
+
+
+		for (let i in map.staticContents) {
+			let content = new StaticContent (map.staticContents [i]);
+			
+			staticContents.push (content);
+		}
+	}
+
+
 	function routes (req: express.Request, res: express.Response, next: express.NextFunction) {
 
 		let url  = req.url;
 		let ruta: baseRouter.Content | undefined;
-		
+
+		// Eliminamos el contenido estatico
+		if (isStaticRoute (req, res, next)) return;
 		// Puede haber rutas sin idiomas en mapa por idiomas
 		if (sinIdiomas.length && req.url)
 			ruta = map.contents.find ((ruta: any) => { if (findRouteOk (ruta, req.url)) return ruta; });
@@ -294,7 +325,6 @@ let sinIdiomas: Array<baseRouter.Content> = [];
 		if (ruta) ruta.sinIdioma = true;
 		else ruta = findRoute (req, res);
 
-		// OJO NO DEBERIAMOS RENDERIZAR TODO EL CONTENIDO
 		if (! ruta.id) {
 			if (res.headersSent) return
 			setRoute (req, res, ruta, url);
@@ -452,8 +482,10 @@ let sinIdiomas: Array<baseRouter.Content> = [];
 
 	export { configure, contentById, lng, urlToLink, sitemap };
 
+
 	///////////////////////////////////
 	///////////////////////////////////
 	///////////////////////////////////
+
 
 

@@ -19,6 +19,7 @@ La estructura de este archivo yaml es la siguiente:
 | [dnsPrefetch](#dnsprefetch) | Array  | Contiene las URLs para las cuales queremos que el navegador resuelva las DNS realizando un "prefetching" al comenzar a cargar nuestro website. |
 | [scripts](#scripts)         | Objeto | Reservado para definir los bloques de código para Google Analytics y Tag Manager. |
 | [meta](#meta)               | Objeto | Define de forma global y por defecto los metadatos incluidos en el `<head>` de nuestro website. Esto incluye title, description, keywords, etiquetas Open Graph para Facebook y las de Twitter Card. |
+| staticContent               | Objeto | Lista de contenido estático que no debe ser procesado por el enrutador. Se usa para rebajar la sobrecarga que pudiese tener el enrutador. Ejemplo tipico la carpeta de imagenes |
 
 
 
@@ -946,3 +947,24 @@ meta:
 ```
 
 
+
+## staticContent
+
+Lista de urls que no deben de ser procesadas por el enrutador.
+
+Por ejemplo:
+
+```yaml
+languages:
+	...
+content:
+	...
+groups:
+	...
+staticContent:
+  - /imagenes/(.*)
+  - /css/(.*)
+...
+```
+
+## 

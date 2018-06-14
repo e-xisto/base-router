@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require('fs');
 const groups_1 = __importDefault(require("./models/groups"));
+const staticContent_1 = require("./models/staticContent");
 let app;
 let idiomas = { idiomas: false, lng: '', default: '', actives: {}, t: {} };
 let map;
@@ -15,6 +16,7 @@ let pathRoutes = ''; // Path de las rutas por defecto _path/routes
 let routesFile = ''; // Fichero con la declaración de rutas por defecto routes.js
 let server = {};
 let sinIdiomas = [];
+let staticContents = [];
 function alternate(ruta, info) {
     if (idiomas.idiomas) {
         info.alternate = [];
@@ -139,6 +141,17 @@ function idiomaNavegador(req) {
     }
     return idiomas.default;
 }
+function isStaticRoute(req, res, next) {
+    for (let content of staticContents) {
+        if (content.match(req.url)) {
+            res.locals.url = req.url;
+            req.url = '/static-not-found';
+            next();
+            return true;
+        }
+    }
+    return false;
+}
 function lng() { return idiomas.lng; }
 exports.lng = lng;
 function loadMap() {
@@ -165,6 +178,7 @@ function loadMap() {
         process.exit();
     }
     optimizedLanguages();
+    prepareStaticContents();
     prepareRoutes();
 }
 function loadRoutes() {
@@ -251,9 +265,18 @@ function prepareRoutes() {
         }
     }
 }
+function prepareStaticContents() {
+    for (let i in map.staticContents) {
+        let content = new staticContent_1.StaticContent(map.staticContents[i]);
+        staticContents.push(content);
+    }
+}
 function routes(req, res, next) {
     let url = req.url;
     let ruta;
+    // Eliminamos el contenido estatico
+    if (isStaticRoute(req, res, next))
+        return;
     // Puede haber rutas sin idiomas en mapa por idiomas
     if (sinIdiomas.length && req.url)
         ruta = map.contents.find((ruta) => { if (findRouteOk(ruta, req.url))
@@ -262,7 +285,6 @@ function routes(req, res, next) {
         ruta.sinIdioma = true;
     else
         ruta = findRoute(req, res);
-    // OJO NO DEBERIAMOS RENDERIZAR TODO EL CONTENIDO
     if (!ruta.id) {
         if (res.headersSent)
             return;
