@@ -20,6 +20,7 @@
     },
     "homepage": "https://github.com/e-xisto/base-router#readme",
     "dependencies": {
+        "device": "^0.3.9",
         "path-to-regexp": "^2.2.0",
         "yamljs": "^0.3.0"
     },

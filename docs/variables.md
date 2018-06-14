@@ -4,11 +4,12 @@ Base-router expone de forma pública diferentes variables que contiene infomaci�
 
 Las variables expuestas son las siguiente:
 
-| Variable              | Tipo   | Descripción                                                  |
-| --------------------- | ------ | :----------------------------------------------------------- |
-| [__server](#__server) | Objeto | Contiene la información del servidor web: Puerto, nombre de dominio, protocolo y SeverName. |
-| [__route](#__route)   | Objeto | Incluye toda la información de la ruta que se está cargando. Si el website es multilíngue, la información contenida únicamente será la del idioma activo. |
-| [__groups](#__groups) | Objeto | Almacena todas las agrupaciones de contenido definidas en el mapa que nos facilitará representar diferentes menús de navegación. Ver configuración de `groups` en mapa ([link](#groups)) |
+| Variable              | Tipo    | Descripción                                                  |
+| --------------------- | ------- | :----------------------------------------------------------- |
+| [__server](#__server) | Objeto  | Contiene la información del servidor web: Puerto, nombre de dominio, protocolo y SeverName. |
+| [__route](#__route)   | Objeto  | Incluye toda la información de la ruta que se está cargando. Si el website es multilíngue, la información contenida únicamente será la del idioma activo. |
+| [__groups](#__groups) | Objeto  | Almacena todas las agrupaciones de contenido definidas en el mapa que nos facilitará representar diferentes menús de navegación. Ver configuración de `groups` en mapa ([link](#groups)) |
+| __device              | Objecto | Información del dispositivo                                  |
 
 A nivel de vista, en nuestra plantilla HTML, la carga de variables es directa ( `__route` ):
 
@@ -74,4 +75,18 @@ Cada uno de nuestros menús se identifica como una clave dentro de este objeto (
 | __groups.menu.description | Texto | Texto que utilizaremos para representar la opción de menú en nuestra vista. Si el website es multilíngüe solo incluirá la información del idioma cargado. |
 | __groups.menu.link        | Texto | Incluye la URL que sirve de enlace para la opción de menú. Si el website es multilíngüe solo incluirá la información del idioma cargado. |
 | __groups.menu.items       | Array | Si exiten anidaciones dentro de una opción de menú se incluirán dentro de este array con el mismo esquema (descripción + link + items) |
+
+## __device
+
+Esta variable incluye información del dispositivo.
+
+| Propiedad        | Tipo    | Descripción                                                  |
+| ---------------- | ------- | ------------------------------------------------------------ |
+| __device.bot     | boolean | Si es un robot.                                              |
+| __device.car     | boolean | Si es un coche                                               |
+| __device.desktop | boolean | Si es un ordenador                                           |
+| __device.phone   | boolean | Si es un teléfono                                            |
+| __device.tablet  | boolean | Si es una tablet                                             |
+| __device.tv      | boolean | Si es un televisor                                           |
+| __device.type    | string  | Tipo de dispositivos. Valores posibles: bot, car, desktop, phone, tablet, tv, type |
 

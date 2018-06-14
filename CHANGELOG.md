@@ -1,6 +1,10 @@
 # Changelog
 
 
+## [1.1.11] - 2018-06-14
+
+- 2018-06-14 Añadir propiedad __device a la ruta @cesaregarcia
+
 ## [1.1.10] - 2018-06-14
 
 - 2018-06-14 Añadir rutas estáticas al mapa para evitar sobrecarga del enrutador @cesaregarcia

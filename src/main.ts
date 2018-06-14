@@ -380,35 +380,6 @@ import { StaticContent } from './models/staticContent';
 	}
 
 
-	function setRoute (req: express.Request, res: express.Response, ruta: any, url: string) {
-
-		let info: baseRouter.Route = {};
-
-		if (ruta) {
-			info.content     = ruta.content;
-			info.id          = ruta.id;
-			info.parent      = ruta.parent || 0;
-            info.noIndex     = ruta.noIndex || false;
-			info.description = setDefaultProperty (ruta, 'description');
-			info.router      = {...ruta.router};
-			info.breadcrumb  = breadcrumb (ruta);
-			alternate (ruta, info);
-		}
-        info.url         = url;
-		info.lng         = idiomas.lng;
-		info.meta        = {...setDefault (map, 'meta'), ...setDefault (ruta, 'meta')}
-		info.og          = {...setDefault (map, 'og'), ...setDefault (ruta, 'og')};
-		info.twitter     = {...setDefault (map, 'twitter'), ...setDefault (ruta, 'twitter')};
-		setData (map, info, 'xDefault');
-		setData (map, info, 'dnsPrefetch');
-		setData (map, info, 'scripts');
-		res.locals.__route  = info;
-		res.locals.__server = {...server};
-		res.locals.__groups = groups;
-		res.locals.t        = {...idiomas.t[idiomas.lng]};
-	}
-
-
 	function setServer () {
 
 		server.name      = app.__args.serverName;
@@ -489,3 +460,32 @@ import { StaticContent } from './models/staticContent';
 
 
 
+	function setRoute (req: express.Request, res: express.Response, ruta: any, url: string) {
+
+		let info: baseRouter.Route = {};
+
+		if (ruta) {
+			info.content     = ruta.content;
+			info.id          = ruta.id;
+			info.parent      = ruta.parent || 0;
+            info.noIndex     = ruta.noIndex || false;
+			info.description = setDefaultProperty (ruta, 'description');
+			info.router      = {...ruta.router};
+			info.breadcrumb  = breadcrumb (ruta);
+			alternate (ruta, info);
+		}
+        info.url         = url;
+		info.lng         = idiomas.lng;
+		info.meta        = {...setDefault (map, 'meta'), ...setDefault (ruta, 'meta')}
+		info.og          = {...setDefault (map, 'og'), ...setDefault (ruta, 'og')};
+		info.twitter     = {...setDefault (map, 'twitter'), ...setDefault (ruta, 'twitter')};
+		setData (map, info, 'xDefault');
+		setData (map, info, 'dnsPrefetch');
+		setData (map, info, 'scripts');
+		res.locals.__route  = info;
+		res.locals.__server = {...server};
+		res.locals.__groups = groups;
+		res.locals.__device = new baseRouter.Device (String (req.get ('User-Agent')));
+		res.locals.t        = {...idiomas.t[idiomas.lng]};
+		
+	}
