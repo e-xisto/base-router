@@ -15,6 +15,7 @@ let pathLanguages: string     = '';	// Path de los idiomas
 let pathRoutes: string        = '';	// Path de las rutas por defecto _path/routes
 let routesFile: string        = '';	// Fichero con la declaración de rutas por defecto routes.js
 let server: baseRouter.Server = {};
+let sinIdiomas: Array<baseRouter.Content> = [];
 
 	function alternate (ruta: any, info: baseRouter.Route) {
 
@@ -116,7 +117,12 @@ let server: baseRouter.Server = {};
 			let url = req.url.substr (3);
 			if (! url) url = '/';
 			ruta = map.contents.find ((ruta: any) => {
-							if (findRouteOk (ruta.languages [idiomas.lng], url)) return ruta;
+							if (ruta.languages) {
+								if (ruta.languages [idiomas.lng] && findRouteOk (ruta.languages [idiomas.lng], url)) 
+									return ruta;
+							} else {
+								if (findRouteOk (ruta, req.url)) return ruta;
+							}
 						});
 
 		} else 
@@ -169,10 +175,10 @@ let server: baseRouter.Server = {};
 		} catch (e) {
 			if (e.code == 'MODULE_NOT_FOUND' || e.code == 'ENOENT') {
 				console.log ("\n\x1b[31mNo se ha encontrado el mapa de rutas");
-				console.log ("    \x1b[41m" + mapFile + "\x1b[0m\n");
+				console.log ("    \x1b[41m\x1b[37m" + mapFile + "\x1b[0m\n");
 			} else if (e.code == undefined) {
 				console.log ("\n\x1b[31mError en el mapa de rutas");
-				console.log ("    \x1b[41m" + mapFile + "\x1b[0m\n");
+				console.log ("    \x1b[41m\x1b[37m" + mapFile + "\x1b[0m\n");
 				console.log (e);
 			} else console.log (e);
 			process.exit ();
@@ -191,7 +197,7 @@ let server: baseRouter.Server = {};
 			require (rutasFile);
 		} catch (e) {
 			console.log ("\n\x1b[31mNo se ha podido cargar el fichero de rutas");
-			console.log ("    \x1b[41m" + rutasFile + "\x1b[0m\n");
+			console.log ("    \x1b[41m\x1b[37m" + rutasFile + "\x1b[0m\n");
 			console.log (e);
 			process.exit ();
 		}
@@ -236,6 +242,16 @@ let server: baseRouter.Server = {};
 	}
 
 
+	function prepareRoute (route: baseRouter.Content, pathToRegexp: any) {
+
+		if (route.url) {
+			route.keys       = [];
+			route.path       = pathToRegexp (route.url, route.keys);
+			route.keysLength = route.keys.length;
+		} else	console.log (`\n\x1b[32mRuta ${ route.content } sin url definida\x1b[0m\n`);
+	}
+
+
 	function prepareRoutes () {
 
 		const pathToRegexp = require ('path-to-regexp');
@@ -243,23 +259,24 @@ let server: baseRouter.Server = {};
 		if (idiomas.idiomas) {
 			for (let i in map.contents) {
 				let route = map.contents [i];
-				for (let lng in idiomas.actives) {
+				if (route.languages) {
+					for (let lng in idiomas.actives) {
 
-					if (route.languages [lng] && route.languages [lng].url) {
-						route.languages [lng].keys = [];
-						route.languages [lng].path = pathToRegexp (route.languages [lng].url, route.languages [lng].keys);
-						route.languages [lng].keysLength = route.languages [lng].keys.length;
-					} else	console.log (`\n\x1b[32mRuta ${ lng }/${ route.content } sin url definida\x1b[0m\n`);
+						if (route.languages [lng] && route.languages [lng].url) {
+							route.languages [lng].keys = [];
+							route.languages [lng].path = pathToRegexp (route.languages [lng].url, route.languages [lng].keys);
+							route.languages [lng].keysLength = route.languages [lng].keys.length;
+						} else	console.log (`\n\x1b[32mRuta ${ lng }/${ route.content } sin url definida\x1b[0m\n`);
+					}
+				} else {
+					prepareRoute (route, pathToRegexp);
+					sinIdiomas.push (route);
 				}
 			}
 		} else {
 			for (let i in map.contents) {
 				let route = map.contents [i];
-				if (route.url) {
-					route.keys       = [];
-					route.path       = pathToRegexp (route.url, route.keys);
-					route.keysLength = route.keys.length;
-				} else	console.log (`\n\x1b[32mRuta ${ route.content } sin url definida\x1b[0m\n`);
+				prepareRoute (route, pathToRegexp);
 			}
 		}
 	}
@@ -268,7 +285,14 @@ let server: baseRouter.Server = {};
 	function routes (req: express.Request, res: express.Response, next: express.NextFunction) {
 
 		let url  = req.url;
-		let ruta = findRoute (req, res);
+		let ruta: baseRouter.Content | undefined;
+		
+		// Puede haber rutas sin idiomas en mapa por idiomas
+		if (sinIdiomas.length && req.url)
+			ruta = map.contents.find ((ruta: any) => { if (findRouteOk (ruta, req.url)) return ruta; });
+
+		if (ruta) ruta.sinIdioma = true;
+		else ruta = findRoute (req, res);
 
 		// OJO NO DEBERIAMOS RENDERIZAR TODO EL CONTENIDO
 		if (! ruta.id) {
@@ -278,7 +302,7 @@ let server: baseRouter.Server = {};
 		}
 
 		if (ruta) {
-			if (idiomas.idiomas) evalRuta (req, res, ruta.languages [idiomas.lng], ruta.router);
+			if (idiomas.idiomas && ! ruta.sinIdioma) evalRuta (req, res, ruta.languages [idiomas.lng], ruta.router);
 			else evalRuta (req, res, ruta, ruta.router);
 		}
 		setRoute (req, res, ruta, url);
@@ -409,13 +433,13 @@ let server: baseRouter.Server = {};
 			res.redirect ('/' + idiomaNavegador (req));
 			return false;
 		}
-
+		
 		if (! req.url.match (/^\/\w\w(\/|$)/)) {
 			res.redirect ('/' + idiomaNavegador (req) + req.url);
 			return false;
 		}
 
-		idiomas.lng  = req.url.substr (1,2);
+		idiomas.lng = req.url.substr (1,2);
 
 		if (! idiomas.actives [idiomas.lng]) {
 			res.redirect ('/' + idiomaNavegador (req));

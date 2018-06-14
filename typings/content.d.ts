@@ -13,6 +13,7 @@ export interface Content {
     path?: any;
     redirect?: string;
     router?: Router;
+    sinIdioma?: boolean;
     sitemap?: Sitemap
     url?: string;
 }

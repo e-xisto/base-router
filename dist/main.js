@@ -14,6 +14,7 @@ let pathLanguages = ''; // Path de los idiomas
 let pathRoutes = ''; // Path de las rutas por defecto _path/routes
 let routesFile = ''; // Fichero con la declaración de rutas por defecto routes.js
 let server = {};
+let sinIdiomas = [];
 function alternate(ruta, info) {
     if (idiomas.idiomas) {
         info.alternate = [];
@@ -98,8 +99,14 @@ function findRoute(req, res) {
         if (!url)
             url = '/';
         ruta = map.contents.find((ruta) => {
-            if (findRouteOk(ruta.languages[idiomas.lng], url))
-                return ruta;
+            if (ruta.languages) {
+                if (ruta.languages[idiomas.lng] && findRouteOk(ruta.languages[idiomas.lng], url))
+                    return ruta;
+            }
+            else {
+                if (findRouteOk(ruta, req.url))
+                    return ruta;
+            }
         });
     }
     else
@@ -146,11 +153,11 @@ function loadMap() {
     catch (e) {
         if (e.code == 'MODULE_NOT_FOUND' || e.code == 'ENOENT') {
             console.log("\n\x1b[31mNo se ha encontrado el mapa de rutas");
-            console.log("    \x1b[41m" + mapFile + "\x1b[0m\n");
+            console.log("    \x1b[41m\x1b[37m" + mapFile + "\x1b[0m\n");
         }
         else if (e.code == undefined) {
             console.log("\n\x1b[31mError en el mapa de rutas");
-            console.log("    \x1b[41m" + mapFile + "\x1b[0m\n");
+            console.log("    \x1b[41m\x1b[37m" + mapFile + "\x1b[0m\n");
             console.log(e);
         }
         else
@@ -167,7 +174,7 @@ function loadRoutes() {
     }
     catch (e) {
         console.log("\n\x1b[31mNo se ha podido cargar el fichero de rutas");
-        console.log("    \x1b[41m" + rutasFile + "\x1b[0m\n");
+        console.log("    \x1b[41m\x1b[37m" + rutasFile + "\x1b[0m\n");
         console.log(e);
         process.exit();
     }
@@ -206,38 +213,55 @@ function optimizedLanguages() {
         }
     }
 }
+function prepareRoute(route, pathToRegexp) {
+    if (route.url) {
+        route.keys = [];
+        route.path = pathToRegexp(route.url, route.keys);
+        route.keysLength = route.keys.length;
+    }
+    else
+        console.log(`\n\x1b[32mRuta ${route.content} sin url definida\x1b[0m\n`);
+}
 function prepareRoutes() {
     const pathToRegexp = require('path-to-regexp');
     if (idiomas.idiomas) {
         for (let i in map.contents) {
             let route = map.contents[i];
-            for (let lng in idiomas.actives) {
-                if (route.languages[lng] && route.languages[lng].url) {
-                    route.languages[lng].keys = [];
-                    route.languages[lng].path = pathToRegexp(route.languages[lng].url, route.languages[lng].keys);
-                    route.languages[lng].keysLength = route.languages[lng].keys.length;
+            if (route.languages) {
+                for (let lng in idiomas.actives) {
+                    if (route.languages[lng] && route.languages[lng].url) {
+                        route.languages[lng].keys = [];
+                        route.languages[lng].path = pathToRegexp(route.languages[lng].url, route.languages[lng].keys);
+                        route.languages[lng].keysLength = route.languages[lng].keys.length;
+                    }
+                    else
+                        console.log(`\n\x1b[32mRuta ${lng}/${route.content} sin url definida\x1b[0m\n`);
                 }
-                else
-                    console.log(`\n\x1b[32mRuta ${lng}/${route.content} sin url definida\x1b[0m\n`);
+            }
+            else {
+                prepareRoute(route, pathToRegexp);
+                sinIdiomas.push(route);
             }
         }
     }
     else {
         for (let i in map.contents) {
             let route = map.contents[i];
-            if (route.url) {
-                route.keys = [];
-                route.path = pathToRegexp(route.url, route.keys);
-                route.keysLength = route.keys.length;
-            }
-            else
-                console.log(`\n\x1b[32mRuta ${route.content} sin url definida\x1b[0m\n`);
+            prepareRoute(route, pathToRegexp);
         }
     }
 }
 function routes(req, res, next) {
     let url = req.url;
-    let ruta = findRoute(req, res);
+    let ruta;
+    // Puede haber rutas sin idiomas en mapa por idiomas
+    if (sinIdiomas.length && req.url)
+        ruta = map.contents.find((ruta) => { if (findRouteOk(ruta, req.url))
+            return ruta; });
+    if (ruta)
+        ruta.sinIdioma = true;
+    else
+        ruta = findRoute(req, res);
     // OJO NO DEBERIAMOS RENDERIZAR TODO EL CONTENIDO
     if (!ruta.id) {
         if (res.headersSent)
@@ -246,7 +270,7 @@ function routes(req, res, next) {
         return next('route');
     }
     if (ruta) {
-        if (idiomas.idiomas)
+        if (idiomas.idiomas && !ruta.sinIdioma)
             evalRuta(req, res, ruta.languages[idiomas.lng], ruta.router);
         else
             evalRuta(req, res, ruta, ruta.router);

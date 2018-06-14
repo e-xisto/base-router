@@ -145,11 +145,11 @@ function loadMap() {
     catch (e) {
         if (e.code == 'MODULE_NOT_FOUND' || e.code == 'ENOENT') {
             console.log("\n\x1b[31mNo se ha encontrado el mapa de rutas");
-            console.log("    \x1b[41m" + mapFile + "\x1b[0m\n");
+            console.log("    \x1b[41m\x1b[37m" + mapFile + "\x1b[0m\n");
         }
         else if (e.code == undefined) {
             console.log("\n\x1b[31mError en el mapa de rutas");
-            console.log("    \x1b[41m" + mapFile + "\x1b[0m\n");
+            console.log("    \x1b[41m\x1b[37m" + mapFile + "\x1b[0m\n");
             console.log(e);
         }
         else
@@ -165,8 +165,8 @@ function loadRoutes() {
         require(rutasFile);
     }
     catch (e) {
-        console.log("\n\x1b[31mNo se ha podido cargar el fichero de rutas");
-        console.log("    \x1b[41m" + rutasFile + "\x1b[0m\n");
+        console.log("\n\x1b[31mNodd se ha podido cargar el fichero de rutas");
+        console.log("    \x1b[41m\x1b[37m" + rutasFile + "\x1b[0m\n");
         console.log(e);
         process.exit();
     }

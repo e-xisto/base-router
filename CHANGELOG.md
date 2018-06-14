@@ -1,5 +1,9 @@
 # Changelog
 
+- 2018-06-14 Poder definir una url sin idioma en un mapa por idiomas @cesaregarcia
+- 2018-06-14 Errores con fondo rojo poner texto blanco @cesaregarcia
+
+
 ## [1.1.9] - 2018-06-07
 
 - 2018-06-07 Añadir un metodo sitemap, que devuelve el contenido del sitemap basado en el mapa @cesaregarcia
