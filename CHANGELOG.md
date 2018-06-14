@@ -1,6 +1,10 @@
 # Changelog
 
 
+## [1.1.12] - 2018-06-14
+
+- 2018-06-14 Error publicación versión anterior @cesaregarcia
+
 ## [1.1.11] - 2018-06-14
 
 - 2018-06-14 Añadir propiedad __device a la ruta @cesaregarcia

@@ -13,7 +13,10 @@ export class Device {
 	public get type (): string { return this.getType (); };
 
 
-	public constructor (private userAgent: string) { }
+	public constructor (private userAgent: string) { 
+	
+		console.log (userAgent);
+	}
 
 
 	private isType (type: string): boolean {
@@ -25,7 +28,7 @@ export class Device {
 	private getType (): string {
 	
 		if (! this.device) this.device = require('device')(this.userAgent);
-		return this.type;
+		return this.device.type;
 	}
 
 

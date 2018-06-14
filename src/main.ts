@@ -5,6 +5,7 @@ const fs    = require('fs');
 
 import groups from './models/groups';
 import { StaticContent } from './models/staticContent';
+import { Device } from './models/device';
 
 
 	let app: any;
@@ -311,35 +312,6 @@ import { StaticContent } from './models/staticContent';
 	}
 
 
-	function routes (req: express.Request, res: express.Response, next: express.NextFunction) {
-
-		let url  = req.url;
-		let ruta: baseRouter.Content | undefined;
-
-		// Eliminamos el contenido estatico
-		if (isStaticRoute (req, res, next)) return;
-		// Puede haber rutas sin idiomas en mapa por idiomas
-		if (sinIdiomas.length && req.url)
-			ruta = map.contents.find ((ruta: any) => { if (findRouteOk (ruta, req.url)) return ruta; });
-
-		if (ruta) ruta.sinIdioma = true;
-		else ruta = findRoute (req, res);
-
-		if (! ruta.id) {
-			if (res.headersSent) return
-			setRoute (req, res, ruta, url);
-			return next ('route');
-		}
-
-		if (ruta) {
-			if (idiomas.idiomas && ! ruta.sinIdioma) evalRuta (req, res, ruta.languages [idiomas.lng], ruta.router);
-			else evalRuta (req, res, ruta, ruta.router);
-		}
-		setRoute (req, res, ruta, url);
-		next ('route');
-	}
-
-
 	function setData (parent: any, info: any, property: string): void {
 
 		if (parent [property] !== undefined) info [property] = parent [property];
@@ -460,6 +432,35 @@ import { StaticContent } from './models/staticContent';
 
 
 
+	function routes (req: express.Request, res: express.Response, next: express.NextFunction) {
+
+		let url  = req.url;
+		let ruta: baseRouter.Content | undefined;
+
+		// Eliminamos el contenido estatico
+		if (isStaticRoute (req, res, next)) return;
+		// Puede haber rutas sin idiomas en mapa por idiomas
+		if (sinIdiomas.length && req.url)
+			ruta = map.contents.find ((ruta: any) => { if (findRouteOk (ruta, req.url)) return ruta; });
+
+		if (ruta) ruta.sinIdioma = true;
+		else ruta = findRoute (req, res);
+
+		if (! ruta.id) {
+			if (res.headersSent) return
+			setRoute (req, res, ruta, url);
+			return next ('route');
+		}
+
+		if (ruta) {
+			if (idiomas.idiomas && ! ruta.sinIdioma) evalRuta (req, res, ruta.languages [idiomas.lng], ruta.router);
+			else evalRuta (req, res, ruta, ruta.router);
+		}
+		setRoute (req, res, ruta, url);
+		next ('route');
+	}
+
+
 	function setRoute (req: express.Request, res: express.Response, ruta: any, url: string) {
 
 		let info: baseRouter.Route = {};
@@ -485,7 +486,7 @@ import { StaticContent } from './models/staticContent';
 		res.locals.__route  = info;
 		res.locals.__server = {...server};
 		res.locals.__groups = groups;
-		res.locals.__device = new baseRouter.Device (String (req.get ('User-Agent')));
+		res.locals.__device = new Device (String (req.get ('User-Agent')));
 		res.locals.t        = {...idiomas.t[idiomas.lng]};
 		
 	}

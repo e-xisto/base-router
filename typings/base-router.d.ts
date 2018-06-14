@@ -1,6 +1,5 @@
 
 export { Content } from './content';
-export { Device } from '../src/models/device';
 export { GroupItem } from './group-item';
 export { GroupItemData } from './group-item-data';
 export { Groups } from './groups';
