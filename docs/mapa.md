@@ -19,7 +19,7 @@ La estructura de este archivo yaml es la siguiente:
 | [dnsPrefetch](#dnsprefetch)     | Array  | Contiene las URLs para las cuales queremos que el navegador resuelva las DNS realizando un "prefetching" al comenzar a cargar nuestro website. |
 | [scripts](#scripts)             | Objeto | Reservado para definir los bloques de código para Google Analytics y Tag Manager. |
 | [meta](#meta)                   | Objeto | Define de forma global y por defecto los metadatos incluidos en el `<head>` de nuestro website. Esto incluye title, description, keywords, etiquetas Open Graph para Facebook y las de Twitter Card. |
-| [staticContent](#staticContent) | Array  | Lista de contenido estático que no debe ser procesado por el enrutador. Se usa para reducir la carga de trabajo del enrutador y evitar tener que procesar peticiones que no vinculadas con las rutas definidas en el mapa. |
+| [staticContent](#staticcontent) | Array  | Lista de contenido estático que no debe ser procesado por el enrutador. Se usa para reducir la carga de trabajo del enrutador y evitar tener que procesar peticiones que no vinculadas con las rutas definidas en el mapa. |
 
 
 
@@ -147,16 +147,16 @@ Dentro de la propiedad `contents` añadiremos toda la información de las rutas 
 
 Es muy importante no olvidar asignar un identificador `id` único a cada uno de los contenidos que nos ayude a identificarlos. Este identificador nos servirá fundamentalmente para crear los grupos de menús y cargar contenido específico de una vista o ruta determinada desde el enrutador.
 
-Para cada entrada en `contents` podremos definir un objeto con las siguientes opciones:
+Para cada entrada del array `contents` podremos definir un objeto con las siguientes opciones:
 
 | Propiedad                              | Tipo     | Descripción                                                  |
 | -------------------------------------- | -------- | ------------------------------------------------------------ |
 | content                       | Texto    | Descripción del contenido. Solo de utiliza internamente en el componente para identificar el contenido dentro del mapa. |
 | content.id                             | Entero   | Identificador numérico único del contenido.                  |
 | content.description                    | Texto    | Texto descripción del contenido. Esta descripción será la que utilizaremos para mostrar en menús y será compartida con el motor de plantillas. Solo necesaria si no se definen múltiples idiomas. |
-| content.url                            | Texto    | Punto de entrada o URL absoluta de la ruta que nos llevará al contenido. No incluye el nombre de dominio ni el protocolo. Si el mapa es por idiomas y no se definen las url por idioma, se puede usar para servir esa url sin idiomas (Ejemplo clásico del /sitemap.xml). |
+| content.url                            | Texto    | Punto de entrada o URL absoluta de la ruta que cargará nuestro contenido. No incluye el nombre de dominio ni el protocolo. Opcionalmente, en mapas multilingües, podemos definir esta como única URL común a todos los idiomas (Ejemplo /sitemap.xml). |
 | [content.parent](#contentparent)       | Número   | Esta propiedad indica si este contenido depende de un contenido padre. Nos permite dibujar la miga de pan (breadcrumb) de nuestra ruta en la vista. |
-| content.meta                           | Objeto   | Define de forma específica para este contenido los metadatos incluidos en el `<head>` de nuestro website. Esta información sobreescribe a la información por defecto especificada en la propiedad meta del idioma dentro de la opción languages. Solo necesaria si no se definen múltiples idiomas. |
+| content.meta                           | Objeto   | Define de forma específica para este contenido los metadatos incluidos en el `<head>` de nuestro website. Esta información sobreescribe a la información por defecto especificada en la propiedad meta del idioma dentro de la opción `languages`. Solo necesaria si no se definen múltiples idiomas. |
 | [content.languages](#contentlanguages) | Objeto   | Destro de esta propiedad se define la configuración del contenido para los diferentes idiomas activos en la web. En el caso de definir una configuración por idiomas las propiedades description, meta y url anteriores quedarán definidas dentro de este objeto por idiomas. |
 | [content.router](#content.router)      | Objeto   | Asignación de la vista y enrutador a cargar en express. No necesaria si configuramos la opción [content.redirect](#contentredirect) |
 | [content.noIndex](#contentnoindex)     | Booleano | Opción de incluir el meta robots content="noindex"  para evitar que la URL sea indexada por los buscadores. Por defecto siempre está a `false` |
@@ -604,7 +604,7 @@ El anidamiento puede ser múltiple:
 ...
 ```
 
-En esta caso nuestro mapa quedaría así:
+En este caso nuestro mapa quedaría así:
 
 ```yaml
 contents:
@@ -743,9 +743,18 @@ El router `/editor ` se encargará de cargar el contenido mediante una llamada a
 Para la carga de contenido, el router tomará el `id` del contenido como valor clave.
 
 
-## content.sitemap
 
-Información para el sitemap de la ruta
+### content.sitemap
+
+Permite configurar información necesaria para generar el `sitemap.xml` de nuestra web.
+
+| Propiedad                  | Tipo   | Descripción                                                  |
+| -------------------------- | ------ | ------------------------------------------------------------ |
+| content.sitemap.changefreq | Texto  | Frecuencia con la que puede cambiar esta página. Este valor proporciona información general a los motores de búsqueda y es posible que no se corresponda exactamente con la frecuencia de rastreo de la página. Valores aceptados: `always`, `hourly`, `daily`, `weekly`, `monthly`,  `yearly` y  `never`. |
+| content.sitemap.lastmod    | Fecha  | Fecha de la última modificación del archivo. Esta fecha debe encontrarse en formato [Fecha y hora de W3C](http://www.w3.org/TR/NOTE-datetime). Este formato le permite omitir la parte referente a la hora, si así lo desea, y utilizar AAAA-MM-DD. |
+| content.sitemap.priority   | Número | La prioridad de esta dirección URL es relativa con respecto a las demás URL de su sitio. Los valores válidos abarcan desde 0.0 a 1.0. Este valor no afecta a la comparación de sus páginas con respecto a las de otros sitios; únicamente permite informar a los motores de búsqueda de las páginas que considera más importantes para los rastreadores. Lo recomendable es reservar el valor 1 para la home, 0.8 para categorías principales, 0.6 para subcategorías y 0.5 para productos o secciones destacadas. Ver [Formato XML de Sitemaps](https://www.sitemaps.org/es/protocol.html). |
+
+Ejemplo:
 
 ```yaml
 contents:
@@ -756,11 +765,14 @@ contents:
     router:
       route: /presentacion
       view: presentacion
-     sitemap: 
-         changefreq: daily
-         lastmod: 2018-01-01
-         priority: 1
+    sitemap: 
+      changefreq: daily
+      lastmod: 2018-01-01
+      priority: 1
 ```
+
+
+
 
 
 ## groups
@@ -828,7 +840,7 @@ Si configuramos nuestro xDefault para que cargue el idioma español por defecto:
 ```yaml
 languages:
 	...
-content:
+contents:
 	...
 groups:
 	...
@@ -861,7 +873,7 @@ Por ejemplo:
 ```yaml
 languages:
 	...
-content:
+contents:
 	...
 groups:
 	...
