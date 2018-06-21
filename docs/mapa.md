@@ -10,16 +10,16 @@ Si la ruta no está definida en nuestro mapa express no recibirá instrucciones 
 
 La estructura de este archivo yaml es la siguiente:
 
-| Propiedad                   | Tipo   | Descripción                                                  |
-| --------------------------- | ------ | ------------------------------------------------------------ |
-| [languages](#languages)     | Objeto | Define los idiomas con los que podremos navegar en nuestro website. Cada idioma se añadirá al objeto como una nueva propiedad que contendrá la configuración por defecto del idioma. Tomaremos la norma [ISO 639-1](https://es.wikipedia.org/wiki/ISO_639-1) para nombrar los idiomas. |
-| [content](#content)         | Array  | Los elementos de este array contienen la información de todas las rutas URL que forman el contenido de nuestro website. Para cada una de las rutas, además de la URL y sus metadatos de descripción por idioma, asignaremos la configuración del enrutador y la vista que deseamos cargar. Es muy importante no olvidar asignar un identificador `id` único a cada uno de los contenidos que nos ayude a identificarlos. |
-| [groups](#groups)           | Objeto | Nos permite organizar el contenido de nuestro website en diferentes grupos que podremos utilizar en nuestra vista como menús de navegación. |
-| [xDefault](#xdefault)       | Texto  | Define el atributo "hreflang" con valor "x-default" lo que nos permitirá auto-redireccionar al idioma que elijamos por defecto. |
-| [dnsPrefetch](#dnsprefetch) | Array  | Contiene las URLs para las cuales queremos que el navegador resuelva las DNS realizando un "prefetching" al comenzar a cargar nuestro website. |
-| [scripts](#scripts)         | Objeto | Reservado para definir los bloques de código para Google Analytics y Tag Manager. |
-| [meta](#meta)               | Objeto | Define de forma global y por defecto los metadatos incluidos en el `<head>` de nuestro website. Esto incluye title, description, keywords, etiquetas Open Graph para Facebook y las de Twitter Card. |
-| staticContent               | Objeto | Lista de contenido estático que no debe ser procesado por el enrutador. Se usa para rebajar la sobrecarga que pudiese tener el enrutador. Ejemplo tipico la carpeta de imagenes |
+| Propiedad                       | Tipo   | Descripción                                                  |
+| ------------------------------- | ------ | ------------------------------------------------------------ |
+| [languages](#languages)         | Objeto | Define los idiomas con los que podremos navegar en nuestro website. Cada idioma se añadirá al objeto como una nueva propiedad que contendrá la configuración por defecto del idioma. Tomaremos la norma [ISO 639-1](https://es.wikipedia.org/wiki/ISO_639-1) para nombrar los idiomas. |
+| [contents](#contents)           | Array  | Los elementos de este array contienen la información de todas las rutas URL que forman el contenido de nuestro website. Para cada una de las rutas, además de la URL y sus metadatos de descripción por idioma, asignaremos la configuración del enrutador y la vista que deseamos cargar. Es muy importante no olvidar asignar un identificador `id` único a cada uno de los contenidos que nos ayude a identificarlos. |
+| [groups](#groups)               | Objeto | Nos permite organizar el contenido de nuestro website en diferentes grupos que podremos utilizar en nuestra vista como menús de navegación. |
+| [xDefault](#xdefault)           | Texto  | Define el atributo "hreflang" con valor "x-default" lo que nos permitirá auto-redireccionar al idioma que elijamos por defecto. |
+| [dnsPrefetch](#dnsprefetch)     | Array  | Contiene las URLs para las cuales queremos que el navegador resuelva las DNS realizando un "prefetching" al comenzar a cargar nuestro website. |
+| [scripts](#scripts)             | Objeto | Reservado para definir los bloques de código para Google Analytics y Tag Manager. |
+| [meta](#meta)                   | Objeto | Define de forma global y por defecto los metadatos incluidos en el `<head>` de nuestro website. Esto incluye title, description, keywords, etiquetas Open Graph para Facebook y las de Twitter Card. |
+| [staticContent](#staticContent) | Array  | Lista de contenido estático que no debe ser procesado por el enrutador. Se usa para reducir la carga de trabajo del enrutador y evitar tener que procesar peticiones que no vinculadas con las rutas definidas en el mapa. |
 
 
 
@@ -141,31 +141,31 @@ Para más información consultar los siguientes enlaces
 
 
 
-## content
+## contents
 
-Dentro de la propiedad `content` añadiremos toda la información de las rutas URL que forman el contenido de nuestro website y la información sobre la vista y el enrutador que debe cargar express para cada petición.
+Dentro de la propiedad `contents` añadiremos toda la información de las rutas URL que forman el contenido de nuestro website y la información sobre la vista y el enrutador que debe cargar express para cada petición.
 
 Es muy importante no olvidar asignar un identificador `id` único a cada uno de los contenidos que nos ayude a identificarlos. Este identificador nos servirá fundamentalmente para crear los grupos de menús y cargar contenido específico de una vista o ruta determinada desde el enrutador.
 
-Para cada entrada en `content` podremos definir las siguientes opciones:
+Para cada entrada en `contents` podremos definir un objeto con las siguientes opciones:
 
 | Propiedad                              | Tipo     | Descripción                                                  |
 | -------------------------------------- | -------- | ------------------------------------------------------------ |
-| content.content                        | Texto    | Descripción del contenido. Solo de utiliza internamente en el componente para identificar el contenido dentro del mapa. |
+| content                       | Texto    | Descripción del contenido. Solo de utiliza internamente en el componente para identificar el contenido dentro del mapa. |
 | content.id                             | Entero   | Identificador numérico único del contenido.                  |
 | content.description                    | Texto    | Texto descripción del contenido. Esta descripción será la que utilizaremos para mostrar en menús y será compartida con el motor de plantillas. Solo necesaria si no se definen múltiples idiomas. |
 | content.url                            | Texto    | Punto de entrada o URL absoluta de la ruta que nos llevará al contenido. No incluye el nombre de dominio ni el protocolo. Si el mapa es por idiomas y no se definen las url por idioma, se puede usar para servir esa url sin idiomas (Ejemplo clásico del /sitemap.xml). |
 | [content.parent](#contentparent)       | Número   | Esta propiedad indica si este contenido depende de un contenido padre. Nos permite dibujar la miga de pan (breadcrumb) de nuestra ruta en la vista. |
 | content.meta                           | Objeto   | Define de forma específica para este contenido los metadatos incluidos en el `<head>` de nuestro website. Esta información sobreescribe a la información por defecto especificada en la propiedad meta del idioma dentro de la opción languages. Solo necesaria si no se definen múltiples idiomas. |
 | [content.languages](#contentlanguages) | Objeto   | Destro de esta propiedad se define la configuración del contenido para los diferentes idiomas activos en la web. En el caso de definir una configuración por idiomas las propiedades description, meta y url anteriores quedarán definidas dentro de este objeto por idiomas. |
-| [contentrouter](#contentrouter)        | Objeto   | Asignación de la vista y enrutador a cargar en express. No necesaria si configuramos la opción [content.redirect](#contentredirect) |
+| [content.router](#content.router)      | Objeto   | Asignación de la vista y enrutador a cargar en express. No necesaria si configuramos la opción [content.redirect](#contentredirect) |
 | [content.noIndex](#contentnoindex)     | Booleano | Opción de incluir el meta robots content="noindex"  para evitar que la URL sea indexada por los buscadores. Por defecto siempre está a `false` |
 | [content.sitemap](#contentnositemap)     | sitemap | Opciones del sitemap para la ruta |
 
 Un ejemplo de contenido básico:
 
 ```yaml
-content:
+contents:
   - content: Inicio
   	id: 1
   	description: Inicio
@@ -187,7 +187,7 @@ En el ejemplo hemos definido 2 contenidos: Inicio y presentación. A cada uno de
 Si queremos añadir información adicional sobre metadatos para cada contenido, añadiríamos lo siguiente:
 
 ```yaml
-content:
+contents:
   - content: Inicio
   	id: 1
   	description: Inicio
@@ -219,7 +219,7 @@ content:
 En el caso de gestionar el contenido por idiomas debemos incluir la información por idiomas definiendo las propiedades `description`, `url` y `meta` dentro de cada idioma:
 
 ```yaml
-content:
+contents:
   - content: Inicio
   	id: 1
     languages:
@@ -269,7 +269,7 @@ content:
 Podemos añadir opcionalmente una URL canónica a cada ruta:
 
 ```yaml
-content:
+contents:
   - content: Aviso Legal
     id: 200
     description: Aviso Legal
@@ -293,7 +293,7 @@ La URL canonical debe ser completa, incluyendo nombre de dominio y protocolo.
 En el caso de una web multilingüe gestionaremos la canonical por idiomas:
 
 ```yaml
-content:
+contents:
   - content: Aviso Legal
   	id: 200
     languages:
@@ -327,7 +327,7 @@ En muchas ocasiones necesitamos crear una URL que no carga directamente ningún 
 Para poder hacer esto en nuestro contenido podemos añadir la propiedad `redirect`:
 
 ```yaml
-content:
+contents:
   - content: Presentación
     id: 2
     description: Presentación
@@ -351,7 +351,7 @@ Cuando definimos la propiedad `redirect` la información de `router` no se tiene
 El mismo ejemplo por idiomas:
 
 ```yaml
-content:
+contents:
   - content: Presentación
     id: 2
     languages:
@@ -378,7 +378,7 @@ En ocasiones nos interesa realizar una redirección pero devolver un código de 
 Por ejemplo:
 
 ```yaml
-content:
+contents:
   - content: Presentación
     id: 2
     description: Presentación
@@ -402,7 +402,7 @@ Si definimos la propiedad `noIndex` para una ruta estaremos informando de que no
 Un ejemplo:
 
 ```yaml
-content:
+contents:
   - content: Aviso Legal
     id: 200
     description: Aviso Legal
@@ -420,7 +420,7 @@ content:
 Si nuestro website es multilingüe:
 
 ```yaml
-content:
+contents:
   - content: Presentación
     id: 2
     languages:
@@ -450,7 +450,7 @@ Esta propiedad es del contenido y no se define por idiomas.
 Del mismo modo que podemos definir de forma global los metas para nuestro website, también podemos definir los meta para cada una de nuestras rutas.
 
 ```yaml
-content:
+contents:
   - content: Inicio
   	id: 1
   	description: Inicio
@@ -482,7 +482,7 @@ content:
 Y por idiomas:
 
 ```yaml
-content:
+contents:
   - content: Inicio
   	id: 1
     languages:
@@ -557,7 +557,7 @@ Básicamente, lo que nos pemite resolver esta propiedad en la gerarquía que tie
 El contenido anterior podría tener una representación parecida a esta en nuestro mapa:
 
 ```yaml
-content:
+contents:
   - content: Inicio
   	id: 1
   	ulr: /
@@ -607,7 +607,7 @@ El anidamiento puede ser múltiple:
 En esta caso nuestro mapa quedaría así:
 
 ```yaml
-content:
+contents:
   - content: Inicio
   	id: 1
   	ulr: /
@@ -646,7 +646,7 @@ content:
 En un website multilíngüe:
 
 ```yaml
-content:
+contents:
   - content: Inicio
   	id: 1
   	languages:
@@ -711,7 +711,7 @@ En el proyecto BASE se han definido unos tipos de configuraciones estándares pa
 Esta configuración nos ayuda a cargar de forma directa una plantilla. Solo tendremos que indicar que vista cargar y este `route` prodecerá a renderizarla directamente.
 
 ```yaml
-content:
+contents:
   - content: Contacto
     id: 10
     url: /contacto
@@ -729,7 +729,7 @@ Este contenido cargará la vista `contacto`  dentro de la carpeta `views` y la e
 Esta configuración realizará una carga de contenido externa y la montará en la vista elegida.
 
 ```yaml
-content:
+contents:
   - content: Presentación
     id: 2
     url: /presentacion
@@ -748,7 +748,7 @@ Para la carga de contenido, el router tomará el `id` del contenido como valor c
 Información para el sitemap de la ruta
 
 ```yaml
-content:
+contents:
   - content: Presentación
     id: 2
     description: Presentación
@@ -950,21 +950,30 @@ meta:
 
 ## staticContent
 
-Lista de urls que no deben de ser procesadas por el enrutador.
+Su uso no es otro que definir un listado de URLs que no deben ser procesadas por el enrutador.
 
-Por ejemplo:
+Un caso de uso típico de esta opción es el de la carpeta de imágenes y otros assets de nuestro proyecto (CSS, fuentes, iconos...). Estas carpetas normalmente las ubicamos dentro de la carpeta `/public` que configuramos en nuestro servidor como `express.static()`. Cuando el servidor recibe una petición a esta carpeta lo primero que hace es buscar el recurso y servirlo si lo encuentra, pero en el caso de que no exista, el servidor da paso a nuestro enrutador que vuelve a procesar la petición para comprobar que no existe esa ruta en el mapa y devolver un error.
+
+Si configuramos estas rutas de contenidos estáticos en nuestro mapa, cuando un recurso no ha sido encontrado en nuestra carpeta de estáticos se envía al enrutador que directamente cargará una ruta que será la encargada de renderizar el error. Esta `route` por defecto es `/routes/static-not-found.js`
+
+Un ejemplo:
 
 ```yaml
 languages:
 	...
-content:
+contents:
 	...
 groups:
 	...
 staticContent:
-  - /imagenes/(.*)
+  - /images/(.*)
   - /css/(.*)
 ...
 ```
 
-## 
+Con la configuración del ejemplo, todas las peticiones a la carpeta pública con nuestras imágenes o css devolverán el resultado generado por nuestro `route / static-not-fount`.
+
+
+
+
+

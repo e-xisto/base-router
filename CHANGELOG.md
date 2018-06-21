@@ -1,5 +1,9 @@
 # Changelog
 
+## [Unrelease]
+
+- 2018-06-21 Actualización documentación sobre mapa
+
 
 ## [1.2.0] - 2018-06-21
 
