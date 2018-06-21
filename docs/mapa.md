@@ -160,7 +160,7 @@ Para cada entrada del array `contents` podremos definir un objeto con las siguie
 | [content.languages](#contentlanguages) | Objeto   | Destro de esta propiedad se define la configuración del contenido para los diferentes idiomas activos en la web. En el caso de definir una configuración por idiomas las propiedades description, meta y url anteriores quedarán definidas dentro de este objeto por idiomas. |
 | [content.router](#content.router)      | Objeto   | Asignación de la vista y enrutador a cargar en express. No necesaria si configuramos la opción [content.redirect](#contentredirect) |
 | [content.noIndex](#contentnoindex)     | Booleano | Opción de incluir el meta robots content="noindex"  para evitar que la URL sea indexada por los buscadores. Por defecto siempre está a `false` |
-| [content.sitemap](#contentnositemap)     | sitemap | Opciones del sitemap para la ruta |
+| [content.sitemap](#contentsitemap)     | sitemap | Opciones del sitemap para la ruta |
 
 Un ejemplo de contenido básico:
 
