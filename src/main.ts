@@ -109,7 +109,7 @@ import { Device } from './models/device';
 	function findRoute (req: express.Request, res: express.Response): baseRouter.Content {
 
 		let ruta;
-		
+
 		if (req.url == '/map-reload') {
 			mapReload (res);
 			return <baseRouter.Content>{id: 0};
@@ -122,14 +122,14 @@ import { Device } from './models/device';
 			if (! url) url = '/';
 			ruta = map.contents.find ((ruta: any) => {
 							if (ruta.languages) {
-								if (ruta.languages [idiomas.lng] && findRouteOk (ruta.languages [idiomas.lng], url)) 
+								if (ruta.languages [idiomas.lng] && findRouteOk (ruta.languages [idiomas.lng], url))
 									return ruta;
 							} else {
 								if (findRouteOk (ruta, req.url)) return ruta;
 							}
 						});
 
-		} else 
+		} else
 			ruta = map.contents.find ((ruta: any) => {
 							if (findRouteOk (ruta, req.url)) return ruta;
 						});
@@ -176,6 +176,18 @@ import { Device } from './models/device';
 			}
 		}
 		return false;
+	}
+
+
+	function languages () : string []{
+
+		let langs: string [] = [];
+		if (idiomas.idiomas) {
+			for (let lng in idiomas.actives) {
+				langs.push(lng);
+			}
+		}
+		return langs;
 	}
 
 
@@ -306,7 +318,7 @@ import { Device } from './models/device';
 
 		for (let i in map.staticContents) {
 			let content = new StaticContent (map.staticContents [i]);
-			
+
 			staticContents.push (content);
 		}
 	}
@@ -406,7 +418,7 @@ import { Device } from './models/device';
 			res.redirect ('/' + idiomaNavegador (req));
 			return false;
 		}
-		
+
 		if (! req.url.match (/^\/\w\w(\/|$)/)) {
 			res.redirect ('/' + idiomaNavegador (req) + req.url);
 			return false;
@@ -469,13 +481,14 @@ import { Device } from './models/device';
 			info.content     = ruta.content;
 			info.id          = ruta.id;
 			info.parent      = ruta.parent || 0;
-            info.noIndex     = ruta.noIndex || false;
+			info.noIndex     = ruta.noIndex || false;
 			info.description = setDefaultProperty (ruta, 'description');
 			info.router      = {...ruta.router};
 			info.breadcrumb  = breadcrumb (ruta);
 			alternate (ruta, info);
 		}
-        info.url         = url;
+		info.url         = url;
+		info.languages   = languages();
 		info.lng         = idiomas.lng;
 		info.meta        = {...setDefault (map, 'meta'), ...setDefault (ruta, 'meta')}
 		info.og          = {...setDefault (map, 'og'), ...setDefault (ruta, 'og')};
@@ -488,5 +501,5 @@ import { Device } from './models/device';
 		res.locals.__groups = groups;
 		res.locals.__device = new Device (String (req.get ('User-Agent')));
 		res.locals.t        = {...idiomas.t[idiomas.lng]};
-		
+
 	}

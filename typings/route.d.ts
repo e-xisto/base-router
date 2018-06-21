@@ -11,6 +11,7 @@ export interface Route {
     link?: any;
     lng?: boolean | string;
     meta?: baseRouter.Meta;
+    languages?: string [];
     noIndex?: boolean;
     og?: baseRouter.Og;
     parent?:number;

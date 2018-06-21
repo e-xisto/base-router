@@ -1,6 +1,10 @@
 # Changelog
 
 
+## [1.2.0] - 2018-06-21
+
+- 2018-06-21 Variable languages en __router con los idiomas activos @atrinidad
+
 ## [1.1.12] - 2018-06-14
 
 - 2018-06-14 Error publicación versión anterior @cesaregarcia

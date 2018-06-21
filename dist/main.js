@@ -153,6 +153,15 @@ function isStaticRoute(req, res, next) {
     }
     return false;
 }
+function languages() {
+    let langs = [];
+    if (idiomas.idiomas) {
+        for (let lng in idiomas.actives) {
+            langs.push(lng);
+        }
+    }
+    return langs;
+}
 function lng() { return idiomas.lng; }
 exports.lng = lng;
 function loadMap() {
@@ -415,6 +424,7 @@ function setRoute(req, res, ruta, url) {
         alternate(ruta, info);
     }
     info.url = url;
+    info.languages = languages();
     info.lng = idiomas.lng;
     info.meta = Object.assign({}, setDefault(map, 'meta'), setDefault(ruta, 'meta'));
     info.og = Object.assign({}, setDefault(map, 'og'), setDefault(ruta, 'og'));
