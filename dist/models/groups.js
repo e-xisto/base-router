@@ -69,7 +69,7 @@ class Grupos {
     }
     items(name) {
         // Todo se puede optimizar guardando la información estáticamente
-        let idioma = main_1.lng();
+        let idioma = main_1.lng().lng;
         let items = [];
         if (!grupos[name])
             return [];

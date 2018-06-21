@@ -24,12 +24,12 @@ import { Device } from './models/device';
 	function alternate (ruta: any, info: baseRouter.Route) {
 
 		if (idiomas.idiomas) {
-			info.alternate = [];
 			info.link      = {};
 			for (let lng in idiomas.actives) {
 				if (ruta.languages && ruta.languages [lng]) {
-					info.alternate.push ({lang: lng, href: `${ server.serverName }/${ lng }${ urlToLink(ruta.languages [lng].url) }`});
 					info.link [lng] = `/${ lng }${ urlToLink(ruta.languages [lng].url) }`;
+				} else {
+					info.link [lng] = `/${ lng }`;
 				}
 			}
 		}
@@ -179,19 +179,14 @@ import { Device } from './models/device';
 	}
 
 
-	function languages () : string []{
+	function lng (): baseRouter.Languages {
 
-		let langs: string [] = [];
-		if (idiomas.idiomas) {
-			for (let lng in idiomas.actives) {
-				langs.push(lng);
-			}
+		let actives: string [] = [];
+		for (let lng in idiomas.actives) {
+			actives.push(lng);
 		}
-		return langs;
+		return { lng: idiomas.lng, actives: actives };
 	}
-
-
-	function lng (): string { return idiomas.lng; }
 
 
 	function loadMap () {
@@ -488,7 +483,6 @@ import { Device } from './models/device';
 			alternate (ruta, info);
 		}
 		info.url         = url;
-		info.languages   = languages();
 		info.lng         = idiomas.lng;
 		info.meta        = {...setDefault (map, 'meta'), ...setDefault (ruta, 'meta')}
 		info.og          = {...setDefault (map, 'og'), ...setDefault (ruta, 'og')};
