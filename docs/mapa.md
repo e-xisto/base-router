@@ -1,3 +1,5 @@
+
+
 # Mapa
 
 Dentro de nuestro proyecto BASE definimos el mapa de contendios de nuestro website utilizando un archivo con sintaxis Yaml.
@@ -17,7 +19,7 @@ La estructura de este archivo yaml es la siguiente:
 | [groups](#groups)               | Objeto | Nos permite organizar el contenido de nuestro website en diferentes grupos que podremos utilizar en nuestra vista como menús de navegación. |
 | [xDefault](#xdefault)           | Texto  | Define el atributo "hreflang" con valor "x-default" lo que nos permitirá auto-redireccionar al idioma que elijamos por defecto. |
 | [dnsPrefetch](#dnsprefetch)     | Array  | Contiene las URLs para las cuales queremos que el navegador resuelva las DNS realizando un "prefetching" al comenzar a cargar nuestro website. |
-| [scripts](#scripts)             | Objeto | Reservado para definir los bloques de código para Google Analytics y Tag Manager. |
+| [scripts](#scripts)             | Objeto | Reservado para definir bloques de código javascript de terceros a insertar en en nuestra web (Ejemplo: códigos de seguimiento Google Analytics y Tag Manager). |
 | [meta](#meta)                   | Objeto | Define de forma global y por defecto los metadatos incluidos en el `<head>` de nuestro website. Esto incluye title, description, keywords, etiquetas Open Graph para Facebook y las de Twitter Card. |
 | [staticContent](#staticcontent) | Array  | Lista de contenido estático que no debe ser procesado por el enrutador. Se usa para reducir la carga de trabajo del enrutador y evitar tener que procesar peticiones que no vinculadas con las rutas definidas en el mapa. |
 
@@ -904,15 +906,43 @@ Esto ayudará a optimizar la carga de recursos externos a nuestra página. Para 
 
 ## scripts
 
-Esta opción está reservada para definir los bloques de código para Google Analytics y Tag Manager.
+Esta opción está reservada para definir bloques de código javascript de terceros que podremos insertar en nuestra web.
 
-Dentro de este objeto se definen las siguiente propiedades:
+Aunque este objeto podemos definir todos los bloques que sean necesarios, hemos definido el nombre de algunas propiedades como estándares al ser las más frecuentes:
 
 | Propiedad                      | Tipo  | Descripción                                                  |
 | ------------------------------ | ----- | ------------------------------------------------------------ |
 | scripts.googleAnalytics        | Texto | Bloque de código universal para seguimiento Google Analytics |
-| scripts.googleTagManager       | Texto | Bloque de código para seguimiento Google Tag Manager         |
+| scripts.googleTagManager       | Texto | Bloque de código para seguimiento Google Tag Manager en el `head` |
+| scripts.googleTagManagerBody   | Texto | Bloque de código para seguimiento Google Tag Manager en el `body` |
 | scripts.googleSiteVerification | Texto | Bloque de código para verificación de propiedad de sito      |
+| scripts.facebookPixel          | Texto | Bloque de código para pixel Facebook                         |
+| scripts.addthis                | Texto | Bloque de código para plugin Addthis.com                     |
+
+Ejemplo:
+
+```yaml
+languages:
+	...
+contents:
+	...
+groups:
+	...
+scripts:
+    googleAnalytics: >
+      <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||
+      function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();
+      a=s.createElement(o),m=s.getElementsByTagName(o)[0];
+      a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})
+      (window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+      ga('create', 'UA-XXXX-X', 'auto');
+      ga('send', 'pageview');
+      </script>
+...
+```
+
+Para incluir bloques de contenido texto en múltiples líneas usaremos `>` y en la siguiente línea guardando la indexación incluiremos todas las líneas del script.
 
 
 
