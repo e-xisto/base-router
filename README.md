@@ -11,6 +11,7 @@ Base-router es el enrutador personalizado configurado por defecto en nuestra esc
 - [Forzar la recarga del mapa](#recarga-de-mapa)
 - [Mapa (map.yaml)](./docs/mapa.md)
 - [Variables](./docs/variables.md)
+- [Métodos](./docs/metodos.md)
 - [Routes](./docs/routes.md)
 - [Notas de revisión y TODOs](#Notas-de-revisión-y-TODOs)
 
@@ -195,4 +196,4 @@ Si realizamos cambios sobre nuestro archivo de mapa podemos forzar la carga del 
 
 
 
-Versión 0.1.0 (2018-05-10) 
+Versión 0.1.0 (2018-05-10)
