@@ -7,7 +7,7 @@
 
 ## [1.2.0] - 2018-06-21
 
-- 2018-06-21 Variable languages en __router con los idiomas activos @atrinidad
+- 2018-06-21 método lng() ahora devuelve el lng y los lenguajes activos @atrinidad
 
 ## [1.1.12] - 2018-06-14
 

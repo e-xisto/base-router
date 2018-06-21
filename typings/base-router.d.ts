@@ -4,6 +4,7 @@ export { GroupItem } from './group-item';
 export { GroupItemData } from './group-item-data';
 export { Groups } from './groups';
 export { Idiomas } from './idiomas';
+export { Languages } from './languages';
 export { LinkAlternate } from './link-alternate';
 export { Map } from './map';
 export { Meta } from './meta';
