@@ -29,7 +29,7 @@ La estructura de este archivo yaml es la siguiente:
 
 Si nuestro website va a ser multilingüe, debemos definir en nuestro mapa los idiomas con los que vamos a trabajar. Si por el contrario nuestro website solo funcionará en un único idioma esta propiedad del mapa no es necesaria.
 
-Parar cada idioma definiremos dentro de `languages` una nueva propiedad con el idioma codificado según norma [ISO 639-1](https://es.wikipedia.org/wiki/ISO_639-1) y sus parámetros de configuración. 
+Parar cada idioma definiremos dentro de `languages` una nueva propiedad con el idioma codificado según norma [ISO 639-1](https://es.wikipedia.org/wiki/ISO_639-1) y sus parámetros de configuración.
 
 Si queremos montar nuestro website en dos idiomas, por ejemplo español e inglés, nos quedará una estructura la siguiente:
 
@@ -69,7 +69,7 @@ languages:
     meta:
       title: My first website
       description: Praesent sapien massa, convallis a pellentesque nec.
-      keywords: keyword1 keyword2 keyword3			
+      keywords: keyword1 keyword2 keyword3
 ```
 
 En este ejemplo de mapa hemos configurado un website con dos idiomas: Español e Inglés. Ambos idiomas están activos, se ha seleccionado el Español como idioma por defecto y dentro de cada idioma se han definido los metas que aparecerán por defecto para todos los contenidos de ese idioma en nuestra web.
@@ -99,7 +99,7 @@ languages:
       type: website
       title: Mi primera web
       image: http://www.minuevowebsite.com/logo.png
-      description: Lorem ipsum dolor sit amet, consectetur adipiscing 
+      description: Lorem ipsum dolor sit amet, consectetur adipiscing
       site_name: Mi nuevo website
       locale: es
       author: existo.es
@@ -208,7 +208,7 @@ contents:
    	meta:
       title: Sobre nosotros
       description: Vivamus magna justo, lacinia eget consectetur sed.
-      keywords: palabraclave1 palabraclave2 
+      keywords: palabraclave1 palabraclave2
     router:
       route: /presentacion
       view: presentacion
@@ -231,14 +231,14 @@ contents:
         meta:
           title: Bienvenidos a mi website
           description: Vivamus magna justo, lacinia eget consectetur sed.
-          keywords: palabraclave1 palabraclave2	    
+          keywords: palabraclave1 palabraclave2
       en:
         description: Home
         url: /
         meta:
           title: Welcome to my website
           description: Vivamus magna justo, lacinia eget consectetur sed.
-          keywords: keyword1 keyword2	    
+          keywords: keyword1 keyword2
     router:
       route: /home
       view: home
@@ -247,18 +247,18 @@ contents:
     languages:
       es:
         description: Presentación
-        url: /presentacion   
+        url: /presentacion
         meta:
         title: Todo sobre nuestra empresa
         description: Vivamus magna justo, lacinia eget consectetur sed.
-        keywords: palabraclave1 palabraclave2	    
+        keywords: palabraclave1 palabraclave2
       en:
         description: About us
-        url: /about-us  
+        url: /about-us
         meta:
           title: All about our company
           description: Vivamus magna justo, lacinia eget consectetur sed.
-          keywords: keyword1 keyword2	    
+          keywords: keyword1 keyword2
     router:
       route: /presentacion
       view: presentacion
@@ -306,7 +306,7 @@ contents:
           title: Aviso Legal
           description: Vivamus magna justo, lacinia eget consectetur sed.
           keywords: palabraclave1 palabraclave2
-          canonical: https://www.minuevowebsite.com/es/legal	    
+          canonical: https://www.minuevowebsite.com/es/legal
       en:
         description: Legal Warning
         url: /legal-warning
@@ -314,7 +314,7 @@ contents:
           title: Legal Warning
           description: Vivamus magna justo, lacinia eget consectetur sed.
           keywords: keyword1 keyword2
-          canonical: https://www.minuevowebsite.com/en/legal	    
+          canonical: https://www.minuevowebsite.com/en/legal
     router:
       route: /home
       view: home
@@ -363,7 +363,7 @@ contents:
         redirect: https://www.google.com
       en:
         description: About us
-        url: /about-us  
+        url: /about-us
     router:
       route: /presentacion
       view: presentacion
@@ -436,7 +436,7 @@ contents:
         meta:
           title: About us
           description: Vivamus magna justo, lacinia eget consectetur sed.
-          keywords: palabraclave1 palabraclave2	    
+          keywords: palabraclave1 palabraclave2
     router:
       route: /presentacion
       view: presentacion
@@ -468,10 +468,10 @@ contents:
         type: website
         title: Mi primera web
         image: http://www.minuevowebsite.com/logo.png
-        description: Lorem ipsum dolor sit amet, consectetur adipiscing 
+        description: Lorem ipsum dolor sit amet, consectetur adipiscing
         site_name: Mi nuevo website
         locale: es
-        author: existo.es      
+        author: existo.es
     router:
       route: /home
       view: home
@@ -502,10 +502,10 @@ contents:
             type: website
             title: Mi primera web
             image: http://www.minuevowebsite.com/logo.png
-            description: Lorem ipsum dolor sit amet, consectetur adipiscing 
+            description: Lorem ipsum dolor sit amet, consectetur adipiscing
             site_name: Mi nuevo website
             locale: es
-            author: existo.es             
+            author: existo.es
       en:
         description: Home
         url: /
@@ -520,10 +520,10 @@ contents:
             type: website
             title: Mi primera web
             image: http://www.minuevowebsite.com/logo.png
-            description: Lorem ipsum dolor sit amet, consectetur adipiscing 
+            description: Lorem ipsum dolor sit amet, consectetur adipiscing
             site_name: Mi nuevo website
             locale: es
-            author: existo.es             
+            author: existo.es
     router:
       route: /home
       view: home
@@ -565,20 +565,20 @@ contents:
   	ulr: /
   	router:
       route: /home
-      view: home	
+      view: home
    - content: Quienes somos
      id: 2
   	 ulr: /quienes-somos
   	 router:
        route: /editor
-       view: editor 	 
+       view: editor
    - content: Presentación
      id: 3
   	 ulr: /quienes-somos/presentacion
   	 parent: 2
   	 router:
        route: /editor
-       view: editor        
+       view: editor
    - content: Nuestro equipo
      id: 4
   	 ulr: /quienes-somos/nuestro-equipo
@@ -591,7 +591,7 @@ contents:
   	 ulr: /proyectos
   	 router:
        route: /proyectos
-       view: proyectos   
+       view: proyectos
  ...
 ```
 
@@ -615,20 +615,20 @@ contents:
   	ulr: /
   	router:
       route: /home
-      view: home	
+      view: home
    - content: Quienes somos
      id: 2
   	 ulr: /quienes-somos
   	 router:
        route: /editor
-       view: editor 	 
+       view: editor
    - content: Presentación
      id: 3
   	 ulr: /quienes-somos/presentacion
   	 parent: 2
   	 router:
        route: /editor
-       view: editor        
+       view: editor
    - content: Nuestro equipo
      id: 4
   	 ulr: /quienes-somos/presentacion/nuestro-equipo
@@ -641,7 +641,7 @@ contents:
   	 ulr: /proyectos
   	 router:
        route: /proyectos
-       view: proyectos   
+       view: proyectos
  ...
 ```
 
@@ -660,10 +660,10 @@ contents:
         url: /
     router:
       route: /home
-      view: home	
+      view: home
    - content: Quienes somos
      id: 2
-     languages:     
+     languages:
        es:
          description: Quienes somos
          url: /quienes-somos
@@ -672,20 +672,20 @@ contents:
          url: /about-us
      router:
        route: /editor
-       view: editor 	 
+       view: editor
    - content: Presentación
      id: 3
   	 parent: 2
-     languages:     
+     languages:
        es:
          description: Presentación
          url: /quienes-somos/presentacion
        en:
          description: Our Company
-         url: /about-us/our-company 	 
+         url: /about-us/our-company
   	 router:
   	   route: /editor
-  	   view: editor          
+  	   view: editor
  ...
 ```
 
@@ -767,7 +767,7 @@ contents:
     router:
       route: /presentacion
       view: presentacion
-    sitemap: 
+    sitemap:
       changefreq: daily
       lastmod: 2018-01-01
       priority: 1
@@ -795,7 +795,7 @@ groups:
             content: Nuestro equipo
     - id: 5
       content: Proyectos
-...      
+...
 ```
 
 En el ejemplo hemos creado un grupo de contenidos denominado `menu` que contiene 5 contenidos que se ordenan de forma gerárquica según el siguiente esquema:
@@ -818,7 +818,7 @@ groups:
   menu:
   	- id: 1
   	  content: Inicio
-    ...  
+    ...
   legal:
     - id: 10
       content: Aviso Legal
@@ -826,7 +826,7 @@ groups:
       content: Política cookies
     - id: 12
       content: Política de privacidad
-...                  
+...
 ```
 
 En cualquier caso, la propiedad `content` únicamente se utiliza para identificar el contenido que representa cada `id`. No se utiliza y no tiene porqué coincidir con la porpiedad `content` del contenido asociado a ese `id`. Puede omitirse si no se considera de utilidad.
@@ -885,7 +885,7 @@ dnsPrefetch:
   - //facebook.com
   - //googleads.g.doubleclick.net
   - //pagead2.googlesyndication.com
-  - //google-analytics.com	
+  - //google-analytics.com
 ...
 ```
 
@@ -976,10 +976,10 @@ meta:
     type: website
     title: Mi primera web
     image: http://www.minuevowebsite.com/logo.png
-    description: Lorem ipsum dolor sit amet, consectetur adipiscing 
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing
     site_name: Mi nuevo website
     locale: es
-    author: existo.es      
+    author: existo.es
   twitter:
     card: summary_large_image
     title: Mi primera web
