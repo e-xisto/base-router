@@ -8,7 +8,7 @@ import { StaticContent } from './models/staticContent';
 import { Device } from './models/device';
 
 
-	let app: any;
+	// let app: any;
 	let idiomas: baseRouter.Idiomas = { idiomas: false, lng: '', default: '', actives: {}, t: {}};
 	let map: baseRouter.Map;
 	let mapName: string           = ''; // Nombre del fichero del mapa de rutas, por defecto map.json
@@ -64,21 +64,19 @@ import { Device } from './models/device';
 	}
 
 
-	function configure (options: any) {
+	function configure (app: any, options: any) {
 
 		mapName    = options.map || 'map.yaml';
 		path       = options.path || '';
 		pathLanguages = options.pathLanguages || '/public/lang/';
-		pathRoutes = options.pathRoutes || options.path + '/routes';
+		pathRoutes = options.pathRoutes || path + '/routes';
 		routesFile = options.routes || 'routes.js';
 
 		if (! path) {
 			console.log ("\n\x1b[31mNo se puede cargar un mapa poque no se ha definido un path\x1b[0m\n");
 			process.exit ();
 		}
-
-		app = require (path + '/server.js');
-		setServer ();
+		setServer (app);
 		app.use (routes);
 		loadRoutes ();
 		loadMap ();
@@ -352,7 +350,7 @@ import { Device } from './models/device';
 	}
 
 
-	function setServer () {
+	function setServer (app: any) {
 
 		server.name      = app.__args.serverName;
 		server.localPort = app.get('port');

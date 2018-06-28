@@ -7,7 +7,7 @@ const fs = require('fs');
 const groups_1 = __importDefault(require("./models/groups"));
 const staticContent_1 = require("./models/staticContent");
 const device_1 = require("./models/device");
-let app;
+// let app: any;
 let idiomas = { idiomas: false, lng: '', default: '', actives: {}, t: {} };
 let map;
 let mapName = ''; // Nombre del fichero del mapa de rutas, por defecto map.json
@@ -51,18 +51,17 @@ function breadcrumbData(content) {
     }
     return result;
 }
-function configure(options) {
+function configure(app, options) {
     mapName = options.map || 'map.yaml';
     path = options.path || '';
     pathLanguages = options.pathLanguages || '/public/lang/';
-    pathRoutes = options.pathRoutes || options.path + '/routes';
+    pathRoutes = options.pathRoutes || path + '/routes';
     routesFile = options.routes || 'routes.js';
     if (!path) {
         console.log("\n\x1b[31mNo se puede cargar un mapa poque no se ha definido un path\x1b[0m\n");
         process.exit();
     }
-    app = require(path + '/server.js');
-    setServer();
+    setServer(app);
     app.use(routes);
     loadRoutes();
     loadMap();
@@ -305,7 +304,7 @@ function setGroups() {
         }
     }
 }
-function setServer() {
+function setServer(app) {
     server.name = app.__args.serverName;
     server.localPort = app.get('port');
     server.protocol = app.__args.protocol;
