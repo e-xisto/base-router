@@ -24,8 +24,6 @@ let lngActivo = baseRouter.lng().lng;
 
 ## lng()
 
-## __server
-
 Esta variable incluye información sobre los idiomas.
 
 | Propiedad           | Tipo   | Descripción                                                  |
@@ -36,4 +34,15 @@ Esta variable incluye información sobre los idiomas.
 
 ## sitemap()
 
-Devuelve el sitemap básico basado en el map.yaml de la aplicación
+Devuelve array que representa el sitemap básico basado en el map.yaml de la aplicación.
+
+Cada item del array será de la forma
+
+| Propiedad           | Tipo   | Descripción                                                  |
+| ------------------- | ------ | ------------------------------------------------------------ |
+| changefreq          | String | Opcional, representa la etiqueta changefreq |
+| id                  | Number | Id del contenido en el mapa |
+| lastmod             | String | Opcional, representa la etiqueta lastmod (fecha de última modificación) |
+| loc             | String | Url del sitio |
+| priority             | Number | Valor de la prioridad del sitio, entre 0 y 1 |
+

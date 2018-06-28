@@ -326,6 +326,7 @@ function sitemap() {
         let url = {};
         if (idiomas.idiomas) {
             let locs = 0;
+            url.id = ruta.id;
             url.loc = {};
             for (let lng in idiomas.actives) {
                 if (ruta.languages && ruta.languages[lng]) {
