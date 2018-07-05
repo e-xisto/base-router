@@ -2,10 +2,11 @@
 
 ## [Unrelease]
 
+- 2018-07-05 documentación métodos @atrinidad
 
 ## [1.1.15] - 2018-07-05
 
-- 2018-07-05 ahora lng se rellena con los valores del idioma por defecto
+- 2018-07-05 ahora lng se rellena con los valores del idioma por defecto @atrinidad
 
 ## [1.1.13] - 2018-06-21
 

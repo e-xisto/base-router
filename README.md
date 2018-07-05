@@ -51,15 +51,16 @@ baseRouter.configure ({ path: __dirname, map: 'map.yaml' });
 ```
 
 
-
 Opciones de configuración:
 
 | Variable                   | Description                                                  |
 | :------------------------- | ------------------------------------------------------------ |
 | **path**                   | Ruta de la aplicación, esta variable es obligatoria e indica la ruta donde empezar a localizar el mapa y las rutas estáticas. |
-| map                        | Nombre del fichero del mapa. Debe estar localizado en el path o ser una ruta relativa al path. Por defecto tiene el valor `map.yaml` |
+| mapName                        | Nombre del fichero del mapa. Debe estar localizado en el path o ser una ruta relativa al path. Por defecto tiene el valor `map.yaml` |
 | pathRoutes                 | Ruta de la la carpeta de rutas. Por defecto `[path]/routes`  |
 | [routes](./docs/routes.md) | Nombre del fichero de rutas. Por defecto `routes.js`         |
+
+Para más detalles ver [métodos](./docs/metodos.md)
 
 Un ejemplo de configuración básica para nuestra aplicación express sería:
 
