@@ -264,6 +264,17 @@ import { Device } from './models/device';
 				idiomas.lng     = idiomas.default;
 				idiomas.idiomas = true;
 			}
+			fillLanguages();
+		}
+	}
+
+
+	function fillLanguages() {
+
+		for (let lng in idiomas.actives) {
+			if (lng != idiomas.default) {
+				idiomas.t[lng] = {...idiomas.t[idiomas.default], ...idiomas.t[lng]};
+			}
 		}
 	}
 

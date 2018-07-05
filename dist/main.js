@@ -233,6 +233,14 @@ function optimizedLanguages() {
             idiomas.lng = idiomas.default;
             idiomas.idiomas = true;
         }
+        fillLanguages();
+    }
+}
+function fillLanguages() {
+    for (let lng in idiomas.actives) {
+        if (lng != idiomas.default) {
+            idiomas.t[lng] = Object.assign({}, idiomas.t[idiomas.default], idiomas.t[lng]);
+        }
     }
 }
 function prepareRoute(route, pathToRegexp) {
