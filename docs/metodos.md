@@ -57,9 +57,9 @@ module.exports = Noticia;
 ```
 
 
-## configure(options)
+## configure(app, options)
 
-Como ya hemos visto en la introducción, este método configura la aplicación. Admite los siguientes parámetros en el objeto json que recibe:
+Como ya hemos visto en la introducción, este método configura la aplicación. options, Admite los siguientes parámetros en el objeto json que recibe:
 
 | Variable                   | Description                                                  |
 | :------------------------- | ------------------------------------------------------------ |

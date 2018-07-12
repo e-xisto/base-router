@@ -9,8 +9,7 @@ Un ejemplo de nuestro archivo de rutas:
 ```javascript
 // Archivo /routes/routes.js
 
-// Requerimos nuestro aplicación servidor
-var app = require ('../server');
+module.exports = function (app) {
 
 // Carga de rutas
 app.use ('/sitemap', require ('./sitemap'));
@@ -22,6 +21,8 @@ app.use ('/proyectos', require ('./proyectos'));
 
 // En este caso no necesitamos vincular a una ruta
 app.use (require ('./breadcrumb'));
+
+}
 ```
 
 En este ejemplo definimos una ruta `/template` que podremos incluir en nuestro [mapa](./mapa.md) y que asociamos a la carga de nuestro archivo de enrutado de express `/routes/template.js` .

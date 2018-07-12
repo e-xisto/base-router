@@ -2,6 +2,9 @@
 
 ## [Unrelease]
 
+## [1.1.16] - 2018-07-12
+
+- 2018-07-12 typescript en servidor @cesaregarcia
 - 2018-07-05 documentación métodos @atrinidad
 
 ## [1.1.15] - 2018-07-05
