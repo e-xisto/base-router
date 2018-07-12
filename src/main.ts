@@ -64,13 +64,13 @@ import { Device } from './models/device';
 	}
 
 
-	function configure (app: any, options: any) {
+	function configure (app: express.Express, options: any) {
 
-		mapName    = options.map || 'map.yaml';
-		path       = options.path || '';
+		mapName       = options.map || 'map.yaml';
+		path          = options.path || '';
 		pathLanguages = options.pathLanguages || '/public/lang/';
-		pathRoutes = options.pathRoutes || path + '/routes';
-		routesFile = options.routes || 'routes.js';
+		pathRoutes    = options.pathRoutes || path + '/routes';
+		routesFile    = options.routes || 'routes.js';
 
 		if (! path) {
 			console.log ("\n\x1b[31mNo se puede cargar un mapa poque no se ha definido un path\x1b[0m\n");
@@ -78,7 +78,7 @@ import { Device } from './models/device';
 		}
 		setServer (app);
 		app.use (routes);
-		loadRoutes ();
+		loadRoutes (app);
 		loadMap ();
 		setGroups ();
 	}
@@ -206,12 +206,12 @@ import { Device } from './models/device';
 	}
 
 
-	function loadRoutes () {
+	function loadRoutes (app: express.Express) {
 
 		let rutasFile = `${ pathRoutes }/${ routesFile }`;
 
 		try {
-			require (rutasFile);
+			require (rutasFile)(app);
 		} catch (e) {
 			console.log ("\n\x1b[31mNo se ha podido cargar el fichero de rutas");
 			console.log ("    \x1b[41m\x1b[37m" + rutasFile + "\x1b[0m\n");
@@ -310,6 +310,35 @@ import { Device } from './models/device';
 	}
 
 
+	function routes (req: express.Request, res: express.Response, next: express.NextFunction) {
+
+		let url  = req.url;
+		let ruta: baseRouter.Content | undefined;
+
+		// Eliminamos el contenido estatico
+		if (isStaticRoute (req, res, next)) return;
+		// Puede haber rutas sin idiomas en mapa por idiomas
+		if (sinIdiomas.length && req.url)
+			ruta = map.contents.find ((ruta: any) => { if (findRouteOk (ruta, req.url)) return ruta; });
+
+		if (ruta) ruta.sinIdioma = true;
+		else ruta = findRoute (req, res);
+
+		if (! ruta.id) {
+			if (res.headersSent) return
+			setRoute (req, res, ruta, url);
+			return next ('route');
+		}
+
+		if (ruta) {
+			if (idiomas.idiomas && ! ruta.sinIdioma) evalRuta (req, res, ruta.languages [idiomas.lng], ruta.router);
+			else evalRuta (req, res, ruta, ruta.router);
+		}
+		setRoute (req, res, ruta, url);
+		next ('route');
+	}
+
+
 	function setData (parent: any, info: any, property: string): void {
 
 		if (parent [property] !== undefined) info [property] = parent [property];
@@ -347,6 +376,37 @@ import { Device } from './models/device';
 				}
 			}
 		}
+	}
+
+
+	function setRoute (req: express.Request, res: express.Response, ruta: any, url: string) {
+
+		let info: baseRouter.Route = {};
+
+		if (ruta) {
+			info.content     = ruta.content;
+			info.id          = ruta.id;
+			info.parent      = ruta.parent || 0;
+            info.noIndex     = ruta.noIndex || false;
+			info.description = setDefaultProperty (ruta, 'description');
+			info.router      = {...ruta.router};
+			info.breadcrumb  = breadcrumb (ruta);
+			alternate (ruta, info);
+		}
+        info.url         = url;
+		info.lng         = idiomas.lng;
+		info.meta        = {...setDefault (map, 'meta'), ...setDefault (ruta, 'meta')}
+		info.og          = {...setDefault (map, 'og'), ...setDefault (ruta, 'og')};
+		info.twitter     = {...setDefault (map, 'twitter'), ...setDefault (ruta, 'twitter')};
+		setData (map, info, 'xDefault');
+		setData (map, info, 'dnsPrefetch');
+		setData (map, info, 'scripts');
+		res.locals.__route  = info;
+		res.locals.__server = {...server};
+		res.locals.__groups = groups;
+		res.locals.__device = new Device (String (req.get ('User-Agent')));
+		res.locals.t        = {...idiomas.t[idiomas.lng]};
+		
 	}
 
 
@@ -430,61 +490,8 @@ import { Device } from './models/device';
 
 
 
-	function routes (req: express.Request, res: express.Response, next: express.NextFunction) {
-
-		let url  = req.url;
-		let ruta: baseRouter.Content | undefined;
-
-		// Eliminamos el contenido estatico
-		if (isStaticRoute (req, res, next)) return;
-		// Puede haber rutas sin idiomas en mapa por idiomas
-		if (sinIdiomas.length && req.url)
-			ruta = map.contents.find ((ruta: any) => { if (findRouteOk (ruta, req.url)) return ruta; });
-
-		if (ruta) ruta.sinIdioma = true;
-		else ruta = findRoute (req, res);
-
-		if (! ruta.id) {
-			if (res.headersSent) return
-			setRoute (req, res, ruta, url);
-			return next ('route');
-		}
-
-		if (ruta) {
-			if (idiomas.idiomas && ! ruta.sinIdioma) evalRuta (req, res, ruta.languages [idiomas.lng], ruta.router);
-			else evalRuta (req, res, ruta, ruta.router);
-		}
-		setRoute (req, res, ruta, url);
-		next ('route');
-	}
 
 
-	function setRoute (req: express.Request, res: express.Response, ruta: any, url: string) {
 
-		let info: baseRouter.Route = {};
 
-		if (ruta) {
-			info.content     = ruta.content;
-			info.id          = ruta.id;
-			info.parent      = ruta.parent || 0;
-            info.noIndex     = ruta.noIndex || false;
-			info.description = setDefaultProperty (ruta, 'description');
-			info.router      = {...ruta.router};
-			info.breadcrumb  = breadcrumb (ruta);
-			alternate (ruta, info);
-		}
-        info.url         = url;
-		info.lng         = idiomas.lng;
-		info.meta        = {...setDefault (map, 'meta'), ...setDefault (ruta, 'meta')}
-		info.og          = {...setDefault (map, 'og'), ...setDefault (ruta, 'og')};
-		info.twitter     = {...setDefault (map, 'twitter'), ...setDefault (ruta, 'twitter')};
-		setData (map, info, 'xDefault');
-		setData (map, info, 'dnsPrefetch');
-		setData (map, info, 'scripts');
-		res.locals.__route  = info;
-		res.locals.__server = {...server};
-		res.locals.__groups = groups;
-		res.locals.__device = new Device (String (req.get ('User-Agent')));
-		res.locals.t        = {...idiomas.t[idiomas.lng]};
-		
-	}
+

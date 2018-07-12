@@ -1,6 +1,5 @@
 # Changelog
 
-
 ## [1.1.12] - 2018-06-14
 
 - 2018-06-14 Error publicación versión anterior @cesaregarcia

@@ -63,7 +63,7 @@ function configure(app, options) {
     }
     setServer(app);
     app.use(routes);
-    loadRoutes();
+    loadRoutes(app);
     loadMap();
     setGroups();
 }
@@ -181,10 +181,10 @@ function loadMap() {
     prepareStaticContents();
     prepareRoutes();
 }
-function loadRoutes() {
+function loadRoutes(app) {
     let rutasFile = `${pathRoutes}/${routesFile}`;
     try {
-        require(rutasFile);
+        require(rutasFile)(app);
     }
     catch (e) {
         console.log("\n\x1b[31mNo se ha podido cargar el fichero de rutas");
@@ -271,6 +271,35 @@ function prepareStaticContents() {
         staticContents.push(content);
     }
 }
+function routes(req, res, next) {
+    let url = req.url;
+    let ruta;
+    // Eliminamos el contenido estatico
+    if (isStaticRoute(req, res, next))
+        return;
+    // Puede haber rutas sin idiomas en mapa por idiomas
+    if (sinIdiomas.length && req.url)
+        ruta = map.contents.find((ruta) => { if (findRouteOk(ruta, req.url))
+            return ruta; });
+    if (ruta)
+        ruta.sinIdioma = true;
+    else
+        ruta = findRoute(req, res);
+    if (!ruta.id) {
+        if (res.headersSent)
+            return;
+        setRoute(req, res, ruta, url);
+        return next('route');
+    }
+    if (ruta) {
+        if (idiomas.idiomas && !ruta.sinIdioma)
+            evalRuta(req, res, ruta.languages[idiomas.lng], ruta.router);
+        else
+            evalRuta(req, res, ruta, ruta.router);
+    }
+    setRoute(req, res, ruta, url);
+    next('route');
+}
 function setData(parent, info, property) {
     if (parent[property] !== undefined)
         info[property] = parent[property];
@@ -303,6 +332,32 @@ function setGroups() {
             }
         }
     }
+}
+function setRoute(req, res, ruta, url) {
+    let info = {};
+    if (ruta) {
+        info.content = ruta.content;
+        info.id = ruta.id;
+        info.parent = ruta.parent || 0;
+        info.noIndex = ruta.noIndex || false;
+        info.description = setDefaultProperty(ruta, 'description');
+        info.router = Object.assign({}, ruta.router);
+        info.breadcrumb = breadcrumb(ruta);
+        alternate(ruta, info);
+    }
+    info.url = url;
+    info.lng = idiomas.lng;
+    info.meta = Object.assign({}, setDefault(map, 'meta'), setDefault(ruta, 'meta'));
+    info.og = Object.assign({}, setDefault(map, 'og'), setDefault(ruta, 'og'));
+    info.twitter = Object.assign({}, setDefault(map, 'twitter'), setDefault(ruta, 'twitter'));
+    setData(map, info, 'xDefault');
+    setData(map, info, 'dnsPrefetch');
+    setData(map, info, 'scripts');
+    res.locals.__route = info;
+    res.locals.__server = Object.assign({}, server);
+    res.locals.__groups = groups_1.default;
+    res.locals.__device = new device_1.Device(String(req.get('User-Agent')));
+    res.locals.t = Object.assign({}, idiomas.t[idiomas.lng]);
 }
 function setServer(app) {
     server.name = app.__args.serverName;
@@ -372,58 +427,3 @@ function validarIdioma(req, res) {
 ///////////////////////////////////
 ///////////////////////////////////
 ///////////////////////////////////
-function routes(req, res, next) {
-    let url = req.url;
-    let ruta;
-    // Eliminamos el contenido estatico
-    if (isStaticRoute(req, res, next))
-        return;
-    // Puede haber rutas sin idiomas en mapa por idiomas
-    if (sinIdiomas.length && req.url)
-        ruta = map.contents.find((ruta) => { if (findRouteOk(ruta, req.url))
-            return ruta; });
-    if (ruta)
-        ruta.sinIdioma = true;
-    else
-        ruta = findRoute(req, res);
-    if (!ruta.id) {
-        if (res.headersSent)
-            return;
-        setRoute(req, res, ruta, url);
-        return next('route');
-    }
-    if (ruta) {
-        if (idiomas.idiomas && !ruta.sinIdioma)
-            evalRuta(req, res, ruta.languages[idiomas.lng], ruta.router);
-        else
-            evalRuta(req, res, ruta, ruta.router);
-    }
-    setRoute(req, res, ruta, url);
-    next('route');
-}
-function setRoute(req, res, ruta, url) {
-    let info = {};
-    if (ruta) {
-        info.content = ruta.content;
-        info.id = ruta.id;
-        info.parent = ruta.parent || 0;
-        info.noIndex = ruta.noIndex || false;
-        info.description = setDefaultProperty(ruta, 'description');
-        info.router = Object.assign({}, ruta.router);
-        info.breadcrumb = breadcrumb(ruta);
-        alternate(ruta, info);
-    }
-    info.url = url;
-    info.lng = idiomas.lng;
-    info.meta = Object.assign({}, setDefault(map, 'meta'), setDefault(ruta, 'meta'));
-    info.og = Object.assign({}, setDefault(map, 'og'), setDefault(ruta, 'og'));
-    info.twitter = Object.assign({}, setDefault(map, 'twitter'), setDefault(ruta, 'twitter'));
-    setData(map, info, 'xDefault');
-    setData(map, info, 'dnsPrefetch');
-    setData(map, info, 'scripts');
-    res.locals.__route = info;
-    res.locals.__server = Object.assign({}, server);
-    res.locals.__groups = groups_1.default;
-    res.locals.__device = new device_1.Device(String(req.get('User-Agent')));
-    res.locals.t = Object.assign({}, idiomas.t[idiomas.lng]);
-}
