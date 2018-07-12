@@ -102,7 +102,7 @@ class Grupos implements Groups {
 	public items (name: string): any {
 
 		// Todo se puede optimizar guardando la información estáticamente
-		let idioma: string = lng ();
+		let idioma: string = lng ().lng;
 		let items: any []  = [];
 
 		if (! grupos [name]) return [];

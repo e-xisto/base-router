@@ -1,5 +1,18 @@
 # Changelog
 
+## [Unrelease]
+
+- 2018-07-05 documentación métodos @atrinidad
+
+## [1.1.15] - 2018-07-05
+
+- 2018-07-05 ahora lng se rellena con los valores del idioma por defecto @atrinidad
+
+## [1.1.13] - 2018-06-21
+
+- 2018-06-21 Actualización documentación sobre mapa
+- 2018-06-21 método lng() ahora devuelve el lng y los lenguajes activos @atrinidad
+
 ## [1.1.12] - 2018-06-14
 
 - 2018-06-14 Error publicación versión anterior @cesaregarcia

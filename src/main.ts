@@ -24,12 +24,12 @@ import { Device } from './models/device';
 	function alternate (ruta: any, info: baseRouter.Route) {
 
 		if (idiomas.idiomas) {
-			info.alternate = [];
 			info.link      = {};
 			for (let lng in idiomas.actives) {
 				if (ruta.languages && ruta.languages [lng]) {
-					info.alternate.push ({lang: lng, href: `${ server.serverName }/${ lng }${ urlToLink(ruta.languages [lng].url) }`});
 					info.link [lng] = `/${ lng }${ urlToLink(ruta.languages [lng].url) }`;
+				} else {
+					info.link [lng] = `/${ lng }`;
 				}
 			}
 		}
@@ -107,7 +107,7 @@ import { Device } from './models/device';
 	function findRoute (req: express.Request, res: express.Response): baseRouter.Content {
 
 		let ruta;
-		
+
 		if (req.url == '/map-reload') {
 			mapReload (res);
 			return <baseRouter.Content>{id: 0};
@@ -120,14 +120,14 @@ import { Device } from './models/device';
 			if (! url) url = '/';
 			ruta = map.contents.find ((ruta: any) => {
 							if (ruta.languages) {
-								if (ruta.languages [idiomas.lng] && findRouteOk (ruta.languages [idiomas.lng], url)) 
+								if (ruta.languages [idiomas.lng] && findRouteOk (ruta.languages [idiomas.lng], url))
 									return ruta;
 							} else {
 								if (findRouteOk (ruta, req.url)) return ruta;
 							}
 						});
 
-		} else 
+		} else
 			ruta = map.contents.find ((ruta: any) => {
 							if (findRouteOk (ruta, req.url)) return ruta;
 						});
@@ -177,7 +177,14 @@ import { Device } from './models/device';
 	}
 
 
-	function lng (): string { return idiomas.lng; }
+	function lng (): baseRouter.Languages {
+
+		let actives: string [] = [];
+		for (let lng in idiomas.actives) {
+			actives.push(lng);
+		}
+		return { lng: idiomas.lng, actives: actives };
+	}
 
 
 	function loadMap () {
@@ -255,6 +262,17 @@ import { Device } from './models/device';
 				idiomas.lng     = idiomas.default;
 				idiomas.idiomas = true;
 			}
+			fillLanguages();
+		}
+	}
+
+
+	function fillLanguages() {
+
+		for (let lng in idiomas.actives) {
+			if (lng != idiomas.default) {
+				idiomas.t[lng] = {...idiomas.t[idiomas.default], ...idiomas.t[lng]};
+			}
 		}
 	}
 
@@ -304,7 +322,7 @@ import { Device } from './models/device';
 
 		for (let i in map.staticContents) {
 			let content = new StaticContent (map.staticContents [i]);
-			
+
 			staticContents.push (content);
 		}
 	}
@@ -427,6 +445,7 @@ import { Device } from './models/device';
 			let url: any = {};
 			if (idiomas.idiomas) {
 				let locs = 0;
+				url.id = ruta.id;
 				url.loc = {};
 				for (let lng in idiomas.actives) {
 					if (ruta.languages && ruta.languages [lng]) {
@@ -464,7 +483,7 @@ import { Device } from './models/device';
 			res.redirect ('/' + idiomaNavegador (req));
 			return false;
 		}
-		
+
 		if (! req.url.match (/^\/\w\w(\/|$)/)) {
 			res.redirect ('/' + idiomaNavegador (req) + req.url);
 			return false;
@@ -487,11 +506,4 @@ import { Device } from './models/device';
 	///////////////////////////////////
 	///////////////////////////////////
 	///////////////////////////////////
-
-
-
-
-
-
-
 

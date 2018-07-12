@@ -8,8 +8,9 @@ Las variables expuestas son las siguiente:
 | --------------------- | ------- | :----------------------------------------------------------- |
 | [__server](#__server) | Objeto  | Contiene la información del servidor web: Puerto, nombre de dominio, protocolo y SeverName. |
 | [__route](#__route)   | Objeto  | Incluye toda la información de la ruta que se está cargando. Si el website es multilíngue, la información contenida únicamente será la del idioma activo. |
-| [__groups](#__groups) | Objeto  | Almacena todas las agrupaciones de contenido definidas en el mapa que nos facilitará representar diferentes menús de navegación. Ver configuración de `groups` en mapa ([link](#groups)) |
-| __device              | Objecto | Información del dispositivo                                  |
+| [__groups](#__groups) | Objeto  | Almacena todas las agrupaciones de contenido definidas en el mapa que nos facilitará representar diferentes menús de navegación. Ver configuración de `groups` en mapa ([link](#groups)). |
+| [__device](#__device) | Objecto | Información del dispositivo.                                 |
+| [t](#t)               | Objeto  | Diccionario de traducciones.                                 |
 
 A nivel de vista, en nuestra plantilla HTML, la carga de variables es directa ( `__route` ):
 
@@ -76,9 +77,11 @@ Cada uno de nuestros menús se identifica como una clave dentro de este objeto (
 | __groups.menu.link        | Texto | Incluye la URL que sirve de enlace para la opción de menú. Si el website es multilíngüe solo incluirá la información del idioma cargado. |
 | __groups.menu.items       | Array | Si exiten anidaciones dentro de una opción de menú se incluirán dentro de este array con el mismo esquema (descripción + link + items) |
 
+
+
 ## __device
 
-Esta variable incluye información del dispositivo.
+Esta variable incluye información del dispositivo que realiza la petición al servidor web.
 
 | Propiedad        | Tipo    | Descripción                                                  |
 | ---------------- | ------- | ------------------------------------------------------------ |
@@ -89,4 +92,39 @@ Esta variable incluye información del dispositivo.
 | __device.tablet  | boolean | Si es una tablet                                             |
 | __device.tv      | boolean | Si es un televisor                                           |
 | __device.type    | string  | Tipo de dispositivos. Valores posibles: bot, car, desktop, phone, tablet, tv, type |
+
+
+
+## t
+
+Esta variable contiene el diccionario por idiomas que utilizaremos para la traducción de textos en las vistas de nuestro website. La variable `t` solo devuelve las traducciones del lenguaje actual a modo de diccionario clave/valor.
+
+Por ejemplo, a nivel de vista en nuestra plantilla HTML, la carga de variables es directa:
+
+```javascript
+<script> console.log({{ t.modulotextoDescriptor }}) </script>
+```
+
+Este código nos devolverá un mensaje en consola con el contenido de la clave 'modulotextoDescriptor' de nuestro diccionario siempre que exista. Si no existe devolverá 'undefined'.
+
+Los diccionarios en los diferentes idiomas se almacenarán por defecto en la carpeta `/public/lang/`. Deberá existir un diccionario por cada idioma activo. El formato del diccionario será `json` y el archivo tendrá como nombre la abreviatura del idioma siguiendo la norma [ISO 639-1](https://es.wikipedia.org/wiki/ISO_639-1).
+
+Un ejemplo de diccionario sería:
+
+```json
+{
+	"homeBienvenida": "Home",
+	"homeTextoSEO": "Lorem ipsum en inglés, dolor sit amet adipisicing elit.",
+	"homeIntro": "Quisque velit nisi, pretium ut lacinia in, elementum id.",
+	"homeServicios": "Name",
+    
+	"presentacionTitulo": "Lorem ipsum en inglés, dolor sit amet adipisicing elit.",
+	"presentacionTextoDerecha": "Velit nisi, pretium ut lacinia in, elementum id.",
+	"presentacionTextoHistoria": "Name"    
+}
+```
+
+En este caso, para organizar las traducciones, proponemos que el nombre de la clave se componga del nombre del módulo donde aparece la traducción y un descriptor (numérico o en formato camelcase).
+
+Es posible configurar una ruta diferente para la carga de los diccionarios. Para modificar esta ruta podemos utilizar el método `configure` del base router ([mirar métodos](./metodos.md)). Es muy importante tener en cuenta que los diccionarios serán utilizados por el cliente luego deben estar accesible de forma pública en el servidor web.
 

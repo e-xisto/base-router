@@ -20,12 +20,13 @@ let sinIdiomas = [];
 let staticContents = [];
 function alternate(ruta, info) {
     if (idiomas.idiomas) {
-        info.alternate = [];
         info.link = {};
         for (let lng in idiomas.actives) {
             if (ruta.languages && ruta.languages[lng]) {
-                info.alternate.push({ lang: lng, href: `${server.serverName}/${lng}${urlToLink(ruta.languages[lng].url)}` });
                 info.link[lng] = `/${lng}${urlToLink(ruta.languages[lng].url)}`;
+            }
+            else {
+                info.link[lng] = `/${lng}`;
             }
         }
     }
@@ -152,7 +153,13 @@ function isStaticRoute(req, res, next) {
     }
     return false;
 }
-function lng() { return idiomas.lng; }
+function lng() {
+    let actives = [];
+    for (let lng in idiomas.actives) {
+        actives.push(lng);
+    }
+    return { lng: idiomas.lng, actives: actives };
+}
 exports.lng = lng;
 function loadMap() {
     let mapFile = `${path}/${mapName}`;
@@ -224,6 +231,14 @@ function optimizedLanguages() {
         if (idiomas.default) {
             idiomas.lng = idiomas.default;
             idiomas.idiomas = true;
+        }
+        fillLanguages();
+    }
+}
+function fillLanguages() {
+    for (let lng in idiomas.actives) {
+        if (lng != idiomas.default) {
+            idiomas.t[lng] = Object.assign({}, idiomas.t[idiomas.default], idiomas.t[lng]);
         }
     }
 }
@@ -373,6 +388,7 @@ function sitemap() {
         let url = {};
         if (idiomas.idiomas) {
             let locs = 0;
+            url.id = ruta.id;
             url.loc = {};
             for (let lng in idiomas.actives) {
                 if (ruta.languages && ruta.languages[lng]) {

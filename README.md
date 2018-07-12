@@ -11,6 +11,7 @@ Base-router es el enrutador personalizado configurado por defecto en nuestra esc
 - [Forzar la recarga del mapa](#recarga-de-mapa)
 - [Mapa (map.yaml)](./docs/mapa.md)
 - [Variables](./docs/variables.md)
+- [Métodos](./docs/metodos.md)
 - [Routes](./docs/routes.md)
 - [Notas de revisión y TODOs](#Notas-de-revisión-y-TODOs)
 
@@ -50,15 +51,16 @@ baseRouter.configure ({ path: __dirname, map: 'map.yaml' });
 ```
 
 
-
 Opciones de configuración:
 
 | Variable                   | Description                                                  |
 | :------------------------- | ------------------------------------------------------------ |
 | **path**                   | Ruta de la aplicación, esta variable es obligatoria e indica la ruta donde empezar a localizar el mapa y las rutas estáticas. |
-| map                        | Nombre del fichero del mapa. Debe estar localizado en el path o ser una ruta relativa al path. Por defecto tiene el valor `map.yaml` |
+| mapName                        | Nombre del fichero del mapa. Debe estar localizado en el path o ser una ruta relativa al path. Por defecto tiene el valor `map.yaml` |
 | pathRoutes                 | Ruta de la la carpeta de rutas. Por defecto `[path]/routes`  |
 | [routes](./docs/routes.md) | Nombre del fichero de rutas. Por defecto `routes.js`         |
+
+Para más detalles ver [métodos](./docs/metodos.md)
 
 Un ejemplo de configuración básica para nuestra aplicación express sería:
 
@@ -195,4 +197,4 @@ Si realizamos cambios sobre nuestro archivo de mapa podemos forzar la carga del 
 
 
 
-Versión 0.1.0 (2018-05-10) 
+Versión 0.1.0 (2018-05-10)
