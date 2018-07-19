@@ -7,7 +7,7 @@ Para que esto sea posible debemos definir nuestro mapa de rutas disponibles. Par
 Un ejemplo de nuestro archivo de rutas:
 
 ```javascript
-// Archivo /routes/routes.js
+// Archivo /src/routes/routes.js
 
 module.exports = function (app) {
 
@@ -30,7 +30,7 @@ En este ejemplo definimos una ruta `/template` que podremos incluir en nuestro [
 Nuestro archivo de enrutado podría quedar de la siguiente forma:
 
 ```javascript
-// Archivo /routes/template.js
+// Archivo /src/routes/template.js
 
 const router = require ('express').Router ();
 

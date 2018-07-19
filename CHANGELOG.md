@@ -2,6 +2,10 @@
 
 ## [Unrelease]
 
+## [1.2.0] - 2018-07-19
+
+- 2018-07-19 Las rutas del servidor se cargan desde el servidor. Se elimina el pathRoutes y routes de la configuracion @cesaregarcia
+
 ## [1.1.16] - 2018-07-12
 
 - 2018-07-12 typescript en servidor @cesaregarcia

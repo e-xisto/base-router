@@ -13,8 +13,6 @@ let map;
 let mapName = ''; // Nombre del fichero del mapa de rutas, por defecto map.json
 let path = ''; // Path de la aplicación
 let pathLanguages = ''; // Path de los idiomas
-let pathRoutes = ''; // Path de las rutas por defecto _path/routes
-let routesFile = ''; // Fichero con la declaración de rutas por defecto routes.js
 let server = {};
 let sinIdiomas = [];
 let staticContents = [];
@@ -56,15 +54,13 @@ function configure(app, options) {
     mapName = options.map || 'map.yaml';
     path = options.path || '';
     pathLanguages = options.pathLanguages || '/public/lang/';
-    pathRoutes = options.pathRoutes || path + '/routes';
-    routesFile = options.routes || 'routes.js';
     if (!path) {
         console.log("\n\x1b[31mNo se puede cargar un mapa poque no se ha definido un path\x1b[0m\n");
         process.exit();
     }
     setServer(app);
     app.use(routes);
-    loadRoutes(app);
+    app.serverRoutes();
     loadMap();
     setGroups();
 }
@@ -187,18 +183,6 @@ function loadMap() {
     optimizedLanguages();
     prepareStaticContents();
     prepareRoutes();
-}
-function loadRoutes(app) {
-    let rutasFile = `${pathRoutes}/${routesFile}`;
-    try {
-        require(rutasFile)(app);
-    }
-    catch (e) {
-        console.log("\n\x1b[31mNo se ha podido cargar el fichero de rutas");
-        console.log("    \x1b[41m\x1b[37m" + rutasFile + "\x1b[0m\n");
-        console.log(e);
-        process.exit();
-    }
 }
 function mapReload(res) {
     console.log("\n\x1b[32mRecargando mapa de contenidos\x1b[0m\n");

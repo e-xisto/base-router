@@ -3,6 +3,9 @@ import * as baseRouter from '../typings/base-router';
 
 const fs    = require('fs');
 
+interface Express {
+}
+
 import groups from './models/groups';
 import { StaticContent } from './models/staticContent';
 import { Device } from './models/device';
@@ -14,8 +17,6 @@ import { Device } from './models/device';
 	let mapName: string           = ''; // Nombre del fichero del mapa de rutas, por defecto map.json
 	let path: string              = '';	// Path de la aplicación
 	let pathLanguages: string     = '';	// Path de los idiomas
-	let pathRoutes: string        = '';	// Path de las rutas por defecto _path/routes
-	let routesFile: string        = '';	// Fichero con la declaración de rutas por defecto routes.js
 	let server: baseRouter.Server = {};
 	let sinIdiomas: Array<baseRouter.Content> = [];
 	let staticContents: Array<StaticContent> = [];
@@ -69,8 +70,6 @@ import { Device } from './models/device';
 		mapName       = options.map || 'map.yaml';
 		path          = options.path || '';
 		pathLanguages = options.pathLanguages || '/public/lang/';
-		pathRoutes    = options.pathRoutes || path + '/routes';
-		routesFile    = options.routes || 'routes.js';
 
 		if (! path) {
 			console.log ("\n\x1b[31mNo se puede cargar un mapa poque no se ha definido un path\x1b[0m\n");
@@ -78,7 +77,7 @@ import { Device } from './models/device';
 		}
 		setServer (app);
 		app.use (routes);
-		loadRoutes (app);
+		(<any>app).serverRoutes ();
 		loadMap ();
 		setGroups ();
 	}
@@ -210,21 +209,6 @@ import { Device } from './models/device';
 		optimizedLanguages ();
 		prepareStaticContents ();
 		prepareRoutes ();
-	}
-
-
-	function loadRoutes (app: express.Express) {
-
-		let rutasFile = `${ pathRoutes }/${ routesFile }`;
-
-		try {
-			require (rutasFile)(app);
-		} catch (e) {
-			console.log ("\n\x1b[31mNo se ha podido cargar el fichero de rutas");
-			console.log ("    \x1b[41m\x1b[37m" + rutasFile + "\x1b[0m\n");
-			console.log (e);
-			process.exit ();
-		}
 	}
 
 

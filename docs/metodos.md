@@ -61,13 +61,11 @@ module.exports = Noticia;
 
 Como ya hemos visto en la introducción, este método configura la aplicación. options, Admite los siguientes parámetros en el objeto json que recibe:
 
-| Variable                   | Description                                                  |
-| :------------------------- | ------------------------------------------------------------ |
-| **path**                   | Ruta de la aplicación, esta variable es obligatoria e indica la ruta donde empezar a localizar el mapa y las rutas estáticas. |
-| mapName                    | Nombre del fichero del mapa. Debe estar localizado en el path o ser una ruta relativa al path. Por defecto tiene el valor `map.yaml` |
-| pathLanguages              | Ruta donde se colocan los .json de las traducciones en nuestro proyecto. Por defecto `[path]/public/lang/` |
-| pathRoutes                 | Ruta de la la carpeta de rutas. Por defecto `[path]/routes`  |
-| [routes](./docs/routes.md) | Nombre del fichero de rutas. Por defecto `routes.js`         |
+| Variable      | Description                                                  |
+| :------------ | ------------------------------------------------------------ |
+| **path**      | Ruta de la aplicación, esta variable es obligatoria e indica la ruta donde empezar a localizar el mapa y las rutas estáticas. |
+| mapName       | Nombre del fichero del mapa. Debe estar localizado en el path o ser una ruta relativa al path. Por defecto tiene el valor `map.yaml` |
+| pathLanguages | Ruta donde se colocan los .json de las traducciones en nuestro proyecto. Por defecto `[path]/public/lang/` |
 
 ## lng()
 
